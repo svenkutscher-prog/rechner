@@ -851,7 +851,16 @@ function onSliderInput() {
   renderSliderAmt();
   const v = parseInt(document.getElementById('preisSlider').value);
   document.getElementById('totalAmt').textContent = v + ' €';
-  document.getElementById('kostenAmt').textContent = v + ' €';
+  const diesel = parseFloat(document.getElementById('dDiesel')?.value) || 0;
+  const verbr  = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const km     = parseFloat(document.getElementById('kmVal')?.value) || 0;
+  const dieselAnteil = (verbr / 100) * diesel;
+  const eigeneFahrt  = Math.round(km * 2 * dieselAnteil);
+  const umsatz = v - eigeneFahrt;
+  const ka = document.getElementById('kostenAmt');
+  if(ka) ka.textContent = umsatz + ' €';
+  const kd = document.getElementById('kostenDetail');
+  if(kd) kd.innerHTML = km > 0 ? `Diesel −${eigeneFahrt} €` : '–';
 }
 
 function renderSliderAmt() {
@@ -1169,7 +1178,7 @@ function calc() {
   if(ml) ml.textContent = `−${Math.round(marge*100)}%`;
 
   const ka = document.getElementById('kostenAmt');
-  if(ka) ka.textContent = total.toFixed(0) + ' €';
+  if(ka) ka.textContent = (totalRound - Math.round(eigeneFahrt)) + ' €';
 
   const kd = document.getElementById('kostenDetail');
   if(kd) kd.innerHTML = km > 0
