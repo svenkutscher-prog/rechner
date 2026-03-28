@@ -851,6 +851,7 @@ function onSliderInput() {
   renderSliderAmt();
   const v = parseInt(document.getElementById('preisSlider').value);
   document.getElementById('totalAmt').textContent = v + ' €';
+  document.getElementById('kostenAmt').textContent = v + ' €';
 }
 
 function renderSliderAmt() {
@@ -1157,8 +1158,9 @@ function calc() {
   const minRound = Math.round(minimum);
   const maxRound = Math.round(total * 1.3);
   updateSlider(totalRound, minRound, maxRound);
-  const sliderVal = parseInt(document.getElementById('preisSlider')?.value) || totalRound;
-  document.getElementById('totalAmt').textContent = sliderVal + ' €';
+  document.getElementById('preisSlider').value = totalRound;
+  document.getElementById('totalAmt').textContent = totalRound + ' €';
+  renderSliderAmt();
 
   const kb = document.getElementById('kostenBox');
   if(kb) kb.style.display = (totalBilder > 0 || km > 0) ? 'block' : 'none';
