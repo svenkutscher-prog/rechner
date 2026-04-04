@@ -7,20 +7,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0c0b09;
-  --s1: #161412;
-  --s2: #1e1c19;
-  --s3: #272421;
-  --border: #2a2724;
-  --border2: #383330;
-  --gold: #c8a96e;
-  --gold2: #e2c98e;
-  --gold-dim: rgba(200,169,110,0.15);
-  --text: #ede8df;
-  --muted: #7a746b;
-  --muted2: #5a5550;
-  --green: #6dab8a;
-  --red: #c07060;
+  --bg: #0a0908;
+  --s1: #171513;
+  --s2: #211f1c;
+  --s3: #2c2926;
+  --border: #363330;
+  --border2: #484340;
+  --gold: #d4b06a;
+  --gold2: #ecd48e;
+  --gold-dim: rgba(212,176,106,0.18);
+  --text: #f0ebe0;
+  --muted: #9a9288;
+  --muted2: #6e6760;
+  --green: #72c490;
+  --red: #d47870;
+  --blue: #6ea8d4;
   --r: 10px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,6 +39,7 @@ header {
   border-bottom: 1px solid var(--border);
   padding: 18px 20px 14px;
   text-align: center;
+  position: relative;
 }
 header h1 {
   font-family: 'Cormorant Garamond', serif;
@@ -53,6 +55,31 @@ header p {
   text-transform: uppercase;
   margin-top: 3px;
 }
+.reset-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--s3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  line-height: 1;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  min-width: 44px;
+}
+.reset-btn:active { background: var(--red); color: #fff; border-color: var(--red); transform: translateY(-50%) scale(0.95); }
+.reset-btn svg { display: block; }
 .tabs {
   display: flex;
   background: var(--s1);
@@ -114,7 +141,7 @@ header p {
 .card-head.collapsible.closed { border-bottom-color: transparent; }
 .collapsible-body {
   overflow: hidden;
-  max-height: 500px;
+  max-height: 600px;
   transition: max-height 0.3s ease, opacity 0.25s ease;
   opacity: 1;
 }
@@ -127,8 +154,8 @@ header p {
   margin-bottom: 12px;
 }
 .row:last-child { margin-bottom: 0; }
-.lbl { font-size: 0.72rem; color: var(--text); line-height: 1.35; flex: 1; }
-.lbl small { display: block; font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+.lbl { font-size: 0.75rem; color: var(--text); line-height: 1.35; flex: 1; }
+.lbl small { display: block; font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
 input[type="text"], input[type="number"], input[type="password"] {
   background: var(--s2);
   border: 1px solid var(--border2);
@@ -165,13 +192,13 @@ input::placeholder { color: var(--muted2); }
 }
 .step button {
   background: none; border: none; color: var(--gold);
-  font-size: 1.1rem; width: 34px; height: 34px;
+  font-size: 1.3rem; width: 40px; height: 40px;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   transition: background 0.15s;
 }
 .step button:active { background: var(--gold-dim); }
 .step input {
-  width: 40px; border: none; border-radius: 0;
+  width: 44px; border: none; border-radius: 0;
   text-align: center; padding: 0; font-size: 16px; -moz-appearance: textfield;
 }
 .step input:focus { border-color: transparent; }
@@ -181,21 +208,24 @@ input::placeholder { color: var(--muted2); }
   display: flex; align-items: center;
   justify-content: space-between; gap: 10px; margin-bottom: 12px;
 }
-.tog { position: relative; width: 42px; height: 22px; flex-shrink: 0; }
+.tog { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
 .tog input { opacity: 0; width: 0; height: 0; position: absolute; }
 .tog-sl {
   position: absolute; inset: 0;
   background: var(--s3); border: 1px solid var(--border2);
-  border-radius: 22px; cursor: pointer; transition: background 0.2s;
+  border-radius: 26px; cursor: pointer; transition: background 0.2s;
 }
 .tog-sl::before {
   content: '';
-  position: absolute; width: 16px; height: 16px; top: 2px; left: 2px;
+  position: absolute; width: 18px; height: 18px; top: 3px; left: 3px;
   background: var(--muted); border-radius: 50%;
   transition: transform 0.2s, background 0.2s;
 }
 .tog input:checked + .tog-sl { background: var(--gold-dim); border-color: var(--gold); }
-.tog input:checked + .tog-sl::before { transform: translateX(19px); background: var(--gold); }
+.tog input:checked + .tog-sl::before { transform: translateX(20px); background: var(--gold); }
+/* Rechnung toggle uses blue */
+.tog.tog-rechnung input:checked + .tog-sl { background: rgba(110,168,212,0.18); border-color: var(--blue); }
+.tog.tog-rechnung input:checked + .tog-sl::before { background: var(--blue); }
 .color-btn {
   background: var(--s2); border: 2px solid var(--border2); border-radius: 8px;
   cursor: pointer; padding: 10px 8px 8px; text-align: center;
@@ -205,72 +235,103 @@ input::placeholder { color: var(--muted2); }
 .color-btn:hover { border-color: var(--muted); }
 .color-btn.on { border-color: var(--gold); background: var(--gold-dim); }
 .color-preview { width: 36px; height: 36px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); }
-.color-label { font-size: 0.62rem; color: var(--text); letter-spacing: 0.05em; }
-.color-price { font-size: 0.62rem; color: var(--gold); min-height: 12px; }
+.color-label { font-size: 0.65rem; color: var(--text); letter-spacing: 0.05em; }
+.color-price { font-size: 0.65rem; color: var(--gold); min-height: 12px; }
 .btn-maps {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; padding: 9px;
+  width: 100%; padding: 10px;
   background: var(--s3); border: 1px solid var(--border2); border-radius: 7px;
   color: var(--gold); font-family: 'DM Mono', monospace;
-  font-size: 0.7rem; letter-spacing: 0.08em; cursor: pointer;
+  font-size: 0.72rem; letter-spacing: 0.08em; cursor: pointer;
   transition: background 0.2s, border-color 0.2s; margin-top: 10px;
 }
-.btn-maps:hover { background: var(--gold-dim); border-color: var(--gold); }
-.km-status { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.68rem; min-height: 22px; }
-.km-status .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.btn-maps:active { background: var(--gold-dim); border-color: var(--gold); }
+.km-status { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.7rem; min-height: 22px; }
+.km-status .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .dot-idle { background: var(--muted2); }
 .dot-loading { background: var(--gold); animation: pulse 1s infinite; }
 .dot-ok { background: var(--green); }
 .dot-err { background: var(--red); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 .div { height: 1px; background: var(--border); margin: 12px 0; }
+/* Rechnung Banner */
+.rechnung-banner {
+  background: rgba(110,168,212,0.12);
+  border: 1px solid rgba(110,168,212,0.35);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  color: #a8cce8;
+  line-height: 1.6;
+  margin-top: 10px;
+  display: none;
+}
+.rechnung-banner strong { color: var(--blue); }
 .total-card {
   background: var(--s1); border: 1px solid var(--gold);
   border-radius: var(--r); margin-top: 14px; padding: 18px 16px; text-align: center;
 }
-.total-lbl { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.22em; text-transform: uppercase; }
+.total-lbl { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.22em; text-transform: uppercase; }
 .total-amt {
   font-family: 'Cormorant Garamond', serif; font-size: 3rem;
   font-weight: 300; color: var(--gold2); line-height: 1.1; margin: 6px 0 4px;
 }
-.total-lines { font-size: 0.65rem; color: var(--muted); line-height: 1.8; margin-top: 6px; }
+.total-lines { font-size: 0.67rem; color: var(--muted); line-height: 1.9; margin-top: 6px; }
 .total-lines span { color: var(--text); }
 .btn-copy {
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; margin-top: 14px; padding: 15px;
-  background: var(--gold); color: #0c0b09; border: none; border-radius: var(--r);
-  font-family: 'DM Mono', monospace; font-size: 0.8rem; font-weight: 400;
+  width: 100%; margin-top: 14px; padding: 16px;
+  background: var(--gold); color: #0a0908; border: none; border-radius: var(--r);
+  font-family: 'DM Mono', monospace; font-size: 0.82rem; font-weight: 400;
   letter-spacing: 0.1em; cursor: pointer; transition: background 0.2s, transform 0.1s;
 }
 .btn-copy:active { transform: scale(0.98); }
 .btn-copy.ok { background: var(--green); color: #fff; }
 .set-group-title {
-  font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase;
+  font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--muted); margin: 18px 0 8px; padding-left: 2px;
 }
 .set-group-title:first-child { margin-top: 0; }
 .api-note {
   background: var(--gold-dim); border: 1px solid rgba(200,169,110,0.3);
-  border-radius: 7px; padding: 10px 12px; font-size: 0.68rem;
+  border-radius: 7px; padding: 10px 12px; font-size: 0.7rem;
   color: var(--gold2); line-height: 1.6; margin-bottom: 12px;
 }
 #preisSlider::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+  -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
   background: var(--gold); cursor: pointer; border: 2px solid var(--s1);
 }
 #preisSlider::-moz-range-thumb {
-  width: 22px; height: 22px; border-radius: 50%;
+  width: 24px; height: 24px; border-radius: 50%;
   background: var(--gold); cursor: pointer; border: 2px solid var(--s1);
 }
 .toast {
   position: fixed; bottom: 20px; left: 50%;
   transform: translateX(-50%) translateY(100px);
   background: var(--green); color: #fff; padding: 11px 22px;
-  border-radius: 30px; font-size: 0.72rem; letter-spacing: 0.08em;
+  border-radius: 30px; font-size: 0.74rem; letter-spacing: 0.08em;
   transition: transform 0.3s ease; z-index: 999; pointer-events: none; white-space: nowrap;
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
-
+/* confirm reset overlay */
+.confirm-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; padding: 20px;
+}
+.confirm-box {
+  background: var(--s1); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 24px 22px; max-width: 320px; width: 100%; text-align: center;
+}
+.confirm-box p { font-size: 0.8rem; color: var(--text); line-height: 1.6; margin-bottom: 18px; }
+.confirm-box strong { color: var(--gold2); font-weight: 400; }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions button {
+  flex: 1; padding: 13px; border-radius: 8px; border: none;
+  font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; cursor: pointer;
+}
+.btn-cancel { background: var(--s3); color: var(--text); border: 1px solid var(--border2) !important; }
+.btn-confirm-reset { background: var(--red); color: #fff; }
 /* ── STUNDENLOHN BLOCK ── */
 .stunden-box {
   margin-top: 14px;
@@ -296,7 +357,7 @@ input::placeholder { color: var(--muted2); }
 }
 .stunden-header .sub {
   margin-left: auto;
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   color: var(--muted);
   letter-spacing: 0.06em;
 }
@@ -310,7 +371,7 @@ input::placeholder { color: var(--muted2); }
 }
 .stunden-col:last-child { border-right: none; }
 .stunden-col-label {
-  font-size: 0.57rem;
+  font-size: 0.6rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
@@ -328,16 +389,16 @@ input::placeholder { color: var(--muted2); }
 .stunden-col-price.low  { color: var(--red); }
 .stunden-col-badge {
   display: inline-block;
-  font-size: 0.57rem;
+  font-size: 0.6rem;
   letter-spacing: 0.07em;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 20px;
 }
-.badge-good { background: rgba(109,171,138,0.15); color: var(--green); }
-.badge-ok   { background: rgba(200,169,110,0.15); color: var(--gold); }
-.badge-low  { background: rgba(192,112,96,0.15);  color: var(--red); }
+.badge-good { background: rgba(114,196,144,0.15); color: var(--green); }
+.badge-ok   { background: rgba(212,176,106,0.15); color: var(--gold); }
+.badge-low  { background: rgba(212,120,112,0.15); color: var(--red); }
 .stunden-detail {
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   color: var(--muted);
   line-height: 2;
   border-top: 1px solid var(--border);
@@ -354,11 +415,11 @@ input::placeholder { color: var(--muted2); }
   flex: 1;
   padding: 8px 14px;
   border-right: 1px solid var(--border);
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   color: var(--muted);
 }
 .stunden-zeit-col:last-child { border-right: none; }
-.stunden-zeit-col span { display: block; color: var(--text); font-size: 0.7rem; margin-top: 1px; }
+.stunden-zeit-col span { display: block; color: var(--text); font-size: 0.72rem; margin-top: 1px; }
 </style>
 </head>
 <body>
@@ -366,13 +427,20 @@ input::placeholder { color: var(--muted2); }
 <header>
   <h1>FotoArtisan</h1>
   <p>Angebotsrechner · Katzen-Fotoshooting</p>
+  <button class="reset-btn" onclick="showResetConfirm()" title="Alles zurücksetzen">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="1 4 1 10 7 10"></polyline>
+      <path d="M3.51 15a9 9 0 1 0 .49-3.54"></path>
+    </svg>
+    Reset
+  </button>
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab('angebot')">
+  <div class="tab active" onclick="showTab('angebot',event)">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Angebot
   </div>
-  <div class="tab" onclick="showTab('einstellungen')">
+  <div class="tab" onclick="showTab('einstellungen',event)">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Einstellungen
   </div>
 </div>
@@ -384,7 +452,7 @@ input::placeholder { color: var(--muted2); }
   <div class="card">
     <div class="card-head"><span class="ico">👤</span><h2>Kunde</h2></div>
     <div class="card-body">
-      <div style="font-size:0.62rem;color:var(--muted);margin-bottom:5px;letter-spacing:0.1em;text-transform:uppercase;">Name</div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Name</div>
       <input type="text" id="kundenName" placeholder="z. B. Maria Müller" oninput="calc()">
     </div>
   </div>
@@ -392,23 +460,23 @@ input::placeholder { color: var(--muted2); }
   <div class="card">
     <div class="card-head"><span class="ico">🚗</span><h2>Anfahrt</h2></div>
     <div class="card-body">
-      <div style="font-size:0.62rem;color:var(--muted);margin-bottom:5px;letter-spacing:0.1em;text-transform:uppercase;">Kundenadresse</div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Kundenadresse</div>
       <input type="text" id="kundeAdresse" placeholder="Straße, PLZ, Stadt" oninput="onAdresseChange()">
       <button class="btn-maps" onclick="openMaps()">🗺 In Google Maps öffnen</button>
 
       <div id="kmInfoBox" style="display:none;margin-top:12px;background:var(--s3);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;">
           <div>
-            <div style="font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px;">Entfernung</div>
+            <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px;">Entfernung</div>
             <div id="kmInfoKm" style="font-size:1rem;color:var(--text);font-weight:400;">—</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px;">Anfahrtskosten gesamt</div>
+            <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px;">Anfahrtskosten gesamt</div>
             <div id="kmInfoKosten" style="font-size:1rem;color:var(--gold2);font-weight:400;">—</div>
           </div>
         </div>
         <div style="height:1px;background:var(--border);margin-bottom:8px;"></div>
-        <div id="kmInfoDetail" style="font-size:0.65rem;color:var(--muted);line-height:2;"></div>
+        <div id="kmInfoDetail" style="font-size:0.67rem;color:var(--muted);line-height:2;"></div>
       </div>
 
       <div class="km-status" style="margin-top:10px;">
@@ -469,6 +537,25 @@ input::placeholder { color: var(--muted2); }
     </div>
   </div>
 
+  <!-- ══ RECHNUNG TOGGLE ══ -->
+  <div class="card" style="margin-top:14px;">
+    <div class="card-body" style="padding:14px 16px;">
+      <div class="tog-row" style="margin:0;">
+        <label class="lbl">
+          Rechnung ausstellen
+          <small>+10 % auf den Gesamtpreis (MwSt./Verwaltung)</small>
+        </label>
+        <label class="tog tog-rechnung">
+          <input type="checkbox" id="rechnungToggle" onchange="calc()">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+      <div class="rechnung-banner" id="rechnungBanner">
+        <strong>+10 % Rechnungsaufschlag</strong> wird auf den Gesamtpreis addiert und im Angebot sowie im Kopiertext ausgewiesen.
+      </div>
+    </div>
+  </div>
+
   <div class="card" style="margin-top:14px;">
     <div class="card-head collapsible closed" onclick="toggleCard(this)">
       <span class="ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
@@ -476,19 +563,19 @@ input::placeholder { color: var(--muted2); }
       <span class="collapse-arrow">▼</span>
     </div>
     <div class="collapsible-body closed" style="padding:0;">
-      <div class="tog-row" style="padding:12px 16px;margin:0;border-bottom:1px solid var(--border);">
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
         <label class="lbl">Rückmeldung<small>Bitte Rückmeldung, ob ein Fototermin … in Frage kommt.</small></label>
         <label class="tog"><input type="checkbox" id="optRueck" checked onchange="saveSettings()"><span class="tog-sl"></span></label>
       </div>
-      <div class="tog-row" style="padding:12px 16px;margin:0;border-bottom:1px solid var(--border);">
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
         <label class="lbl">Parkgebühren<small>HINWEIS: Eventuell anfallende Parkgebühren …</small></label>
         <label class="tog"><input type="checkbox" id="optPark" checked onchange="saveSettings()"><span class="tog-sl"></span></label>
       </div>
-      <div class="tog-row" style="padding:12px 16px;margin:0;border-bottom:1px solid var(--border);">
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
         <label class="lbl">Ratenzahlung<small>Ratenzahlung ist möglich — sprich uns gerne an.</small></label>
         <label class="tog"><input type="checkbox" id="optRate" onchange="saveSettings()"><span class="tog-sl"></span></label>
       </div>
-      <div style="padding:12px 16px;">
+      <div style="padding:13px 16px;">
         <div class="tog-row" style="margin:0 0 10px;">
           <label class="lbl">Eigener Text<small>Wird direkt so ins Angebot übernommen</small></label>
           <label class="tog"><input type="checkbox" id="optEigenAn" onchange="toggleEigenText();saveSettings()"><span class="tog-sl"></span></label>
@@ -502,32 +589,32 @@ input::placeholder { color: var(--muted2); }
   <div id="kostenBox" style="display:none;margin-top:14px;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;">
     <div style="display:flex;">
       <div style="flex:1;padding:14px 16px;border-right:1px solid var(--border);">
-        <div style="font-size:0.58rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Umsatz</div>
+        <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Umsatz</div>
         <div id="kostenAmt" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--gold2);line-height:1.1;">—</div>
-        <div id="kostenDetail" style="font-size:0.6rem;color:var(--muted);margin-top:4px;line-height:1.8;"></div>
+        <div id="kostenDetail" style="font-size:0.62rem;color:var(--muted);margin-top:4px;line-height:1.8;"></div>
       </div>
       <div style="flex:1;padding:14px 16px;">
-        <div style="font-size:0.58rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Minimum <span id="margeLabel" style="color:var(--gold)">−30%</span></div>
+        <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Minimum <span id="margeLabel" style="color:var(--gold)">−30%</span></div>
         <div id="minimumAmt" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--green);line-height:1.1;">—</div>
-        <div id="minimumDetail" style="font-size:0.6rem;color:var(--muted);margin-top:4px;line-height:1.8;"></div>
+        <div id="minimumDetail" style="font-size:0.62rem;color:var(--muted);margin-top:4px;line-height:1.8;"></div>
       </div>
     </div>
   </div>
 
   <!-- Preis-Slider -->
   <div id="preisSliderBox" style="display:none;margin-top:14px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;">
-    <div style="font-size:0.58rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;">Angebotspreis anpassen</div>
+    <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;">Angebotspreis anpassen</div>
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
       <div id="sliderPreisAmt" style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;color:var(--gold2);line-height:1;">— €</div>
-      <div id="sliderPreisHint" style="font-size:0.65rem;color:var(--muted);"></div>
+      <div id="sliderPreisHint" style="font-size:0.67rem;color:var(--muted);"></div>
     </div>
     <input type="range" id="preisSlider" min="0" max="100" step="1" value="0"
       oninput="onSliderInput()"
-      style="width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--border2);outline:none;cursor:pointer;">
-    <div style="display:flex;justify-content:space-between;margin-top:8px;">
-      <span id="sliderLblMin" style="font-size:0.62rem;color:var(--red);">—</span>
-      <span id="sliderLblStd" style="font-size:0.62rem;color:var(--gold);">Standardpreis</span>
-      <span id="sliderLblMax" style="font-size:0.62rem;color:var(--muted);">—</span>
+      style="width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:3px;background:var(--border2);outline:none;cursor:pointer;">
+    <div style="display:flex;justify-content:space-between;margin-top:10px;">
+      <span id="sliderLblMin" style="font-size:0.65rem;color:var(--red);">—</span>
+      <span id="sliderLblStd" style="font-size:0.65rem;color:var(--gold);">Standardpreis</span>
+      <span id="sliderLblMax" style="font-size:0.65rem;color:var(--muted);">—</span>
     </div>
   </div>
 
@@ -556,7 +643,7 @@ input::placeholder { color: var(--muted2); }
 
   <!-- Total -->
   <div class="total-card">
-    <div class="total-lbl">Gesamtpreis (Angebot)</div>
+    <div class="total-lbl" id="totalLbl">Gesamtpreis (Angebot)</div>
     <div class="total-amt" id="totalAmt">— €</div>
     <div class="total-lines" id="totalLines"></div>
   </div>
@@ -584,8 +671,8 @@ input::placeholder { color: var(--muted2); }
   <div class="set-group-title">📍 Startadresse</div>
   <div class="card">
     <div class="card-body">
-      <div style="font-size:0.62rem;color:var(--muted);margin-bottom:5px;letter-spacing:0.1em;text-transform:uppercase;">Deine Adresse (Startpunkt)</div>
-      <input type="text" id="startAdresse" value=„Linnich, Deutschland“ oninput="saveSettings()">
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Deine Adresse (Startpunkt)</div>
+      <input type="text" id="startAdresse" value="Linnich, Deutschland" oninput="saveSettings()">
     </div>
   </div>
 
@@ -619,6 +706,11 @@ input::placeholder { color: var(--muted2); }
         <label class="lbl">Mindestmarge<small>Rabatt auf Shooting (nicht auf Fahrt)</small></label>
         <div class="euro-wrap" style="width:74px;"><input type="number" id="pMarge" value="30" min="0" max="99" oninput="saveSettings();calc()"><span>%</span></div>
       </div>
+      <div class="div"></div>
+      <div class="row">
+        <label class="lbl">Rechnungsaufschlag<small>Wird bei aktiviertem Rechnungs-Toggle addiert</small></label>
+        <div class="euro-wrap" style="width:74px;"><input type="number" id="pRechnungAufschlag" value="10" min="0" max="99" oninput="saveSettings();calc()"><span>%</span></div>
+      </div>
     </div>
   </div>
 
@@ -634,7 +726,7 @@ input::placeholder { color: var(--muted2); }
         <label class="lbl">Verbrauch<small>Liter pro 100 km</small></label>
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
           <input type="number" id="dVerbrauch" value="6" step="0.1" oninput="recalcDiesel();saveSettings()" style="width:64px;text-align:right;-moz-appearance:textfield;background:var(--s2);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Mono',monospace;font-size:16px;padding:9px 10px;outline:none;">
-          <span style="font-size:0.7rem;color:var(--muted);white-space:nowrap;">L/100km</span>
+          <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">L/100km</span>
         </div>
       </div>
       <div class="div"></div>
@@ -642,12 +734,12 @@ input::placeholder { color: var(--muted2); }
         <label class="lbl">Berechneter €/km<small id="dFormel">–</small></label>
         <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold2);min-width:70px;text-align:right;" id="dResult">–</div>
       </div>
-      <button onclick="fetchDieselPreis()" id="dieselBtn" style="width:100%;padding:9px;margin-top:6px;background:var(--s3);border:1px solid var(--border2);border-radius:7px;color:var(--gold);font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"
+      <button onclick="fetchDieselPreis()" id="dieselBtn" style="width:100%;padding:10px;margin-top:6px;background:var(--s3);border:1px solid var(--border2);border-radius:7px;color:var(--gold);font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"
         onmouseover="this.style.background='var(--gold-dim)';this.style.borderColor='var(--gold)'"
         onmouseout="this.style.background='var(--s3)';this.style.borderColor='var(--border2)'">
         ⛽ &nbsp;Aktuellen Dieselpreis laden (Linnich)
       </button>
-      <div id="dieselStatus" style="font-size:0.65rem;color:var(--muted);margin-top:6px;min-height:14px;text-align:center;"></div>
+      <div id="dieselStatus" style="font-size:0.67rem;color:var(--muted);margin-top:6px;min-height:14px;text-align:center;"></div>
     </div>
   </div>
 
@@ -674,17 +766,17 @@ input::placeholder { color: var(--muted2); }
   <div class="card">
     <div class="card-body">
       <div class="row">
-        <label class="lbl">Minuten pro Bild<small>Bildnearbeitung gesamt</small></label>
+        <label class="lbl">Minuten pro Bild<small>Bildbearbeitung gesamt</small></label>
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
           <input type="number" id="pMinProBild" value="8" min="1" max="120" oninput="saveSettings();calc()" style="width:64px;text-align:right;-moz-appearance:textfield;background:var(--s2);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Mono',monospace;font-size:16px;padding:9px 10px;outline:none;">
-          <span style="font-size:0.7rem;color:var(--muted);white-space:nowrap;">Min/Bild</span>
+          <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Min/Bild</span>
         </div>
       </div>
       <div class="row">
         <label class="lbl">Shooting-Pauschale<small>Auf-/Abbau, Kennenlernen, Puffer</small></label>
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
           <input type="number" id="pPauschale" value="180" min="0" step="15" oninput="saveSettings();calc()" style="width:64px;text-align:right;-moz-appearance:textfield;background:var(--s2);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Mono',monospace;font-size:16px;padding:9px 10px;outline:none;">
-          <span style="font-size:0.7rem;color:var(--muted);white-space:nowrap;">Min</span>
+          <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Min</span>
         </div>
       </div>
     </div>
@@ -695,6 +787,17 @@ input::placeholder { color: var(--muted2); }
 </div>
 
 <div class="toast" id="toast">✓ Text kopiert! In WhatsApp einfügen.</div>
+
+<!-- Confirm Reset Overlay -->
+<div class="confirm-overlay" id="confirmOverlay" style="display:none;">
+  <div class="confirm-box">
+    <p>Alle <strong>Einstellungen und Angebotsdaten</strong> werden zurückgesetzt.<br>Dieser Schritt kann nicht rückgängig gemacht werden.</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="hideResetConfirm()">Abbrechen</button>
+      <button class="btn-confirm-reset" onclick="doReset()">Zurücksetzen</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── COLLAPSIBLE ──
@@ -724,19 +827,21 @@ function updateSlider(std, min, max) {
 
 function onSliderInput() {
   renderSliderAmt();
-  const val = parseInt(document.getElementById('preisSlider').value);
-  document.getElementById('totalAmt').textContent = val + ' €';
+  const baseVal = parseInt(document.getElementById('preisSlider').value);
+  const rechnungOn = document.getElementById('rechnungToggle').checked;
+  const aufschlag = n('pRechnungAufschlag') || 10;
+  const displayVal = rechnungOn ? Math.round(baseVal * (1 + aufschlag / 100)) : baseVal;
+  document.getElementById('totalAmt').textContent = displayVal + ' €';
   const diesel = parseFloat(document.getElementById('dDiesel')?.value) || 0;
   const verbr  = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
   const km     = parseFloat(document.getElementById('kmVal')?.value) || 0;
   const eigeneFahrt = Math.round(km * 2 * (verbr / 100) * diesel);
   const ka = document.getElementById('kostenAmt');
-  if(ka) ka.textContent = (val - eigeneFahrt) + ' €';
+  if(ka) ka.textContent = (baseVal - eigeneFahrt) + ' €';
   const kd = document.getElementById('kostenDetail');
   if(kd) kd.innerHTML = km > 0 ? `Diesel −${eigeneFahrt} €` : '–';
-  // Stundenlohn mit Slider-Wert neu berechnen
   const minRound = parseInt(document.getElementById('preisSlider').min);
-  updateStundenlohnDisplay(val, minRound);
+  updateStundenlohnDisplay(baseVal, minRound);
 }
 
 function renderSliderAmt() {
@@ -799,11 +904,24 @@ async function fetchDieselPreis() {
 window.addEventListener('DOMContentLoaded', () => { loadSettings(); recalcDiesel(); calc(); });
 
 // ── TABS ──
-function showTab(name) {
+function showTab(name, event) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
+  if(event && event.currentTarget) event.currentTarget.classList.add('active');
+}
+
+// ── RESET ──
+function showResetConfirm() {
+  document.getElementById('confirmOverlay').style.display = 'flex';
+}
+function hideResetConfirm() {
+  document.getElementById('confirmOverlay').style.display = 'none';
+}
+function doReset() {
+  try { localStorage.removeItem('ksp_settings'); } catch(e){}
+  hideResetConfirm();
+  location.reload();
 }
 
 // ── SETTINGS ──
@@ -816,7 +934,7 @@ function saveSettings() {
     orsKey: v('orsKey'), startAdresse: v('startAdresse'),
     pExtraE: v('pExtraE'), pExtraG: v('pExtraG'),
     pExtraOptE: v('pExtraOptE'), pExtraOptG: v('pExtraOptG'),
-    pBW: v('pBW'), pMarge: v('pMarge'),
+    pBW: v('pBW'), pMarge: v('pMarge'), pRechnungAufschlag: v('pRechnungAufschlag'),
     pKm: v('pKm'), pStunde: v('pStunde'), pSpeed: v('pSpeed'),
     dDiesel: v('dDiesel'), dVerbrauch: v('dVerbrauch'),
     pMinProBild: v('pMinProBild'), pPauschale: v('pPauschale'),
@@ -941,21 +1059,16 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
     return;
   }
 
-  // Zeiten
   const fahrzeitMin = (km * 2 / speed) * 60;
   const bilderMin   = bilder * minProBild;
   const gesamtMin   = fahrzeitMin + bilderMin + pauschale;
   const gesamtStd   = gesamtMin / 60;
-
-  // Nur reinen Diesel abziehen (Zeitanteil steckt im Lohn)
   const dieselNetto = (verbr / 100) * diesel * km * 2;
-
   const lohnStd = (preisStd - dieselNetto) / gesamtStd;
   const lohnMin = preisMin !== null ? (preisMin - dieselNetto) / gesamtStd : null;
 
   const box = document.getElementById('stundenBox');
   box.style.display = 'block';
-
   document.getElementById('stundenZeitTotal').textContent = `Gesamt: ${formatDauer(gesamtMin)}`;
 
   const bStd = bewertung(lohnStd);
@@ -979,7 +1092,6 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
     minBdg.textContent = ''; minBdg.className = 'stunden-col-badge';
   }
 
-  // Zeitaufschlüsselung als Mini-Zeile
   const zr = document.getElementById('stundenZeitRow');
   let zeitCols = '';
   if(km > 0)     zeitCols += `<div class="stunden-zeit-col">Fahrzeit<span>${formatDauer(fahrzeitMin)}</span></div>`;
@@ -987,7 +1099,6 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
   zeitCols += `<div class="stunden-zeit-col">Pauschale<span>${formatDauer(pauschale)}</span></div>`;
   zr.innerHTML = zeitCols;
 
-  // Detail
   const detail = document.getElementById('stundenDetail');
   let d = `Gesamtzeit: <span>${formatDauer(gesamtMin)}</span>`;
   if(dieselNetto > 0) d += ` · Diesel abgezogen: <span>−${dieselNetto.toFixed(2)} €</span>`;
@@ -1005,15 +1116,23 @@ function calc() {
   const einzeln = n('einzeln');
   const gruppe  = n('gruppe');
   const km      = n('kmVal');
+  const rechnungOn = document.getElementById('rechnungToggle').checked;
+  const aufschlagPct = n('pRechnungAufschlag') || 10;
 
   const bildKostenE = einzeln * pBildE;
   const bildKostenG = gruppe  * pBildG;
   const bildKosten  = bildKostenE + bildKostenG;
   const bwKosten    = colorExtra ? pBW : 0;
   const fahrtKosten = km * 2 * pKm;
-  const total       = bildKosten + bwKosten + fahrtKosten;
+  const baseTotal   = bildKosten + bwKosten + fahrtKosten;
   const totalBilder = einzeln + gruppe;
-  const totalRound  = Math.round(total);
+  const totalRound  = Math.round(baseTotal);
+  const aufschlagEuro = rechnungOn ? Math.round(baseTotal * aufschlagPct / 100) : 0;
+  const displayTotal  = totalRound + aufschlagEuro;
+
+  // Rechnung banner
+  const banner = document.getElementById('rechnungBanner');
+  if(banner) banner.style.display = rechnungOn ? 'block' : 'none';
 
   // km info box
   if(km > 0) {
@@ -1038,8 +1157,13 @@ function calc() {
   if(gruppe  > 0) lines += `${gruppe} Gruppenbild${gruppe>1?'er':''} × ${pBildG} €: <span>${bildKostenG.toFixed(0)} €</span>\n`;
   if(bwKosten > 0) lines += `Schwarz/Weiß Aufpreis: <span>${bwKosten.toFixed(0)} €</span>\n`;
   if(km > 0)   lines += `Anfahrt (${km} km): <span>${fahrtKosten.toFixed(0)} €</span>\n`;
+  if(rechnungOn && aufschlagEuro > 0) lines += `Rechnungsaufschlag (+${aufschlagPct}%): <span>${aufschlagEuro} €</span>\n`;
   if(totalBilder > 0) lines += `${totalBilder} Bilder gesamt`;
   document.getElementById('totalLines').innerHTML = lines.trim().replace(/\n/g,'<br>');
+
+  // Total label
+  const totalLbl = document.getElementById('totalLbl');
+  if(totalLbl) totalLbl.textContent = rechnungOn ? 'Gesamtpreis (mit Rechnung)' : 'Gesamtpreis (Angebot)';
 
   // Marge & Minimum
   const marge   = (n('pMarge') || 30) / 100;
@@ -1049,11 +1173,11 @@ function calc() {
   const shootingNachRabatt  = (bildKosten + bwKosten) * (1 - marge);
   const minimum             = shootingNachRabatt + fahrtKosten;
   const minRound            = Math.round(minimum);
-  const maxRound            = Math.round(total * 1.3);
+  const maxRound            = Math.round(baseTotal * 1.3);
 
   updateSlider(totalRound, minRound, maxRound);
   document.getElementById('preisSlider').value = totalRound;
-  document.getElementById('totalAmt').textContent = totalRound + ' €';
+  document.getElementById('totalAmt').textContent = displayTotal + ' €';
   renderSliderAmt();
 
   const kb = document.getElementById('kostenBox');
@@ -1080,7 +1204,6 @@ function calc() {
   document.getElementById('infoGruppe').textContent  = `${pBildG} €/Bild`;
   updateBWLabel();
 
-  // ── STUNDENLOHN ──
   updateStundenlohnDisplay(totalRound, minRound);
 }
 
@@ -1104,8 +1227,12 @@ function buildText() {
   const bildKostenG= gruppe  * pBildG;
   const bwKosten   = colorExtra ? pBW : 0;
   const fahrtKosten= km * 2 * pKm;
-  const total      = bildKostenE + bildKostenG + bwKosten + fahrtKosten;
-  const sliderVal  = parseInt(document.getElementById('preisSlider')?.value) || Math.round(total);
+  const baseTotal  = bildKostenE + bildKostenG + bwKosten + fahrtKosten;
+  const rechnungOn = document.getElementById('rechnungToggle').checked;
+  const aufschlagPct = n('pRechnungAufschlag') || 10;
+  const aufschlagEuro = rechnungOn ? Math.round(baseTotal * aufschlagPct / 100) : 0;
+  const sliderBase = parseInt(document.getElementById('preisSlider')?.value) || Math.round(baseTotal);
+  const sliderVal  = rechnungOn ? sliderBase + Math.round(sliderBase * aufschlagPct / 100) : sliderBase;
   const totalBilder= einzeln + gruppe;
   const pExtraOptE = n('pExtraOptE');
   const pExtraOptG = n('pExtraOptG');
@@ -1115,6 +1242,7 @@ function buildText() {
   t += `\nErstellungsdatum: ${datum}`;
   t += `\nOrt: ${ort}`;
   t += `\n\nSHOOTINGKOSTEN inkl. Anfahrt: ${sliderVal} €`;
+  if(rechnungOn) t += ` (inkl. ${aufschlagPct}% Rechnungsaufschlag)`;
   t += `\n\nEnthaltene Leistungen:`;
   t += `\n* Hintergrundfarbe: ${selectedColor}`;
   t += `\n* ${einzeln} Katzen-Einzelaufnahmen (${pBildE} €/Bild)`;
