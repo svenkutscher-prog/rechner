@@ -793,6 +793,11 @@ input::placeholder { color: var(--muted2); }
           <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Min</span>
         </div>
       </div>
+      <div class="div"></div>
+      <div class="row">
+        <label class="lbl">Mindeststundenlohn<small>Unter diesem Wert → „Zu niedrig" (rot)</small></label>
+        <div class="euro-wrap"><input type="number" id="pMinStunde" value="25" min="1" oninput="saveSettings();calc()"><span>€/h</span></div>
+      </div>
     </div>
   </div>
 
@@ -971,7 +976,7 @@ function saveSettings() {
     pBW: v('pBW'), pMarge: v('pMarge'), pRechnungAufschlag: v('pRechnungAufschlag'),
     pKm: v('pKm'), pStunde: v('pStunde'), pSpeed: v('pSpeed'),
     dDiesel: v('dDiesel'), dVerbrauch: v('dVerbrauch'),
-    pMinProBild: v('pMinProBild'), pPauschale: v('pPauschale'),
+    pMinProBild: v('pMinProBild'), pPauschale: v('pPauschale'), pMinStunde: v('pMinStunde'),
     optRueck: document.getElementById('optRueck')?.checked,
     optPark:  document.getElementById('optPark')?.checked,
     optRate:  document.getElementById('optRate')?.checked,
@@ -1077,9 +1082,11 @@ function formatDauer(min) {
   return `${h} Std. ${m} Min.`;
 }
 function bewertung(eurH) {
-  if(eurH >= 35) return { cls:'good', badge:'badge-good', label:'Sehr gut' };
-  if(eurH >= 20) return { cls:'ok',   badge:'badge-ok',   label:'OK' };
-  return               { cls:'low',  badge:'badge-low',  label:'Zu niedrig' };
+  const minStunde = parseFloat(document.getElementById('pMinStunde')?.value) || 25;
+  const gutStunde = minStunde * 1.4; // "Sehr gut" bei 140% des Minimums
+  if(eurH >= gutStunde) return { cls:'good', badge:'badge-good', label:'Sehr gut' };
+  if(eurH >= minStunde) return { cls:'ok',   badge:'badge-ok',   label:'OK' };
+  return                       { cls:'low',  badge:'badge-low',  label:'Zu niedrig' };
 }
 
 function updateStundenlohnDisplay(preisStd, preisMin) {
