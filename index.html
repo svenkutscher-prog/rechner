@@ -829,7 +829,10 @@ function toggleCard(head) {
 
 // ── SLIDER STATE ──
 let sliderMin = 0, sliderMax = 0, sliderStd = 0;
-
+let selectedColor = 'Schwarz';
+let colorExtra = 0;
+let orsTimeout = null;
+let lastKmAuto = null;
 function updateSlider(std, min, max) {
   sliderStd = std; sliderMin = min; sliderMax = max;
   const box = document.getElementById('preisSliderBox');
@@ -874,11 +877,6 @@ function renderSliderAmt() {
   else if(val < sliderStd)   { hint.textContent = '▼ Unter Standardpreis'; hint.style.color = 'var(--red)'; }
   else                       { hint.textContent = '▲ Über Standardpreis'; hint.style.color = 'var(--green)'; }
 }
-
-// ── STATE ──
-let selectedColor = 'Schwarz';
-let orsTimeout = null;
-let lastKmAuto = null;
 
 // ── DIESEL ──
 function recalcDiesel() {
@@ -1015,7 +1013,6 @@ function step(id, d) {
 }
 
 // ── COLOR ──
-let colorExtra = 0;
 function pickColor(el) {
   document.querySelectorAll('.color-btn').forEach(c => c.classList.remove('on'));
   el.classList.add('on');
