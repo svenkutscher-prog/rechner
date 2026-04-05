@@ -96,8 +96,10 @@ header {
   border: 1px solid var(--border);
   border-radius: var(--r);
   margin-top: 14px;
-  overflow: hidden;
 }
+.card > .card-head:first-child { border-radius: var(--r) var(--r) 0 0; }
+.card > .card-body:only-child,
+.card > *:last-child { border-radius: 0 0 var(--r) var(--r); }
 .card-head {
   display: flex;
   align-items: center;
@@ -127,8 +129,8 @@ header {
 .card-head.collapsible.closed { border-bottom-color: transparent; }
 .collapsible-body {
   overflow: hidden;
-  max-height: 600px;
-  transition: max-height 0.3s ease, opacity 0.25s ease;
+  max-height: 2000px;
+  transition: max-height 0.4s ease, opacity 0.25s ease;
   opacity: 1;
 }
 .collapsible-body.closed { max-height: 0; opacity: 0; }
