@@ -846,7 +846,9 @@ function updateSlider(std, min, max) {
 
 function onSliderInput() {
   renderSliderAmt();
-  const baseVal = parseInt(document.getElementById('preisSlider').value);
+  const sl = document.getElementById('preisSlider');
+  const baseVal = Math.max(parseInt(sl.value), parseInt(sl.min));
+  sl.value = baseVal;
   const rechnungOn = document.getElementById('rechnungToggle').checked;
   const aufschlag = n('pRechnungAufschlag') || 10;
   const preisOptSlider = document.getElementById('optPreisAn')?.checked ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
@@ -1223,9 +1225,24 @@ function calc() {
   const shootingNachRabatt  = (bildKosten + bwKosten) * (1 - marge);
   const minimum             = shootingNachRabatt + fahrtKosten;
   const minRound            = Math.round(minimum);
-  const maxRound            = Math.round(baseTotal * 1.3);
 
-  updateSlider(totalRound, minRound, maxRound);
+  // Stundenlohn-Minimum: Gesamtzeit × Mindeststundenlohn + Diesel
+  const pMinStunde  = n('pMinStunde') || 25;
+  const minProBild  = n('pMinProBild') || 8;
+  const pauschale   = n('pPauschale') || 180;
+  const pSpeed      = n('pSpeed') || 75;
+  const totalBilder2 = einzeln + gruppe;
+  const fahrzeitMin = (km * 2 / pSpeed) * 60;
+  const bilderMin   = totalBilder2 * minProBild;
+  const gesamtStd   = (fahrzeitMin + bilderMin + pauschale) / 60;
+  const dieselNetto = (verbr / 100) * diesel * km * 2;
+  const minStundenPreis = Math.round(gesamtStd * pMinStunde + dieselNetto);
+
+  // Slider-Minimum = höherer von beiden Werten
+  const sliderMin   = Math.max(minRound, minStundenPreis);
+  const maxRound    = Math.round(baseTotal * 1.3);
+
+  updateSlider(totalRound, sliderMin, maxRound);
   document.getElementById('preisSlider').value = totalRound;
   document.getElementById('totalAmt').textContent = displayTotal + ' €';
   renderSliderAmt();
@@ -1243,18 +1260,21 @@ function calc() {
   if(kd) kd.innerHTML = km > 0 ? `Diesel −${eigeneFahrt.toFixed(2)} €` : '–';
 
   const ma = document.getElementById('minimumAmt');
-  if(ma) ma.textContent = minRound + ' €';
+  if(ma) ma.textContent = sliderMin + ' €';
 
   const md = document.getElementById('minimumDetail');
-  if(md) md.innerHTML =
-    `Shooting −${Math.round(marge*100)}%: ${shootingNachRabatt.toFixed(0)} €` +
-    (km > 0 ? `<br>Fahrt: ${fahrtKosten.toFixed(0)} €` : '');
+  if(md) {
+    let detail = `Shooting −${Math.round(marge*100)}%: ${shootingNachRabatt.toFixed(0)} €`;
+    if(km > 0) detail += `<br>Fahrt: ${fahrtKosten.toFixed(0)} €`;
+    if(minStundenPreis > minRound) detail += `<br><span style="color:var(--gold)">▲ ${pMinStunde} €/h Mindestlohn aktiv</span>`;
+    md.innerHTML = detail;
+  }
 
   document.getElementById('infoEinzeln').textContent = `${pBildE} €/Bild`;
   document.getElementById('infoGruppe').textContent  = `${pBildG} €/Bild`;
   updateBWLabel();
 
-  updateStundenlohnDisplay(totalRound, minRound);
+  updateStundenlohnDisplay(totalRound, sliderMin);
 }
 
 // ── TEXT ──
