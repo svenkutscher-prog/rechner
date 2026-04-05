@@ -532,25 +532,6 @@ input::placeholder { color: var(--muted2); }
     </div>
   </div>
 
-  <!-- ══ RECHNUNG TOGGLE ══ -->
-  <div class="card" style="margin-top:14px;">
-    <div class="card-body" style="padding:14px 16px;">
-      <div class="tog-row" style="margin:0;">
-        <label class="lbl">
-          Rechnung ausstellen
-          <small>+10 % auf den Gesamtpreis (MwSt./Verwaltung)</small>
-        </label>
-        <label class="tog tog-rechnung">
-          <input type="checkbox" id="rechnungToggle" onchange="calc()">
-          <span class="tog-sl"></span>
-        </label>
-      </div>
-      <div class="rechnung-banner" id="rechnungBanner">
-        <strong>+10 % Rechnungsaufschlag</strong> wird auf den Gesamtpreis addiert und im Angebot sowie im Kopiertext ausgewiesen.
-      </div>
-    </div>
-  </div>
-
   <div class="card" style="margin-top:14px;">
     <div class="card-head collapsible closed" onclick="toggleCard(this)">
       <span class="ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
@@ -558,6 +539,13 @@ input::placeholder { color: var(--muted2); }
       <span class="collapse-arrow">▼</span>
     </div>
     <div class="collapsible-body closed" style="padding:0;">
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
+        <label class="lbl">Rechnung ausstellen<small>+10 % auf den Gesamtpreis (MwSt./Verwaltung)</small></label>
+        <label class="tog tog-rechnung"><input type="checkbox" id="rechnungToggle" onchange="calc();saveSettings()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="rechnung-banner" id="rechnungBanner" style="margin:0 16px 12px;border-radius:6px;">
+        <strong>+10 % Rechnungsaufschlag</strong> wird auf den Gesamtpreis addiert und im Angebot sowie im Kopiertext ausgewiesen.
+      </div>
       <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
         <label class="lbl">Rückmeldung<small>Bitte Rückmeldung, ob ein Fototermin … in Frage kommt.</small></label>
         <label class="tog"><input type="checkbox" id="optRueck" checked onchange="saveSettings()"><span class="tog-sl"></span></label>
@@ -576,6 +564,23 @@ input::placeholder { color: var(--muted2); }
           <label class="tog"><input type="checkbox" id="optEigenAn" onchange="toggleEigenText();saveSettings()"><span class="tog-sl"></span></label>
         </div>
         <textarea id="optEigenText" placeholder="Deinen Text hier eingeben …" oninput="saveSettings()" style="display:none;width:100%;background:var(--s3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Mono',monospace;font-size:16px;font-weight:300;padding:10px 12px;resize:vertical;min-height:70px;outline:none;line-height:1.6;"></textarea>
+      </div>
+
+      <!-- ── PREIS-OPTION (z.B. CH Vignette) ── -->
+      <div style="border-top:1px solid var(--border);padding:13px 16px 0;">
+        <div class="tog-row" style="margin:0 0 10px;">
+          <label class="lbl">Preis-Option<small id="optPreisPreview">z. B. CH Vignette — wird zur Summe addiert</small></label>
+          <label class="tog"><input type="checkbox" id="optPreisAn" onchange="togglePreisOption();saveSettings();calc()"><span class="tog-sl"></span></label>
+        </div>
+        <div id="optPreisFields" style="display:none;margin-bottom:13px;">
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <input type="text" id="optPreisText" placeholder="Bezeichnung, z. B. CH Vignette …" oninput="updatePreisPreview();saveSettings();calc()" style="flex:1;font-size:14px;padding:9px 12px;">
+            <div class="euro-wrap" style="width:90px;flex-shrink:0;">
+              <input type="number" id="optPreisBetrag" placeholder="0" min="0" step="0.01" oninput="updatePreisPreview();saveSettings();calc()">
+              <span>€</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -825,7 +830,8 @@ function onSliderInput() {
   const baseVal = parseInt(document.getElementById('preisSlider').value);
   const rechnungOn = document.getElementById('rechnungToggle').checked;
   const aufschlag = n('pRechnungAufschlag') || 10;
-  const displayVal = rechnungOn ? Math.round(baseVal * (1 + aufschlag / 100)) : baseVal;
+  const preisOptSlider = document.getElementById('optPreisAn')?.checked ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
+  const displayVal = (rechnungOn ? Math.round(baseVal * (1 + aufschlag / 100)) : baseVal) + Math.round(preisOptSlider);
   document.getElementById('totalAmt').textContent = displayVal + ' €';
   const diesel = parseFloat(document.getElementById('dDiesel')?.value) || 0;
   const verbr  = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
@@ -920,6 +926,25 @@ function doReset() {
 }
 
 // ── SETTINGS ──
+function togglePreisOption() {
+  const on = document.getElementById('optPreisAn').checked;
+  document.getElementById('optPreisFields').style.display = on ? 'block' : 'none';
+  updatePreisPreview();
+}
+function updatePreisPreview() {
+  const on     = document.getElementById('optPreisAn').checked;
+  const text   = document.getElementById('optPreisText')?.value.trim();
+  const betrag = parseFloat(document.getElementById('optPreisBetrag')?.value) || 0;
+  const small  = document.getElementById('optPreisPreview');
+  if (!small) return;
+  if (on && text && betrag > 0) {
+    small.textContent = `${text}: +${betrag.toFixed(2)} € → wird zur Summe addiert`;
+    small.style.color = 'var(--gold)';
+  } else {
+    small.textContent = 'z. B. CH Vignette — wird zur Summe addiert';
+    small.style.color = '';
+  }
+}
 function toggleEigenText() {
   const on = document.getElementById('optEigenAn').checked;
   document.getElementById('optEigenText').style.display = on ? 'block' : 'none';
@@ -936,8 +961,12 @@ function saveSettings() {
     optRueck: document.getElementById('optRueck')?.checked,
     optPark:  document.getElementById('optPark')?.checked,
     optRate:  document.getElementById('optRate')?.checked,
+    rechnungToggle: document.getElementById('rechnungToggle')?.checked,
     optEigenAn: document.getElementById('optEigenAn')?.checked,
     optEigenText: v('optEigenText'),
+    optPreisAn: document.getElementById('optPreisAn')?.checked,
+    optPreisText: v('optPreisText'),
+    optPreisBetrag: v('optPreisBetrag'),
   };
   try { localStorage.setItem('ksp_settings', JSON.stringify(s)); } catch(e){}
 }
@@ -951,6 +980,7 @@ function loadSettings() {
       else el.value = val;
     });
     toggleEigenText();
+    togglePreisOption();
   } catch(e){}
 }
 
@@ -1123,7 +1153,10 @@ function calc() {
   const totalBilder = einzeln + gruppe;
   const totalRound  = Math.round(baseTotal);
   const aufschlagEuro = rechnungOn ? Math.round(baseTotal * aufschlagPct / 100) : 0;
-  const displayTotal  = totalRound + aufschlagEuro;
+  const preisOptOn    = document.getElementById('optPreisAn')?.checked;
+  const preisOptText  = document.getElementById('optPreisText')?.value.trim() || 'Preis-Option';
+  const preisOptBetrag = preisOptOn ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
+  const displayTotal  = totalRound + aufschlagEuro + Math.round(preisOptBetrag);
 
   // Rechnung banner
   const banner = document.getElementById('rechnungBanner');
@@ -1153,6 +1186,7 @@ function calc() {
   if(bwKosten > 0) lines += `Schwarz/Weiß Aufpreis: <span>${bwKosten.toFixed(0)} €</span>\n`;
   if(km > 0)   lines += `Anfahrt (${km} km): <span>${fahrtKosten.toFixed(0)} €</span>\n`;
   if(rechnungOn && aufschlagEuro > 0) lines += `Rechnungsaufschlag (+${aufschlagPct}%): <span>${aufschlagEuro} €</span>\n`;
+  if(preisOptOn && preisOptBetrag > 0) lines += `${preisOptText}: <span>+${preisOptBetrag.toFixed(2)} €</span>\n`;
   if(totalBilder > 0) lines += `${totalBilder} Bilder gesamt`;
   document.getElementById('totalLines').innerHTML = lines.trim().replace(/\n/g,'<br>');
 
@@ -1234,13 +1268,19 @@ function buildText() {
 
   const name = v('kundenName').trim();
 
+  const preisOptOnT    = document.getElementById('optPreisAn')?.checked;
+  const preisOptTextT  = document.getElementById('optPreisText')?.value.trim() || 'Preis-Option';
+  const preisOptBetragT = preisOptOnT ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
+  const sliderValFinal = sliderVal + Math.round(preisOptBetragT);
+
   let t = '';
 
   // Anrede
   t += name ? `Hallo ${name},` : `Hallo,`;
   t += `\n\nhier dein Angebot für das Katzen-Fotoshooting bei dir zuhause${ort && ort !== '–' ? ` in ${ort}` : ''}:`;
 
-  t += `\n\nSHOOTINGKOSTEN inkl. Anfahrt: ${sliderVal} €`;
+  t += `\n\nSHOOTINGKOSTEN inkl. Anfahrt: ${sliderValFinal} €`;
+  if(preisOptOnT && preisOptBetragT > 0) t += `\ninkl. ${preisOptTextT} von ${preisOptBetragT.toFixed(2)} €`;
   // Rechnungsaufschlag nicht im Angebotstext ausgeben
   t += `\n\nEnthaltene Leistungen:`;
   t += `\n* Hintergrundfarbe: ${selectedColor}`;
