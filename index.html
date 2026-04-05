@@ -849,7 +849,7 @@ function onSliderInput() {
   const sl = document.getElementById('preisSlider');
   const baseVal = Math.max(parseInt(sl.value), parseInt(sl.min));
   sl.value = baseVal;
-  const rechnungOn = document.getElementById('rechnungToggle').checked;
+  const rechnungOn = document.getElementById('rechnungToggle')?.checked ?? false;
   const aufschlag = n('pRechnungAufschlag') || 10;
   const preisOptSlider = document.getElementById('optPreisAn')?.checked ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
   const displayVal = (rechnungOn ? Math.round(baseVal * (1 + aufschlag / 100)) : baseVal) + Math.round(preisOptSlider);
@@ -1164,7 +1164,7 @@ function calc() {
   const einzeln = n('einzeln');
   const gruppe  = n('gruppe');
   const km      = n('kmVal');
-  const rechnungOn = document.getElementById('rechnungToggle').checked;
+  const rechnungOn = document.getElementById('rechnungToggle')?.checked ?? false;
   const aufschlagPct = n('pRechnungAufschlag') || 10;
 
   const bildKostenE = einzeln * pBildE;
@@ -1296,7 +1296,7 @@ function buildText() {
   const bwKosten   = colorExtra ? pBW : 0;
   const fahrtKosten= km * 2 * pKm;
   const baseTotal  = bildKostenE + bildKostenG + bwKosten + fahrtKosten;
-  const rechnungOn = document.getElementById('rechnungToggle').checked;
+  const rechnungOn = document.getElementById('rechnungToggle')?.checked ?? false;
   const aufschlagPct = n('pRechnungAufschlag') || 10;
   const aufschlagEuro = rechnungOn ? Math.round(baseTotal * aufschlagPct / 100) : 0;
   const sliderBase = parseInt(document.getElementById('preisSlider')?.value) || Math.round(baseTotal);
