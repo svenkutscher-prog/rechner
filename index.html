@@ -1240,10 +1240,6 @@ function buildText() {
   t += name ? `Hallo ${name},` : `Hallo,`;
   t += `\n\nhier dein Angebot für das Katzen-Fotoshooting bei dir zuhause${ort && ort !== '–' ? ` in ${ort}` : ''}:`;
 
-  // ab hier original
-  t += `\n\nKostenvoranschlag für ein Katzen-Fotoshooting bei Dir zuhause.`;
-  t += `\nErstellungsdatum: ${datum}`;
-  t += `\nOrt: ${ort}`;
   t += `\n\nSHOOTINGKOSTEN inkl. Anfahrt: ${sliderVal} €`;
   // Rechnungsaufschlag nicht im Angebotstext ausgeben
   t += `\n\nEnthaltene Leistungen:`;
