@@ -835,6 +835,7 @@ let selectedColor = 'Schwarz';
 let colorExtra = 0;
 let orsTimeout = null;
 let lastKmAuto = null;
+let _loadingFromURL = false;
 function updateSlider(std, min, max) {
   sliderStd = std; sliderMin = min; sliderMax = max;
   const box = document.getElementById('preisSliderBox');
@@ -1240,7 +1241,7 @@ function calc() {
   const maxRound    = Math.max(Math.round(baseTotal * 1.3), sliderMin);
 
   updateSlider(totalRound, sliderMin, maxRound);
-  document.getElementById('preisSlider').value = totalRound;
+  if(!_loadingFromURL) document.getElementById('preisSlider').value = totalRound;
   document.getElementById('totalAmt').textContent = displayTotal + ' €';
   renderSliderAmt();
 
@@ -1454,12 +1455,29 @@ function loadFromURL() {
   toggleEigenText();
   togglePreisOption();
   updatePreisPreview();
+  _loadingFromURL = true;
   calc();
+  _loadingFromURL = false;
 
-  // Slider nach calc setzen
+  // Slider nach calc setzen — calc() überschreibt den Slider, daher danach setzen
   if(params.has('sl')) {
     const sl = document.getElementById('preisSlider');
-    if(sl) { sl.value = params.get('sl'); renderSliderAmt(); }
+    if(sl) {
+      const savedVal = parseInt(params.get('sl'));
+      // Clamp to valid range
+      const minVal = parseInt(sl.min) || 0;
+      const maxVal = parseInt(sl.max) || 9999;
+      sl.value = Math.max(minVal, Math.min(maxVal, savedVal));
+      renderSliderAmt();
+      // Update totalAmt to reflect the saved slider value
+      const rechnungOn = document.getElementById('rechnungToggle')?.checked ?? false;
+      const aufschlag = parseFloat(document.getElementById('pRechnungAufschlag')?.value) || 10;
+      const preisOptOn = document.getElementById('optPreisAn')?.checked;
+      const preisOptBetrag = preisOptOn ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
+      const base = parseInt(sl.value);
+      const display = (rechnungOn ? Math.round(base * (1 + aufschlag/100)) : base) + Math.round(preisOptBetrag);
+      document.getElementById('totalAmt').textContent = display + ' €';
+    }
   }
 }
 </script>
