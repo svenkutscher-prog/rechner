@@ -803,6 +803,30 @@ input::placeholder { color: var(--muted2); }
     </div>
   </div>
 
+  <div class="set-group-title">🏠 Heimfahrt (Eupen → Linnich)</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Heimfahrt-Strecke<small>Feste Strecke, unabhängig vom Kunden</small></label>
+        <div class="euro-wrap" style="width:90px;"><input type="number" id="pHeimfahrt" value="150" min="0" oninput="saveSettings();calc()"><span>km</span></div>
+      </div>
+      <div class="div"></div>
+      <div class="row" style="background:var(--s2);border-radius:7px;padding:10px 12px;margin-bottom:8px;">
+        <div class="lbl">Diesel-Kosten Heimfahrt<small id="heimfahrtDetail" style="color:var(--gold);">—</small></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;color:var(--gold2);" id="heimfahrtKosten">—</div>
+      </div>
+      <div class="div"></div>
+      <div class="tog-row" style="margin:8px 0 0;">
+        <label class="lbl">Zum Angebotspreis addieren<small>Heimfahrt-Kosten auf den Gesamtpreis</small></label>
+        <label class="tog"><input type="checkbox" id="heimfahrtAdd" checked onchange="saveSettings();calc()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row" style="margin:8px 0 0;">
+        <label class="lbl">Vom Umsatz abziehen<small>Als Eigenkosten in der Analyse</small></label>
+        <label class="tog"><input type="checkbox" id="heimfahrtAbzug" checked onchange="saveSettings();calc()"><span class="tog-sl"></span></label>
+      </div>
+    </div>
+  </div>
+
   <div style="height:20px;"></div>
 </div>
 </div>
@@ -835,6 +859,7 @@ let selectedColor = 'Schwarz';
 let colorExtra = 0;
 let orsTimeout = null;
 let lastKmAuto = null;
+let resolvedOrtName = '';
 let _loadingFromURL = false;
 function updateSlider(std, min, max) {
   sliderStd = std; sliderMin = min; sliderMax = max;
@@ -980,6 +1005,9 @@ function saveSettings() {
     pKm: v('pKm'), pStunde: v('pStunde'), pSpeed: v('pSpeed'),
     dDiesel: v('dDiesel'), dVerbrauch: v('dVerbrauch'),
     pMinProBild: v('pMinProBild'), pPauschale: v('pPauschale'), pMinStunde: v('pMinStunde'),
+    pHeimfahrt: v('pHeimfahrt'),
+    heimfahrtAdd: document.getElementById('heimfahrtAdd')?.checked,
+    heimfahrtAbzug: document.getElementById('heimfahrtAbzug')?.checked,
     optRueck: document.getElementById('optRueck')?.checked,
     optPark:  document.getElementById('optPark')?.checked,
     optRate:  document.getElementById('optRate')?.checked,
@@ -1029,6 +1057,7 @@ function updateBWLabel() {
 
 // ── ORS ──
 function onAdresseChange() {
+  resolvedOrtName = ''; // Reset bei neuer Eingabe
   const addr = v('kundeAdresse').trim();
   clearTimeout(orsTimeout);
   if(addr.length < 5) { setKmStatus('idle', 'Adresse eingeben → km wird automatisch berechnet'); return; }
@@ -1047,12 +1076,16 @@ async function fetchDistance(destination) {
   const start = v('startAdresse') || 'Eupen, Belgien';
   try {
     const geo1 = await geocode(start, key);
-    const geo2 = await geocode(destination, key);
-    if(!geo1 || !geo2) { setKmStatus('err', 'Adresse nicht gefunden'); return; }
+    const geo2res = await geocodeWithName(destination, key);
+    if(!geo1 || !geo2res) { setKmStatus('err', 'Adresse nicht gefunden'); return; }
+    // Store resolved city name
+    if(geo2res.name) {
+      resolvedOrtName = geo2res.name.charAt(0).toUpperCase() + geo2res.name.slice(1);
+    }
     const res = await fetch('https://api.openrouteservice.org/v2/directions/driving-car', {
       method: 'POST',
       headers: { 'Authorization': key, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ coordinates: [geo1, geo2] })
+      body: JSON.stringify({ coordinates: [geo1, geo2res.coords] })
     });
     const data = await res.json();
     if(!data.routes?.[0]) { setKmStatus('err', 'Route nicht berechenbar'); return; }
@@ -1069,6 +1102,16 @@ async function geocode(query, key) {
   const data = await res.json();
   const feat = data.features?.[0];
   return feat ? feat.geometry.coordinates : null;
+}
+async function geocodeWithName(query, key) {
+  const res  = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${key}&text=${encodeURIComponent(query)}&size=1`);
+  const data = await res.json();
+  const feat = data.features?.[0];
+  if(!feat) return null;
+  const props = feat.properties;
+  // locality = Stadt, localadmin = Verwaltungsbezirk, name = Rohname
+  const name = props.locality || props.localadmin || props.name || '';
+  return { coords: feat.geometry.coordinates, name };
 }
 function openMaps() {
   const addr  = v('kundeAdresse').trim();
@@ -1172,6 +1215,23 @@ function calc() {
   const bildKosten  = bildKostenE + bildKostenG;
   const bwKosten    = colorExtra ? pBW : 0;
   const fahrtKosten = km * 2 * pKm;
+
+  // Heimfahrt-Kosten (feste Strecke, einmal)
+  const heimfahrtKm    = n('pHeimfahrt') || 0;
+  const dieselPreis    = parseFloat(document.getElementById('dDiesel')?.value) || 0;
+  const verbrauchL     = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const heimfahrtAdd   = document.getElementById('heimfahrtAdd')?.checked ?? true;
+  const heimfahrtAbzug = document.getElementById('heimfahrtAbzug')?.checked ?? true;
+  const heimfahrtKosten = heimfahrtKm > 0 ? parseFloat(((verbrauchL / 100) * dieselPreis * heimfahrtKm).toFixed(2)) : 0;
+
+  // Update Heimfahrt display in Einstellungen
+  const hkEl = document.getElementById('heimfahrtKosten');
+  const hdEl = document.getElementById('heimfahrtDetail');
+  if(hkEl) hkEl.textContent = heimfahrtKosten > 0 ? heimfahrtKosten.toFixed(2) + ' €' : '—';
+  if(hdEl) hdEl.textContent = heimfahrtKosten > 0
+    ? `${heimfahrtKm} km × ${verbrauchL}÷100 × ${dieselPreis.toFixed(2)} €/L`
+    : 'Strecke oder Diesel eingeben';
+
   const baseTotal   = bildKosten + bwKosten + fahrtKosten;
   const totalBilder = einzeln + gruppe;
   const totalRound  = Math.round(baseTotal);
@@ -1179,7 +1239,8 @@ function calc() {
   const preisOptOn    = document.getElementById('optPreisAn')?.checked;
   const preisOptText  = document.getElementById('optPreisText')?.value.trim() || 'Preis-Option';
   const preisOptBetrag = preisOptOn ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
-  const displayTotal  = totalRound + aufschlagEuro + Math.round(preisOptBetrag);
+  const heimfahrtZuschlag = heimfahrtAdd ? heimfahrtKosten : 0;
+  const displayTotal  = totalRound + aufschlagEuro + Math.round(preisOptBetrag) + Math.round(heimfahrtZuschlag);
 
   // Rechnung banner
   const banner = document.getElementById('rechnungBanner');
@@ -1210,6 +1271,7 @@ function calc() {
   if(km > 0)   lines += `Anfahrt (${km} km): <span>${fahrtKosten.toFixed(0)} €</span>\n`;
   if(rechnungOn && aufschlagEuro > 0) lines += `Rechnungsaufschlag (+${aufschlagPct}%): <span>${aufschlagEuro} €</span>\n`;
   if(preisOptOn && preisOptBetrag > 0) lines += `${preisOptText}: <span>+${preisOptBetrag.toFixed(2)} €</span>\n`;
+  if(heimfahrtAdd && heimfahrtKosten > 0) lines += `Heimfahrt Diesel (${heimfahrtKm} km): <span>+${heimfahrtKosten.toFixed(2)} €</span>\n`;
   if(totalBilder > 0) lines += `${totalBilder} Bilder gesamt`;
   document.getElementById('totalLines').innerHTML = lines.trim().replace(/\n/g,'<br>');
 
@@ -1252,10 +1314,15 @@ function calc() {
   if(ml) ml.textContent = `−${Math.round(marge*100)}%`;
 
   const ka = document.getElementById('kostenAmt');
-  if(ka) ka.textContent = (totalRound - Math.round(eigeneFahrt)) + ' €';
+  const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
+  if(ka) ka.textContent = (totalRound - Math.round(eigeneFahrt) - heimfahrtAbzugBetrag + Math.round(heimfahrtZuschlag)) + ' €';
 
   const kd = document.getElementById('kostenDetail');
-  if(kd) kd.innerHTML = km > 0 ? `Diesel −${eigeneFahrt.toFixed(2)} €` : '–';
+  if(kd) {
+    let kdText = km > 0 ? `Diesel −${eigeneFahrt.toFixed(2)} €` : '–';
+    if(heimfahrtAbzug && heimfahrtKosten > 0) kdText += `<br>Heimfahrt −${heimfahrtKosten.toFixed(2)} €`;
+    kd.innerHTML = kdText;
+  }
 
   const ma = document.getElementById('minimumAmt');
   if(ma) ma.textContent = sliderMin + ' €';
@@ -1281,7 +1348,11 @@ function buildText() {
   const datum = String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getFullYear()).slice(2);
   const adresse = v('kundeAdresse').trim();
   const parts = adresse.split(',');
-  const ort = parts.length > 1 ? parts[parts.length-1].trim().replace(/^\d+\s*/,'') : adresse || '–';
+  const ortRaw = parts.length > 1 ? parts[parts.length-1].trim().replace(/^\d+\s*/,'') : adresse || '–';
+  // API-aufgelöster Name hat Vorrang, sonst Fallback mit Großschreibung
+  const ort = resolvedOrtName
+    ? resolvedOrtName
+    : (ortRaw && ortRaw !== '–' ? ortRaw.charAt(0).toUpperCase() + ortRaw.slice(1) : ortRaw);
 
   const einzeln    = n('einzeln');
   const gruppe     = n('gruppe');
@@ -1310,31 +1381,36 @@ function buildText() {
   const preisOptOnT    = document.getElementById('optPreisAn')?.checked;
   const preisOptTextT  = document.getElementById('optPreisText')?.value.trim() || 'Preis-Option';
   const preisOptBetragT = preisOptOnT ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
-  const sliderValFinal = sliderVal + Math.round(preisOptBetragT);
+  const heimfahrtAddT  = document.getElementById('heimfahrtAdd')?.checked ?? true;
+  const heimfahrtKmT   = parseFloat(document.getElementById('pHeimfahrt')?.value) || 0;
+  const dieselT        = parseFloat(document.getElementById('dDiesel')?.value) || 0;
+  const verbrT         = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const heimfahrtKostenT = heimfahrtAddT && heimfahrtKmT > 0 ? parseFloat(((verbrT/100)*dieselT*heimfahrtKmT).toFixed(2)) : 0;
+  const sliderValFinal = sliderVal + Math.round(preisOptBetragT) + Math.round(heimfahrtKostenT);
 
   let t = '';
 
   // Anrede
   t += name ? `Hallo ${name},` : `Hallo,`;
-  t += `\n\nhier dein Angebot für das Katzen-Fotoshooting bei dir zuhause${ort && ort !== '–' ? ` in ${ort}` : ''}:`;
+  t += `\n\nhier dein Angebot für das Katzen-Fotoshooting bei dir Zuhause${ort && ort !== '–' ? ` in ${ort}` : ''}:`;
 
   t += `\n\nSHOOTINGKOSTEN inkl. Anfahrt: ${sliderValFinal} €`;
   if(preisOptOnT && preisOptBetragT > 0) t += `\ninkl. ${preisOptTextT} von ${preisOptBetragT.toFixed(2)} €`;
-  // Rechnungsaufschlag nicht im Angebotstext ausgeben
+  //if(heimfahrtKostenT > 0) t += `\ninkl. Heimfahrt-Diesel (${heimfahrtKmT} km) von ${heimfahrtKostenT.toFixed(2)} €`;
   t += `\n\nEnthaltene Leistungen:`;
   t += `\n* Hintergrundfarbe: ${selectedColor}`;
-  t += `\n* ${einzeln} Katzen-Einzelaufnahmen (${pBildE} €/Bild)`;
-  t += `\n* ${gruppe} Mensch/Tier- oder Gruppenbild${gruppe!==1?'er':''} (${pBildG} €/Bild)`;
-  t += `\n* ${totalBilder} Professionell bearbeitete Bilder im typischen FotoArtisan-Stil: detailreich, hochwertig und in maximaler Auflösung (digital, Format: jpg)`;
+  t += `\n* ${einzeln} Katzen-Einzelaufnahmen`;
+  t += `\n* ${gruppe} Mensch/Tier- oder Gruppenbild${gruppe!==1?'er':''}`;
+  t += `\n* ${totalBilder} professionell bearbeitete Bilder im typischen FotoArtisan-Stil: detailreich, hochwertig und in maximaler Auflösung (digital, Format: jpg)`;
   t += `\n* Zeit für Auf-/Abbau und Kennenlernen ist inklusive`;
   t += `\n\nNUTZUNGSRECHTE`;
   t += `\nDu darfst deine Fotos zeitlich und örtlich unbegrenzt für private Zwecke nutzen. Eine kommerzielle Nutzung durch Dritte ist nur nach Rücksprache erlaubt. Das Urheberrecht bleibt beim Fotografen.`;
   t += `\n\nOPTIONALE ZUSATZLEISTUNGEN`;
-  t += `\n* Jedes Extra Einzelbild: ${pExtraOptE} €`;
+  t += `\n* Jedes weitere Einzelbild: ${pExtraOptE} €`;
   t += `\n* Jedes weitere Gruppenbild: ${pExtraOptG} €`;
   if(montage) t += `\n* Fotomontage (z. B. Gruppenbild >6 Katzen): auf Anfrage`;
   if(document.getElementById('optRueck')?.checked)
-    t += `\n\nBitte Rückmeldung, ob ein Fototermin, wie oben beschrieben, in Frage kommt.`;
+    t += `\n\nBitte Rückmeldung, ob ein Fototermin, wie oben beschrieben, infrage kommt.`;
   if(document.getElementById('optRate')?.checked)
     t += `\n\nRatenzahlung ist möglich — sprich uns gerne an.`;
   if(document.getElementById('optEigenAn')?.checked) {
