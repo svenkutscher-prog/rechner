@@ -283,6 +283,23 @@ input::placeholder { color: var(--muted2); }
 }
 .btn-share:active { transform: scale(0.98); background: var(--gold-dim); border-color: var(--gold); }
 .btn-share.ok { background: var(--gold-dim); border-color: var(--gold); color: var(--gold2); }
+
+/* ── PATCH 1+3: Neues Angebot Button ── */
+.btn-neues-angebot {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; margin-top: 10px; padding: 13px;
+  background: var(--s2); color: var(--muted); border: 1px solid var(--border2);
+  border-radius: var(--r); font-family: 'DM Mono', monospace;
+  font-size: 0.78rem; font-weight: 300; letter-spacing: 0.08em;
+  cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+}
+.btn-neues-angebot:active {
+  transform: scale(0.98);
+  background: rgba(240,112,112,0.12);
+  border-color: var(--red);
+  color: var(--red);
+}
+
 .set-group-title {
   font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--muted); margin: 18px 0 8px; padding-left: 2px;
@@ -505,7 +522,6 @@ input::placeholder { color: var(--muted2); }
     <div class="card-head"><span class="ico">🚗</span><h2>Anfahrt</h2></div>
     <div class="card-body">
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Kundenadresse</div>
-      <!-- FIX 6: Custom ORS autocomplete dropdown -->
       <div class="autocomplete-wrap">
         <input type="text" id="kundeAdresse" placeholder="Straße, PLZ, Stadt" oninput="onAdresseChange()" autocomplete="off">
         <div class="autocomplete-dropdown" id="adresseDropdown"></div>
@@ -558,12 +574,10 @@ input::placeholder { color: var(--muted2); }
     </div>
   </div>
 
-  <!-- FIX 4: Bilder card — collapsible, closed by default, header badge -->
   <div class="card">
     <div class="card-head collapsible closed" onclick="toggleCard(this)">
       <span class="ico">📸</span>
       <h2>Bilder</h2>
-      <!-- Dynamic badge showing E / G counts -->
       <span class="bilder-badge" id="bilderBadge">
         E <span id="badgeE">21</span> · G <span id="badgeG">1</span>
       </span>
@@ -718,6 +732,11 @@ input::placeholder { color: var(--muted2); }
 
   <button class="btn-share" id="shareBtn" onclick="shareLink()">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:6px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Angebot als Link speichern / teilen
+  </button>
+
+  <!-- PATCH 1: Neues Angebot Button -->
+  <button class="btn-neues-angebot" onclick="neuesAngebot()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Neues Angebot erstellen
   </button>
 
 </div>
@@ -916,7 +935,7 @@ let _loadingFromURL = false;
 
 // ── AUTOCOMPLETE STATE ──
 let acTimeout = null;
-let acSelectedCoords = null; // {coords, name} wenn aus Dropdown gewählt
+let acSelectedCoords = null;
 
 function updateSlider(std, min, max) {
   sliderStd = std; sliderMin = min; sliderMax = max;
@@ -932,43 +951,43 @@ function updateSlider(std, min, max) {
   renderSliderAmt();
 }
 
-// FIX 3: onSliderInput always includes heimfahrt in displayVal
+// ── PATCH 2: onSliderInput — Umsatz-Formel identisch zu calc() ──
+// baseVal enthält heimfahrtKosten bereits (calc() baut es in baseTotal ein)
+// → kein nochmaliges Addieren in displayVal oder kostenAmt
 function onSliderInput() {
   renderSliderAmt();
   const sl = document.getElementById('preisSlider');
   const baseVal = Math.max(parseInt(sl.value), parseInt(sl.min));
   sl.value = baseVal;
-  const rechnungOn = document.getElementById('rechnungToggle')?.checked ?? false;
-  const aufschlag = n('pRechnungAufschlag') || 10;
+
+  const rechnungOn     = document.getElementById('rechnungToggle')?.checked ?? false;
+  const aufschlag      = n('pRechnungAufschlag') || 10;
   const preisOptBetrag = document.getElementById('optPreisAn')?.checked
     ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
 
-  // Always include heimfahrt in slider display
-  const heimfahrtAdd  = document.getElementById('heimfahrtAdd')?.checked ?? true;
-  const heimfahrtKm   = n('pHeimfahrt') || 0;
-  const dieselP       = parseFloat(document.getElementById('dDiesel')?.value) || 0;
-  const verbrP        = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
-  const heimfahrtKosten = heimfahrtAdd && heimfahrtKm > 0
-    ? parseFloat(((verbrP / 100) * dieselP * heimfahrtKm).toFixed(2)) : 0;
-
+  // displayVal: baseVal enthält Heimfahrt bereits — NICHT nochmal addieren
   const displayVal = (rechnungOn ? Math.round(baseVal * (1 + aufschlag / 100)) : baseVal)
-    + Math.round(preisOptBetrag)
-    + Math.round(heimfahrtKosten);
-
+    + Math.round(preisOptBetrag);
   document.getElementById('totalAmt').textContent = displayVal + ' €';
 
-  const diesel = parseFloat(document.getElementById('dDiesel')?.value) || 0;
-  const verbr  = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
-  const km     = parseFloat(document.getElementById('kmVal')?.value) || 0;
-  const eigeneFahrt = Math.round(km * 2 * (verbr / 100) * diesel);
-  const heimfahrtAbzug = document.getElementById('heimfahrtAbzug')?.checked ?? true;
+  // Umsatz — identisch zu calc()
+  const diesel             = parseFloat(document.getElementById('dDiesel')?.value) || 0;
+  const verbr              = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const km                 = parseFloat(document.getElementById('kmVal')?.value) || 0;
+  const heimfahrtAdd       = document.getElementById('heimfahrtAdd')?.checked ?? true;
+  const heimfahrtAbzug     = document.getElementById('heimfahrtAbzug')?.checked ?? true;
+  const heimfahrtKm        = n('pHeimfahrt') || 0;
+  const heimfahrtKosten    = heimfahrtAdd && heimfahrtKm > 0
+    ? parseFloat(((verbr / 100) * diesel * heimfahrtKm).toFixed(2)) : 0;
+  const eigeneFahrt        = Math.round(km * 2 * (verbr / 100) * diesel);
   const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
 
+  // PATCH 2 fix: baseVal - eigeneFahrt - heimfahrtAbzugBetrag
+  // (kein + heimfahrtKosten wie vorher — das war der Doppelzähl-Bug)
   const ka = document.getElementById('kostenAmt');
-  if(ka) ka.textContent = (baseVal - eigeneFahrt - heimfahrtAbzugBetrag + Math.round(heimfahrtKosten)) + ' €';
+  if(ka) ka.textContent = (baseVal - eigeneFahrt - heimfahrtAbzugBetrag) + ' €';
 
   const minRound = parseInt(document.getElementById('preisSlider').min);
-  // FIX 1: Pass correct minRound (already is the max of marge+stunden minimum)
   updateStundenlohnDisplay(baseVal, minRound);
 }
 
@@ -1026,7 +1045,6 @@ async function fetchDieselPreis() {
 // ── INIT ──
 window.addEventListener('DOMContentLoaded', () => { loadSettings(); loadFromURL(); recalcDiesel(); calc(); });
 
-// Close autocomplete when clicking outside
 document.addEventListener('click', (e) => {
   if(!e.target.closest('.autocomplete-wrap')) closeDropdown();
 });
@@ -1039,10 +1057,55 @@ function showTab(name, event) {
   if(event && event.currentTarget) event.currentTarget.classList.add('active');
 }
 
-// ── RESET ──
+// ── RESET (alles) ──
 function showResetConfirm() { document.getElementById('confirmOverlay').style.display = 'flex'; }
 function hideResetConfirm() { document.getElementById('confirmOverlay').style.display = 'none'; }
 function doReset() { try { localStorage.removeItem('ksp_settings'); } catch(e){} hideResetConfirm(); location.reload(); }
+
+// ── PATCH 1: Neues Angebot — nur Angebotsdaten zurücksetzen, Einstellungen bleiben ──
+function neuesAngebot() {
+  // Kundendaten
+  document.getElementById('kundenName').value = '';
+  document.getElementById('kundeAdresse').value = '';
+  // Bilder
+  document.getElementById('einzeln').value = 21;
+  document.getElementById('gruppe').value = 1;
+  document.getElementById('montage').checked = false;
+  // Kilometer
+  document.getElementById('kmVal').value = 0;
+  // Toggles
+  document.getElementById('rechnungToggle').checked = false;
+  document.getElementById('optRueck').checked = true;
+  document.getElementById('optPark').checked = true;
+  document.getElementById('optRate').checked = false;
+  // Eigener Text
+  document.getElementById('optEigenAn').checked = false;
+  document.getElementById('optEigenText').value = '';
+  // Preis-Option
+  document.getElementById('optPreisAn').checked = false;
+  document.getElementById('optPreisText').value = '';
+  document.getElementById('optPreisBetrag').value = '';
+  // Farbe zurück auf Schwarz
+  document.querySelectorAll('.color-btn').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.color === 'Schwarz');
+  });
+  selectedColor = 'Schwarz';
+  colorExtra = 0;
+  // Km-Status zurücksetzen
+  lastKmAuto = null;
+  resolvedOrtName = '';
+  acSelectedCoords = null;
+  setKmStatus('idle', 'Adresse eingeben → km wird automatisch berechnet');
+  document.getElementById('kmInfoBox').style.display = 'none';
+  // UI-Toggles aktualisieren
+  toggleEigenText();
+  togglePreisOption();
+  updatePreisPreview();
+  // URL-Parameter entfernen
+  history.replaceState(null, '', location.pathname);
+  // Neu berechnen
+  calc();
+}
 
 // ── SETTINGS ──
 function togglePreisOption() {
@@ -1135,42 +1198,30 @@ function closeDropdown() {
 
 function onAdresseChange() {
   resolvedOrtName = '';
-  acSelectedCoords = null; // Reset — user is typing again
+  acSelectedCoords = null;
   const addr = v('kundeAdresse').trim();
   clearTimeout(orsTimeout);
   clearTimeout(acTimeout);
   closeDropdown();
-
   if(addr.length < 4) {
     setKmStatus('idle', 'Adresse eingeben → km wird automatisch berechnet');
     return;
   }
-
-  // Show suggestions after short delay
   setKmStatus('loading', 'Suche Vorschläge …');
   acTimeout = setTimeout(() => fetchSuggestions(addr), 500);
 }
 
-// FIX 6: Fetch multiple suggestions and show dropdown
 async function fetchSuggestions(query) {
   const key = v('orsKey').trim();
-  if(!key) {
-    setKmStatus('err', 'Kein API Key – in Einstellungen eintragen');
-    return;
-  }
+  if(!key) { setKmStatus('err', 'Kein API Key – in Einstellungen eintragen'); return; }
   try {
     const res  = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${key}&text=${encodeURIComponent(query)}&size=5`);
     const data = await res.json();
     const features = data.features || [];
-    if(!features.length) {
-      setKmStatus('err', 'Keine Adresse gefunden');
-      return;
-    }
+    if(!features.length) { setKmStatus('err', 'Keine Adresse gefunden'); return; }
     showDropdown(features);
     setKmStatus('idle', 'Bitte Adresse aus der Liste auswählen');
-  } catch(e) {
-    setKmStatus('err', 'Fehler: ' + e.message);
-  }
+  } catch(e) { setKmStatus('err', 'Fehler: ' + e.message); }
 }
 
 function showDropdown(features) {
@@ -1182,7 +1233,6 @@ function showDropdown(features) {
     const name   = props.name || props.label || '';
     const sub    = [props.locality || props.localadmin, props.region, props.country].filter(Boolean).join(', ');
     const city   = props.locality || props.localadmin || props.name || '';
-
     const item = document.createElement('div');
     item.className = 'autocomplete-item';
     item.innerHTML = `${name}<small>${sub}</small>`;
@@ -1191,7 +1241,6 @@ function showDropdown(features) {
       resolvedOrtName = city ? city.charAt(0).toUpperCase() + city.slice(1) : '';
       acSelectedCoords = coords;
       closeDropdown();
-      // Now calculate distance with pre-fetched coords
       calcDistanceFromCoords(coords);
     });
     dd.appendChild(item);
@@ -1218,7 +1267,6 @@ async function calcDistanceFromCoords(destCoords) {
     const min = Math.round(data.routes[0].summary.duration / 60);
     document.getElementById('kmVal').value = km;
     lastKmAuto = { km, min };
-    // FIX 5: No "Ort:" in status text
     setKmStatus('ok', `${km} km · ca. ${min} min (automatisch)`);
     calc();
   } catch(e) { setKmStatus('err', 'Fehler: ' + e.message); }
@@ -1239,9 +1287,7 @@ async function fetchDistance(destination) {
     const geo1     = await geocode(start, key);
     const geo2res  = await geocodeWithName(destination, key);
     if(!geo1 || !geo2res) { setKmStatus('err', 'Adresse nicht gefunden'); return; }
-    if(geo2res.name) {
-      resolvedOrtName = geo2res.name.charAt(0).toUpperCase() + geo2res.name.slice(1);
-    }
+    if(geo2res.name) resolvedOrtName = geo2res.name.charAt(0).toUpperCase() + geo2res.name.slice(1);
     const res = await fetch('https://api.openrouteservice.org/v2/directions/driving-car', {
       method: 'POST',
       headers: { 'Authorization': key, 'Content-Type': 'application/json' },
@@ -1253,7 +1299,6 @@ async function fetchDistance(destination) {
     const min = Math.round(data.routes[0].summary.duration / 60);
     document.getElementById('kmVal').value = km;
     lastKmAuto = { km, min };
-    // FIX 5: No "Ort:" appended
     setKmStatus('ok', `${km} km · ca. ${min} min (automatisch)`);
     calc();
   } catch(e) { setKmStatus('err', 'Fehler: ' + e.message); }
@@ -1295,7 +1340,6 @@ function bewertung(eurH) {
   return                       { cls:'low',  badge:'badge-low',  label:'Zu niedrig' };
 }
 
-// FIX 1: preisMin is guaranteed to never yield < pMinStunde €/h
 function updateStundenlohnDisplay(preisStd, preisMin) {
   const km         = n('kmVal');
   const einzeln    = n('einzeln');
@@ -1319,7 +1363,6 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
   const gesamtStd   = gesamtMin / 60;
   const dieselNetto = (verbr / 100) * diesel * km * 2;
 
-  // FIX 1: Minimum-Preis im Stundenlohn darf nie unter pMinStunde fallen
   const minStundenPreisForDisplay = Math.round(gesamtStd * pMinStunde + dieselNetto);
   const effectiveMin = preisMin !== null ? Math.max(preisMin, minStundenPreisForDisplay) : null;
 
@@ -1378,7 +1421,6 @@ function calc() {
   const rechnungOn    = document.getElementById('rechnungToggle')?.checked ?? false;
   const aufschlagPct  = n('pRechnungAufschlag') || 10;
 
-  // FIX 4: Update bilder badge in header
   const badgeE = document.getElementById('badgeE');
   const badgeG = document.getElementById('badgeG');
   if(badgeE) badgeE.textContent = einzeln;
@@ -1390,7 +1432,6 @@ function calc() {
   const bwKosten    = colorExtra ? pBW : 0;
   const fahrtKosten = km * 2 * pKm;
 
-  // Heimfahrt-Kosten
   const heimfahrtKm    = n('pHeimfahrt') || 0;
   const dieselPreis    = parseFloat(document.getElementById('dDiesel')?.value) || 0;
   const verbrauchL     = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
@@ -1400,7 +1441,6 @@ function calc() {
     ? parseFloat(((verbrauchL / 100) * dieselPreis * heimfahrtKm).toFixed(2)) : 0;
   const heimfahrtZuschlag = heimfahrtAdd ? heimfahrtKosten : 0;
 
-  // Update Heimfahrt display in Einstellungen
   const hkEl = document.getElementById('heimfahrtKosten');
   const hdEl = document.getElementById('heimfahrtDetail');
   if(hkEl) hkEl.textContent = heimfahrtKosten > 0 ? heimfahrtKosten.toFixed(2) + ' €' : '—';
@@ -1408,8 +1448,6 @@ function calc() {
     ? `${heimfahrtKm} km × ${verbrauchL}÷100 × ${dieselPreis.toFixed(2)} €/L`
     : 'Strecke oder Diesel eingeben';
 
-  // FIX 2: heimfahrt is part of base calculation from the start
-  // baseTotal includes heimfahrtZuschlag so slider is always correct
   const baseShootingAndTravel = bildKosten + bwKosten + fahrtKosten;
   const baseTotal = baseShootingAndTravel + Math.round(heimfahrtZuschlag);
   const totalBilder = einzeln + gruppe;
@@ -1422,11 +1460,9 @@ function calc() {
 
   const displayTotal = totalRound + aufschlagEuro + Math.round(preisOptBetrag);
 
-  // Rechnung banner
   const banner = document.getElementById('rechnungBanner');
   if(banner) banner.style.display = rechnungOn ? 'block' : 'none';
 
-  // km info box
   if(km > 0) {
     document.getElementById('kmInfoBox').style.display = 'block';
     document.getElementById('kmInfoKm').textContent = `${km} km einfach · ${km*2} km gesamt`;
@@ -1443,7 +1479,6 @@ function calc() {
     document.getElementById('kmInfoBox').style.display = 'none';
   }
 
-  // Breakdown
   let lines = '';
   if(einzeln > 0) lines += `${einzeln} Einzelbild${einzeln>1?'er':''} × ${pBildE} €: <span>${bildKostenE.toFixed(0)} €</span>\n`;
   if(gruppe  > 0) lines += `${gruppe} Gruppenbild${gruppe>1?'er':''} × ${pBildG} €: <span>${bildKostenG.toFixed(0)} €</span>\n`;
@@ -1458,7 +1493,6 @@ function calc() {
   const totalLbl = document.getElementById('totalLbl');
   if(totalLbl) totalLbl.textContent = rechnungOn ? 'Gesamtpreis (mit Rechnung)' : 'Gesamtpreis (Angebot)';
 
-  // Marge & Minimum
   const marge   = (n('pMarge') || 30) / 100;
   const diesel  = parseFloat(document.getElementById('dDiesel')?.value)    || 0;
   const verbr   = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
@@ -1467,7 +1501,6 @@ function calc() {
   const minimum             = shootingNachRabatt + fahrtKosten + Math.round(heimfahrtZuschlag);
   const minRound            = Math.round(minimum);
 
-  // Stundenlohn-Minimum
   const pMinStunde   = n('pMinStunde') || 25;
   const _minProBild  = n('pMinProBild') || 8;
   const _pauschale   = n('pPauschale') || 180;
@@ -1475,7 +1508,6 @@ function calc() {
   const _bilderMin   = totalBilder * _minProBild;
   const gesamtStd    = (_fahrzeitMin + _bilderMin + _pauschale) / 60;
   const dieselNetto  = (verbr / 100) * diesel * km * 2;
-  // FIX 1: minStundenPreis includes heimfahrt so slider minimum is always correct
   const minStundenPreis = Math.round(gesamtStd * pMinStunde + dieselNetto + Math.round(heimfahrtZuschlag));
 
   const sliderMinVal = (totalBilder > 0 || km > 0) ? Math.max(minRound, minStundenPreis) : 0;
@@ -1492,10 +1524,9 @@ function calc() {
   const ml = document.getElementById('margeLabel');
   if(ml) ml.textContent = `−${Math.round(marge*100)}%`;
 
-  // FIX 2: Umsatz — Heimfahrt always correctly accounted
+  // Umsatz = totalRound minus reine Eigenkosten
   const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
   const ka = document.getElementById('kostenAmt');
-  // Umsatz = totalRound minus reine Eigenkosten (Diesel Hin/Rück + Heimfahrt-Abzug)
   if(ka) ka.textContent = (totalRound - Math.round(eigeneFahrt) - heimfahrtAbzugBetrag) + ' €';
 
   const kd = document.getElementById('kostenDetail');
@@ -1521,14 +1552,11 @@ function calc() {
   document.getElementById('infoGruppe').textContent  = `${pBildG} €/Bild`;
   updateBWLabel();
 
-  // FIX 1: Pass sliderMinVal as second arg — already guaranteed >= pMinStunde
   updateStundenlohnDisplay(totalRound, sliderMinVal);
 }
 
 // ── TEXT ──
 function buildText() {
-  const d = new Date();
-  const datum = String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getFullYear()).slice(2);
   const adresse = v('kundeAdresse').trim();
   const parts = adresse.split(',');
   const ortRaw = parts.length > 1 ? parts[parts.length-1].trim().replace(/^\d+\s*/,'') : adresse || '–';
@@ -1561,7 +1589,6 @@ function buildText() {
     ? parseFloat(((verbrT/100)*dieselT*heimfahrtKmT).toFixed(2)) : 0;
 
   const sliderBase = parseInt(document.getElementById('preisSlider')?.value) || Math.round(baseShootingAndTravel + heimfahrtKostenT);
-  // Slider value already includes heimfahrt (FIX 2), so no need to add again
   const sliderVal  = rechnungOn ? sliderBase + Math.round(sliderBase * aufschlagPct / 100) : sliderBase;
   const totalBilder= einzeln + gruppe;
   const pExtraOptE = n('pExtraOptE');
