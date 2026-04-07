@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FotoArtisan</title>
+<title>Angebot</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -1102,7 +1102,7 @@ function neuesAngebot() {
   updatePreisPreview();
   // URL-Parameter entfernen
   history.replaceState(null, '', location.pathname);
-  document.title = 'FotoArtisan';
+  document.title = 'Angebot';
   // Neu berechnen
   calc();
 }
@@ -1110,7 +1110,7 @@ function neuesAngebot() {
 // ── TITLE ──
 function updateTitle() {
   const name = document.getElementById('kundenName')?.value.trim() || '';
-  document.title = name ? 'FotoArtisan – ' + name : 'FotoArtisan';
+  document.title = name ? name + ' / Angebot' : 'Angebot';
 }
 
 // ── SETTINGS ──
@@ -1389,7 +1389,7 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
 
   const bStd = bewertung(lohnStd);
   const stdEl = document.getElementById('stundenStdAmt');
-  stdEl.textContent = `${lohnStd.toFixed(2)} €/h`;
+  stdEl.textContent = `${Math.ceil(lohnStd)} €/h`;
   stdEl.className   = `stunden-col-price ${bStd.cls}`;
   const stdBdg = document.getElementById('stundenStdBadge');
   stdBdg.textContent = bStd.label;
@@ -1399,7 +1399,7 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
   const minBdg = document.getElementById('stundenMinBadge');
   if(lohnMin !== null) {
     const bMin = bewertung(lohnMin);
-    minEl.textContent = `${lohnMin.toFixed(2)} €/h`;
+    minEl.textContent = `${Math.ceil(lohnMin)} €/h`;
     minEl.className   = `stunden-col-price ${bMin.cls}`;
     minBdg.textContent = bMin.label;
     minBdg.className   = `stunden-col-badge ${bMin.badge}`;
@@ -1759,7 +1759,7 @@ function loadFromURL() {
   // Seitentitel mit Kundennamen für Link-Preview
   const nameForTitle = params.get('n') || '';
   if(nameForTitle.trim()) {
-    document.title = 'FotoArtisan – ' + nameForTitle.trim();
+    document.title = nameForTitle.trim() + ' / Angebot';
   }
 
   if(params.has('sl')) {
