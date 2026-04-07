@@ -514,7 +514,7 @@ input::placeholder { color: var(--muted2); }
     <div class="card-head"><span class="ico">👤</span><h2>Kunde</h2></div>
     <div class="card-body">
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Name</div>
-      <input type="text" id="kundenName" placeholder="z. B. Maria Müller" oninput="calc()">
+      <input type="text" id="kundenName" placeholder="z. B. Maria Müller" oninput="calc();updateTitle()">
     </div>
   </div>
 
@@ -1102,8 +1102,15 @@ function neuesAngebot() {
   updatePreisPreview();
   // URL-Parameter entfernen
   history.replaceState(null, '', location.pathname);
+  document.title = 'FotoArtisan';
   // Neu berechnen
   calc();
+}
+
+// ── TITLE ──
+function updateTitle() {
+  const name = document.getElementById('kundenName')?.value.trim() || '';
+  document.title = name ? 'FotoArtisan – ' + name : 'FotoArtisan';
 }
 
 // ── SETTINGS ──
@@ -1748,6 +1755,12 @@ function loadFromURL() {
   _loadingFromURL = true;
   calc();
   _loadingFromURL = false;
+
+  // Seitentitel mit Kundennamen für Link-Preview
+  const nameForTitle = params.get('n') || '';
+  if(nameForTitle.trim()) {
+    document.title = 'FotoArtisan – ' + nameForTitle.trim();
+  }
 
   if(params.has('sl')) {
     const sl = document.getElementById('preisSlider');
