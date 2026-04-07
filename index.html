@@ -1359,14 +1359,22 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
   const fahrzeitMin = (km * 2 / speed) * 60;
   const bilderMin   = bilder * minProBild;
   const gesamtMin   = fahrzeitMin + bilderMin + pauschale;
-  const gesamtStd   = gesamtMin / 60;
-  const dieselNetto = (verbr / 100) * diesel * km * 2;
+  const gesamtStd     = gesamtMin / 60;
+  // Eigenkosten: nur reiner Diesel (Anfahrt + Heimfahrt) wird vom Gewinn abgezogen
+  const dieselAnfahrt  = (verbr / 100) * diesel * km * 2;
+  const heimfahrtAddSt = document.getElementById('heimfahrtAdd')?.checked ?? true;
+  const heimfahrtAbzSt = document.getElementById('heimfahrtAbzug')?.checked ?? true;
+  const heimfahrtKmSt  = parseFloat(document.getElementById('pHeimfahrt')?.value) || 0;
+  const heimfahrtDiesel = (heimfahrtAddSt && heimfahrtAbzSt && heimfahrtKmSt > 0)
+    ? (verbr / 100) * diesel * heimfahrtKmSt : 0;
+  const gesamtEigenkosten = dieselAnfahrt + heimfahrtDiesel;
 
-  const minStundenPreisForDisplay = Math.round(gesamtStd * pMinStunde + dieselNetto);
+  const minStundenPreisForDisplay = Math.round(gesamtStd * pMinStunde + gesamtEigenkosten);
   const effectiveMin = preisMin !== null ? Math.max(preisMin, minStundenPreisForDisplay) : null;
 
-  const lohnStd = (preisStd - dieselNetto) / gesamtStd;
-  const lohnMin = effectiveMin !== null ? (effectiveMin - dieselNetto) / gesamtStd : null;
+  // Stundenlohn-Basis = Gewinn (Preis − Diesel Anfahrt − Heimfahrt-Diesel)
+  const lohnStd = (preisStd - gesamtEigenkosten) / gesamtStd;
+  const lohnMin = effectiveMin !== null ? (effectiveMin - gesamtEigenkosten) / gesamtStd : null;
 
   const box = document.getElementById('stundenBox');
   box.style.display = 'block';
@@ -1402,7 +1410,8 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
 
   const detail = document.getElementById('stundenDetail');
   let d = `Gesamtzeit: <span>${formatDauer(gesamtMin)}</span>`;
-  if(dieselNetto > 0) d += ` · Diesel abgezogen: <span>−${dieselNetto.toFixed(2)} €</span>`;
+  if(dieselAnfahrt > 0) d += ` · Diesel Anfahrt: <span>−${dieselAnfahrt.toFixed(2)} €</span>`;
+  if(heimfahrtDiesel > 0) d += ` · Heimfahrt: <span>−${heimfahrtDiesel.toFixed(2)} €</span>`;
   detail.innerHTML = d;
 }
 
