@@ -667,7 +667,7 @@ input::placeholder { color: var(--muted2); }
   <div id="kostenBox" style="display:none;margin-top:14px;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;">
     <div style="display:flex;">
       <div style="flex:1;padding:14px 16px;border-right:1px solid var(--border);">
-        <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Umsatz</div>
+        <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Gewinn</div>
         <div id="kostenAmt" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--gold2);line-height:1.1;">—</div>
         <div id="kostenDetail" style="font-size:0.62rem;color:var(--muted);margin-top:4px;line-height:1.8;"></div>
       </div>
@@ -892,7 +892,7 @@ input::placeholder { color: var(--muted2); }
         <label class="tog"><input type="checkbox" id="heimfahrtAdd" checked onchange="saveSettings();calc()"><span class="tog-sl"></span></label>
       </div>
       <div class="tog-row" style="margin:8px 0 0;">
-        <label class="lbl">Vom Umsatz abziehen<small>Als Eigenkosten in der Analyse</small></label>
+        <label class="lbl">Vom Gewinn abziehen<small>Als Eigenkosten in der Analyse</small></label>
         <label class="tog"><input type="checkbox" id="heimfahrtAbzug" checked onchange="saveSettings();calc()"><span class="tog-sl"></span></label>
       </div>
     </div>
@@ -970,7 +970,7 @@ function onSliderInput() {
     + Math.round(preisOptBetrag);
   document.getElementById('totalAmt').textContent = displayVal + ' €';
 
-  // Umsatz — identisch zu calc()
+  // Gewinn — identisch zu calc()
   const diesel             = parseFloat(document.getElementById('dDiesel')?.value) || 0;
   const verbr              = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
   const km                 = parseFloat(document.getElementById('kmVal')?.value) || 0;
@@ -982,8 +982,7 @@ function onSliderInput() {
   const eigeneFahrt        = Math.round(km * 2 * (verbr / 100) * diesel);
   const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
 
-  // PATCH 2 fix: baseVal - eigeneFahrt - heimfahrtAbzugBetrag
-  // (kein + heimfahrtKosten wie vorher — das war der Doppelzähl-Bug)
+  // Gewinn: baseVal - Diesel Anfahrt - Heimfahrt Diesel
   const ka = document.getElementById('kostenAmt');
   if(ka) ka.textContent = (baseVal - eigeneFahrt - heimfahrtAbzugBetrag) + ' €';
 
@@ -1524,16 +1523,23 @@ function calc() {
   const ml = document.getElementById('margeLabel');
   if(ml) ml.textContent = `−${Math.round(marge*100)}%`;
 
-  // Umsatz = totalRound minus reine Eigenkosten
+  // Gewinn = Slider-Preis − reiner Diesel Anfahrt − Heimfahrt-Diesel
   const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
+  const gewinn = totalRound - Math.round(eigeneFahrt) - heimfahrtAbzugBetrag;
   const ka = document.getElementById('kostenAmt');
-  if(ka) ka.textContent = (totalRound - Math.round(eigeneFahrt) - heimfahrtAbzugBetrag) + ' €';
+  if(ka) ka.textContent = gewinn + ' €';
 
   const kd = document.getElementById('kostenDetail');
   if(kd) {
-    let kdText = km > 0 ? `Diesel Anfahrt −${eigeneFahrt.toFixed(2)} €` : '–';
-    if(heimfahrtAbzug && heimfahrtKosten > 0) kdText += `<br>Heimfahrt −${heimfahrtKosten.toFixed(2)} €`;
-    kd.innerHTML = kdText;
+    let kdParts = [];
+    if(km > 0) {
+      kdParts.push(`−Diesel Anfahrt: ${eigeneFahrt.toFixed(2)} €`);
+      kdParts.push(`+Fahrtkosten: ${fahrtKosten.toFixed(2)} €`);
+    }
+    if(heimfahrtAbzug && heimfahrtKosten > 0) {
+      kdParts.push(`−Heimfahrt: ${heimfahrtKosten.toFixed(2)} €`);
+    }
+    kd.innerHTML = kdParts.length ? kdParts.join('<br>') : '–';
   }
 
   const ma = document.getElementById('minimumAmt');
