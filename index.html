@@ -953,8 +953,19 @@ input::placeholder { color: var(--muted2); }
   <div class="card">
     <div class="card-head"><span class="ico">👤</span><h2>Empfängerin</h2></div>
     <div class="card-body">
-      <div class="werb-sect-label">Name</div>
-      <input type="text" id="werbName" placeholder="z. B. Melanie" oninput="werbRender()">
+      <div class="werb-sect-label">Name(n)</div>
+      <input type="text" id="werbName" placeholder="z. B. Melanie  oder  Sofie and Kris" oninput="werbRender()">
+    </div>
+  </div>
+
+  <!-- Sprache -->
+  <div class="card">
+    <div class="card-head"><span class="ico">🌐</span><h2>Sprache</h2></div>
+    <div class="card-body" style="padding:10px 16px;">
+      <div style="display:flex;gap:8px;">
+        <button id="werbLangDE" onclick="werbSetLang('DE')" style="flex:1;padding:11px;border-radius:8px;border:1px solid var(--gold);background:var(--gold-dim);color:var(--gold2);font-family:'DM Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;">🇩🇪 &nbsp;Deutsch</button>
+        <button id="werbLangEN" onclick="werbSetLang('EN')" style="flex:1;padding:11px;border-radius:8px;border:1px solid var(--border2);background:var(--s2);color:var(--muted);font-family:'DM Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;">🇬🇧 &nbsp;English</button>
+      </div>
     </div>
   </div>
 
@@ -1926,17 +1937,62 @@ function werbBuildExtraList() {
   }).join('');
 }
 
+// ── WERBUNG SPRACHE ──
+let werbLang = 'DE';
+
+function werbSetLang(lang) {
+  werbLang = lang;
+  const btnDE = document.getElementById('werbLangDE');
+  const btnEN = document.getElementById('werbLangEN');
+  if (lang === 'DE') {
+    btnDE.style.border = '1px solid var(--gold)';
+    btnDE.style.background = 'var(--gold-dim)';
+    btnDE.style.color = 'var(--gold2)';
+    btnEN.style.border = '1px solid var(--border2)';
+    btnEN.style.background = 'var(--s2)';
+    btnEN.style.color = 'var(--muted)';
+  } else {
+    btnEN.style.border = '1px solid var(--gold)';
+    btnEN.style.background = 'var(--gold-dim)';
+    btnEN.style.color = 'var(--gold2)';
+    btnDE.style.border = '1px solid var(--border2)';
+    btnDE.style.background = 'var(--s2)';
+    btnDE.style.color = 'var(--muted)';
+  }
+  werbRender();
+}
+
 function werbRender() {
   const name = document.getElementById('werbName').value.trim() || '[Name]';
   const combined = [...new Set([...werbAutoSelected, ...werbExtraSelected])];
-  const refStr = combined.length > 0 ? combined.join(', ') : '[Referenzen wählen]';
-  const text =
+
+  let text;
+  if (werbLang === 'EN') {
+    const refStrEN = combined.length > 0 ? combined.join(', ') : '[select references]';
+    text =
+`Hello ${name},
+
+This is Sabine from FotoArtisan.
+I just wanted to check if you would be interested in a professional photoshoot for your beautiful cats (adult cats and/or kittens). I specialise in cat photography and can come to your home with my mobile studio.
+
+Below are some of my references from catteries, such as ${refStrEN}
+
+You can find more details at www.fotoartisan.de
+
+What do you think? Would you be interested in a very special photoshoot?
+I'd love to hear from you to find out if you'd like more information.
+
+Best regards,
+Sabine from FotoArtisan`;
+  } else {
+    const refStrDE = combined.length > 0 ? combined.join(', ') : '[Referenzen wählen]';
+    text =
 `Hallo ${name},
 
 hier ist Sabine von fotoArtisan.
 Ich wollte nachfragen, ob ich grundsätzlich Dein Interesse an einem professionellen Fotoshooting für Eure wunderschönen Fellnasen (Zuchtiere und/oder Kitten) wecken kann. Ich bin auf Katzenfotografie spezialisiert und komme mit meinem mobilen Studio direkt zu Euch nach Hause.
 
-Hier ein paar meiner Cattery-Referenzen, z. B. ${refStr}
+Hier ein paar meiner Cattery-Referenzen, z. B. ${refStrDE}
 
 Zum Stöbern: www.fotoartisan.de
 
@@ -1945,7 +2001,14 @@ Ich freue mich über ein kurzes Feedback, ob Du an weiteren Details interessiert
 
 Liebe Grüße
 Sabine von fotoArtisan`;
+  }
+
   document.getElementById('werbTextPreview').textContent = text;
+  // Button label anpassen
+  const btn = document.getElementById('werbCopyBtn');
+  if (!btn.classList.contains('ok')) {
+    btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.68 3.41 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 16z"/></svg> ${werbLang === 'EN' ? 'Copy text for WhatsApp' : 'Text kopieren für WhatsApp'}`;
+  }
 }
 
 function werbCopyWA() {
