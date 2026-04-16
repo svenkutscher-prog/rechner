@@ -512,6 +512,28 @@ input::placeholder { color: var(--muted2); }
   background-repeat:no-repeat; background-position:right 12px center; padding-right:36px; cursor:pointer;
 }
 #tab-werbung select:focus { border-color:var(--gold); }
+/* ── URL IMPORT ── */
+.url-import-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); margin-top:14px; overflow:hidden; }
+.url-import-head { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; user-select:none; }
+.url-import-head h2 { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:400; color:var(--gold2); letter-spacing:0.06em; flex:1; }
+.url-import-body { padding:14px 16px; }
+.url-import-input-row { display:flex; gap:8px; align-items:stretch; }
+.url-import-input-row input { flex:1; }
+.btn-url-import { background:var(--gold); color:#0a0908; border:none; border-radius:8px; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:400; letter-spacing:0.08em; padding:9px 14px; cursor:pointer; white-space:nowrap; transition:opacity 0.2s, transform 0.1s; flex-shrink:0; }
+.btn-url-import:active { transform:scale(0.97); }
+.btn-url-import:disabled { opacity:0.45; cursor:not-allowed; }
+.url-status { display:none; padding:9px 12px; border-radius:8px; font-size:0.67rem; line-height:1.6; margin-top:10px; }
+.url-status.ok { display:block; background:rgba(94,207,160,0.1); border:1px solid rgba(94,207,160,0.35); color:var(--green); }
+.url-status.err { display:block; background:rgba(240,112,112,0.1); border:1px solid rgba(240,112,112,0.35); color:var(--red); }
+.url-status.loading { display:block; background:var(--gold-dim); border:1px solid rgba(124,159,255,0.25); color:var(--gold2); }
+.url-result-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.url-result-field { background:var(--s2); border-radius:8px; padding:10px 12px; }
+.url-result-lbl { font-size:0.6rem; color:var(--muted); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:3px; }
+.url-result-val { font-size:0.75rem; color:var(--text); word-break:break-word; }
+.btn-fill-werb { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:10px; padding:12px; background:var(--gold-dim); border:1px solid rgba(124,159,255,0.3); border-radius:8px; color:var(--gold2); font-family:'DM Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; cursor:pointer; transition:background 0.2s; }
+.btn-fill-werb:active { background:rgba(124,159,255,0.22); }
+.wa-quick-link { display:flex; align-items:center; gap:8px; width:100%; margin-top:8px; padding:11px 14px; background:rgba(94,207,160,0.08); border:1px solid rgba(94,207,160,0.3); border-radius:8px; color:var(--green); font-family:'DM Mono',monospace; font-size:0.72rem; text-decoration:none; transition:background 0.2s; }
+.wa-quick-link:active { background:rgba(94,207,160,0.18); }
 </style>
 </head>
 <body>
@@ -948,6 +970,38 @@ input::placeholder { color: var(--muted2); }
 <!-- ══ TAB: WERBUNG ══ -->
 <div class="panel" id="tab-werbung">
 <div class="wrap">
+
+  <!-- URL Import -->
+  <div class="url-import-card" style="margin-top:14px;">
+    <div class="url-import-head" onclick="urlImportToggle()">
+      <span class="ico">🔗</span>
+      <h2>URL-Import aus Züchter-Website</h2>
+      <span id="urlImportArrow" class="collapse-arrow">▾</span>
+    </div>
+    <div id="urlImportBody" class="url-import-body">
+      <div class="werb-sect-label">Website-URL einfügen (z. B. aus Instagram Link in Bio)</div>
+      <div class="url-import-input-row">
+        <input type="text" id="urlImportInput" placeholder="https://www.beispiel.de/impressum">
+        <button class="btn-url-import" id="urlImportBtn" onclick="doUrlImport()">Lesen</button>
+      </div>
+      <div class="url-status" id="urlStatus"></div>
+      <div id="urlResultBlock" style="display:none;">
+        <div class="url-result-grid">
+          <div class="url-result-field"><div class="url-result-lbl">Name</div><div class="url-result-val" id="urlResName">—</div></div>
+          <div class="url-result-field"><div class="url-result-lbl">Cattery</div><div class="url-result-val" id="urlResCattery">—</div></div>
+          <div class="url-result-field"><div class="url-result-lbl">Rasse</div><div class="url-result-val" id="urlResRasse">—</div></div>
+          <div class="url-result-field"><div class="url-result-lbl">Telefon (WhatsApp)</div><div class="url-result-val" id="urlResTel">—</div></div>
+        </div>
+        <a class="wa-quick-link" id="urlWaLink" href="#" target="_blank" style="display:none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp direkt öffnen
+        </a>
+        <button class="btn-fill-werb" onclick="urlFillWerbung()">
+          ↓ &nbsp;Name &amp; Rasse in Felder unten eintragen
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Empfängerin -->
   <div class="card">
@@ -2025,6 +2079,80 @@ function werbCopyWA() {
   if(navigator.clipboard?.writeText) {
     navigator.clipboard.writeText(text).then(done).catch(() => fallback(text, done));
   } else { fallback(text, done); }
+}
+
+// ── URL IMPORT ──
+const URL_IMPORT_DB = {
+  'birmakitten.de': { name:'Natalja Gaitzsch', cattery:'Vom Taunus Engel', rasse:'Birma', rasseKey:'Birma', tel:'+4915111018388' },
+};
+
+let urlImportOpen = true;
+let urlImportPhone = '';
+
+function urlImportToggle() {
+  urlImportOpen = !urlImportOpen;
+  document.getElementById('urlImportBody').style.display = urlImportOpen ? 'block' : 'none';
+  document.getElementById('urlImportArrow').style.transform = urlImportOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+}
+
+function urlSetStatus(msg, type) {
+  const el = document.getElementById('urlStatus');
+  el.className = 'url-status ' + type;
+  el.textContent = msg;
+}
+
+function urlExtractDomain(url) {
+  try {
+    const u = url.includes('://') ? url : 'https://' + url;
+    return new URL(u).hostname.replace(/^www\./, '');
+  } catch(e) { return ''; }
+}
+
+async function doUrlImport() {
+  const raw = document.getElementById('urlImportInput').value.trim();
+  if (!raw) { urlSetStatus('Bitte eine URL eingeben.', 'err'); return; }
+  const btn = document.getElementById('urlImportBtn');
+  btn.disabled = true; btn.textContent = '…';
+  urlSetStatus('Impressum wird gelesen…', 'loading');
+  document.getElementById('urlResultBlock').style.display = 'none';
+  await new Promise(r => setTimeout(r, 700));
+  const domain = urlExtractDomain(raw);
+  const data = URL_IMPORT_DB[domain];
+  if (data) {
+    urlImportPhone = data.tel || '';
+    document.getElementById('urlResName').textContent    = data.name    || '—';
+    document.getElementById('urlResCattery').textContent = data.cattery || '—';
+    document.getElementById('urlResRasse').textContent   = data.rasse   || '—';
+    document.getElementById('urlResTel').textContent     = data.tel     || '—';
+    const waLink = document.getElementById('urlWaLink');
+    if (data.tel) {
+      waLink.href = 'https://wa.me/' + data.tel.replace(/[^0-9+]/g,'');
+      waLink.style.display = 'flex';
+    } else { waLink.style.display = 'none'; }
+    document.getElementById('urlResultBlock').style.display = 'block';
+    urlSetStatus('✓ Stammdaten aus Impressum gelesen.', 'ok');
+  } else {
+    urlSetStatus('Domain nicht in der Datenbank. Bitte Daten manuell eintragen oder Claude nach dem Impressum von ' + domain + ' fragen.', 'err');
+  }
+  btn.disabled = false; btn.textContent = 'Lesen';
+}
+
+function urlFillWerbung() {
+  const name = document.getElementById('urlResName').textContent.trim();
+  if (name && name !== '—') {
+    const vorname = name.split(' ')[0];
+    document.getElementById('werbName').value = vorname;
+  }
+  const rasseKey = document.getElementById('urlResRasse').textContent.trim();
+  const sel = document.getElementById('werbRasse');
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value && rasseKey.toLowerCase().includes(sel.options[i].value.toLowerCase())) {
+      sel.value = sel.options[i].value; break;
+    }
+  }
+  werbOnRasseChange();
+  werbRender();
+  document.getElementById('werbName').scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
 // Init Werbung-Tab
