@@ -2081,11 +2081,7 @@ function werbCopyWA() {
   } else { fallback(text, done); }
 }
 
-// ── URL IMPORT ──
-const URL_IMPORT_DB = {
-  'birmakitten.de': { name:'Natalja Gaitzsch', cattery:'Vom Taunus Engel', rasse:'Birma', rasseKey:'Birma', tel:'+4915111018388' },
-};
-
+// ── URL IMPORT (Claude AI live) ──
 let urlImportOpen = true;
 let urlImportPhone = '';
 
@@ -2101,39 +2097,72 @@ function urlSetStatus(msg, type) {
   el.textContent = msg;
 }
 
-function urlExtractDomain(url) {
-  try {
-    const u = url.includes('://') ? url : 'https://' + url;
-    return new URL(u).hostname.replace(/^www\./, '');
-  } catch(e) { return ''; }
-}
-
 async function doUrlImport() {
   const raw = document.getElementById('urlImportInput').value.trim();
   if (!raw) { urlSetStatus('Bitte eine URL eingeben.', 'err'); return; }
   const btn = document.getElementById('urlImportBtn');
   btn.disabled = true; btn.textContent = '…';
-  urlSetStatus('Impressum wird gelesen…', 'loading');
+  urlSetStatus('Claude liest das Impressum …', 'loading');
   document.getElementById('urlResultBlock').style.display = 'none';
-  await new Promise(r => setTimeout(r, 700));
-  const domain = urlExtractDomain(raw);
-  const data = URL_IMPORT_DB[domain];
-  if (data) {
+
+  const prompt = `Rufe das Impressum dieser Website ab und extrahiere folgende Daten: ${raw}
+
+Antworte NUR mit einem JSON-Objekt (kein Markdown, keine Erklärung):
+{
+  "name": "Vorname Nachname der Inhaberin",
+  "cattery": "Name der Zucht / Cattery",
+  "rasse": "Katzenrasse (z.B. Birma, BKH, Maine Coon, ...)",
+  "rasseKey": "eines von: Bengal, BKH, Birma, Burma, DeutschLanghaar, DevonRex, MCO, NFO, Peterbald, Ragdoll, RussischBlau, Savannah, Selkirk, Sibirier, Siam — oder leer lassen",
+  "tel": "Telefonnummer im Format +49... (für WhatsApp)"
+}
+Wenn ein Feld nicht gefunden wird, leeres String verwenden.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const json = await res.json();
+
+    let text = '';
+    if (json.content) {
+      for (const block of json.content) {
+        if (block.type === 'text') text += block.text;
+      }
+    }
+
+    text = text.replace(/```json|```/g, '').trim();
+    const start = text.indexOf('{');
+    const end   = text.lastIndexOf('}');
+    if (start === -1 || end === -1) throw new Error('Kein JSON gefunden');
+    const data = JSON.parse(text.slice(start, end + 1));
+
     urlImportPhone = data.tel || '';
     document.getElementById('urlResName').textContent    = data.name    || '—';
     document.getElementById('urlResCattery').textContent = data.cattery || '—';
     document.getElementById('urlResRasse').textContent   = data.rasse   || '—';
     document.getElementById('urlResTel').textContent     = data.tel     || '—';
+
     const waLink = document.getElementById('urlWaLink');
     if (data.tel) {
-      waLink.href = 'https://wa.me/' + data.tel.replace(/[^0-9+]/g,'');
+      waLink.href = 'https://wa.me/' + data.tel.replace(/[^0-9+]/g, '');
       waLink.style.display = 'flex';
-    } else { waLink.style.display = 'none'; }
+    } else {
+      waLink.style.display = 'none';
+    }
+
     document.getElementById('urlResultBlock').style.display = 'block';
     urlSetStatus('✓ Stammdaten aus Impressum gelesen.', 'ok');
-  } else {
-    urlSetStatus('Domain nicht in der Datenbank. Bitte Daten manuell eintragen oder Claude nach dem Impressum von ' + domain + ' fragen.', 'err');
+  } catch (e) {
+    urlSetStatus('Fehler beim Lesen: ' + e.message, 'err');
   }
+
   btn.disabled = false; btn.textContent = 'Lesen';
 }
 
