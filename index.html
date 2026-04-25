@@ -213,6 +213,21 @@ input::placeholder { color: var(--muted2); }
 .tog input:checked + .tog-sl::before { transform: translateX(20px); background: var(--gold); }
 .tog.tog-rechnung input:checked + .tog-sl { background: rgba(110,168,212,0.18); border-color: var(--blue); }
 .tog.tog-rechnung input:checked + .tog-sl::before { background: var(--blue); }
+.tog.tog-paypal input:checked + .tog-sl { background: rgba(0,156,222,0.18); border-color: #009cde; }
+.tog.tog-paypal input:checked + .tog-sl::before { background: #009cde; }
+.paypal-banner {
+  background: rgba(0,48,135,0.18);
+  border: 1px solid rgba(0,156,222,0.35);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  color: #7ec8e3;
+  line-height: 1.6;
+  margin: 0 16px 12px;
+  display: none;
+}
+.paypal-banner strong { color: #009cde; }
+.paypal-banner .pp-formula { font-size:0.63rem; color: rgba(126,200,227,0.7); margin-top:4px; }
 .color-btn {
   background: var(--s2); border: 2px solid var(--border2); border-radius: 8px;
   cursor: pointer; padding: 10px 8px 8px; text-align: center;
@@ -534,6 +549,65 @@ input::placeholder { color: var(--muted2); }
 .btn-fill-werb:active { background:rgba(124,159,255,0.22); }
 .wa-quick-link { display:flex; align-items:center; gap:8px; width:100%; margin-top:8px; padding:11px 14px; background:rgba(94,207,160,0.08); border:1px solid rgba(94,207,160,0.3); border-radius:8px; color:var(--green); font-family:'DM Mono',monospace; font-size:0.72rem; text-decoration:none; transition:background 0.2s; }
 .wa-quick-link:active { background:rgba(94,207,160,0.18); }
+
+/* ── PAYPAL TAB ── */
+.pp-logo { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.pp-logo svg { flex-shrink:0; }
+.pp-hero {
+  background: linear-gradient(135deg, #003087 0%, #009cde 100%);
+  border-radius: var(--r);
+  padding: 20px 18px;
+  margin-top: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.pp-hero::before {
+  content:'';
+  position:absolute;
+  right:-30px; top:-30px;
+  width:130px; height:130px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.07);
+}
+.pp-hero::after {
+  content:'';
+  position:absolute;
+  right:20px; bottom:-40px;
+  width:90px; height:90px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.05);
+}
+.pp-hero-label { font-size:0.6rem; letter-spacing:0.22em; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:6px; }
+.pp-hero-amount {
+  font-family:'Cormorant Garamond',serif;
+  font-size:3.2rem; font-weight:300; color:#fff; line-height:1;
+}
+.pp-hero-sub { font-size:0.68rem; color:rgba(255,255,255,0.6); margin-top:4px; }
+
+.pp-input-row { display:flex; gap:8px; align-items:center; margin-top:14px; }
+.pp-input-wrap { position:relative; flex:1; }
+.pp-input-wrap input {
+  width:100%; background:var(--s2); border:1px solid var(--border2);
+  border-radius:8px; color:var(--text); font-family:'DM Mono',monospace;
+  font-size:22px; font-weight:300; padding:12px 40px 12px 14px;
+  outline:none; transition:border-color 0.2s;
+  -moz-appearance:textfield;
+}
+.pp-input-wrap input::-webkit-outer-spin-button,
+.pp-input-wrap input::-webkit-inner-spin-button { -webkit-appearance:none; }
+.pp-input-wrap input:focus { border-color: #009cde; }
+.pp-input-wrap .pp-currency {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  font-size:0.8rem; color:var(--muted); pointer-events:none;
+}
+
+.pp-result-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+.pp-result-card {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:10px; padding:14px 14px 12px;
+}
+.pp-result-card.highlight { border-color:#009cde; background:rgba(0,156,222,0.08); }
+.pp-result-lbl { font-size:0.
 </style>
 </head>
 <body>
@@ -617,9 +691,17 @@ input::placeholder { color: var(--muted2); }
   </div>
 
   <div class="card">
-    <div class="card-head collapsible closed" onclick="toggleCard(this)"><span class="ico">🎨</span><h2>Hintergrundfarbe</h2><span class="collapse-arrow">▼</span></div>
+    <div class="card-head collapsible closed" onclick="toggleCard(this)">
+      <span class="ico">📸</span>
+      <h2>Shooting</h2>
+      <span class="bilder-badge" id="bilderBadge">
+        <span id="badgeColor">Schwarz</span> · E<span id="badgeE">21</span> · G<span id="badgeG">1</span>
+      </span>
+      <span class="collapse-arrow">▼</span>
+    </div>
     <div class="collapsible-body closed">
     <div class="card-body">
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:8px;letter-spacing:0.1em;text-transform:uppercase;">Hintergrundfarbe</div>
       <div style="display:flex;gap:10px;">
         <div class="color-btn on" data-color="Schwarz" data-extra="0" onclick="pickColor(this)" style="flex:1;">
           <div class="color-preview" style="background:#1a1a1a;"></div>
@@ -635,21 +717,8 @@ input::placeholder { color: var(--muted2); }
           <div class="color-price" id="bwPriceLabel">+30 €</div>
         </div>
       </div>
-    </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-head collapsible closed" onclick="toggleCard(this)">
-      <span class="ico">📸</span>
-      <h2>Bilder</h2>
-      <span class="bilder-badge" id="bilderBadge">
-        E <span id="badgeE">21</span> · G <span id="badgeG">1</span>
-      </span>
-      <span class="collapse-arrow">▼</span>
-    </div>
-    <div class="collapsible-body closed">
-    <div class="card-body">
+      <div class="div"></div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:10px;letter-spacing:0.1em;text-transform:uppercase;">Bilder</div>
       <div class="row">
         <label class="lbl">Katzen-Einzelaufnahmen<small id="infoEinzeln">12 €/Bild</small></label>
         <div class="step">
@@ -689,9 +758,28 @@ input::placeholder { color: var(--muted2); }
       <div class="rechnung-banner" id="rechnungBanner" style="margin:0 16px 12px;border-radius:6px;">
         <strong>+10 % Rechnungsaufschlag</strong> wird auf den Gesamtpreis addiert und im Angebot sowie im Kopiertext ausgewiesen.
       </div>
+      <!-- ── PAYPAL TOGGLE ── -->
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
+        <label class="lbl">
+          <span style="display:inline-flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .92-.787h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.773-4.472z" fill="#009cde"/></svg>
+            PayPal-Zahlung
+          </span>
+          <small>Gebühren werden auf den Betrag aufgeschlagen (1,49 % + 0,35 €)</small>
+        </label>
+        <label class="tog tog-paypal"><input type="checkbox" id="paypalToggle" onchange="calc();saveSettings()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="paypal-banner" id="paypalBanner">
+        <strong id="paypalBannerFee"></strong> PayPal-Gebühren werden aufgeschlagen.<br>
+        <span class="pp-formula">Formel: Betrag × 1,49 % + 0,35 € → aufgerundet auf volle Euro</span>
+      </div>
       <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
         <label class="lbl">Rückmeldung<small>Bitte Rückmeldung, ob ein Fototermin … in Frage kommt.</small></label>
         <label class="tog"><input type="checkbox" id="optRueck" checked onchange="saveSettings()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
+        <label class="lbl">Bildbearbeitung<small>Hinweis zu natürlicher Bearbeitung & keine Veränderungen</small></label>
+        <label class="tog"><input type="checkbox" id="optBildbearbeitung" checked onchange="saveSettings()"><span class="tog-sl"></span></label>
       </div>
       <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
         <label class="lbl">Parkgebühren<small>HINWEIS: Eventuell anfallende Parkgebühren …</small></label>
@@ -1260,6 +1348,7 @@ function neuesAngebot() {
   // Toggles
   document.getElementById('rechnungToggle').checked = false;
   document.getElementById('optRueck').checked = true;
+  document.getElementById('optBildbearbeitung').checked = true;
   document.getElementById('optPark').checked = true;
   document.getElementById('optRate').checked = false;
   // Eigener Text
@@ -1275,6 +1364,8 @@ function neuesAngebot() {
   });
   selectedColor = 'Schwarz';
   colorExtra = 0;
+  const bc = document.getElementById('badgeColor');
+  if(bc) bc.textContent = 'Schwarz';
   // Km-Status zurücksetzen
   lastKmAuto = null;
   resolvedOrtName = '';
@@ -1335,6 +1426,7 @@ function saveSettings() {
     heimfahrtAdd: document.getElementById('heimfahrtAdd')?.checked,
     heimfahrtAbzug: document.getElementById('heimfahrtAbzug')?.checked,
     optRueck: document.getElementById('optRueck')?.checked,
+    optBildbearbeitung: document.getElementById('optBildbearbeitung')?.checked,
     optPark:  document.getElementById('optPark')?.checked,
     optRate:  document.getElementById('optRate')?.checked,
     rechnungToggle: document.getElementById('rechnungToggle')?.checked,
@@ -1343,6 +1435,7 @@ function saveSettings() {
     optPreisAn: document.getElementById('optPreisAn')?.checked,
     optPreisText: v('optPreisText'),
     optPreisBetrag: v('optPreisBetrag'),
+    paypalToggle: document.getElementById('paypalToggle')?.checked,
   };
   try { localStorage.setItem('ksp_settings', JSON.stringify(s)); } catch(e){}
 }
@@ -1375,6 +1468,8 @@ function pickColor(el) {
   el.classList.add('on');
   selectedColor = el.dataset.color;
   colorExtra = parseInt(el.dataset.extra) || 0;
+  const bc = document.getElementById('badgeColor');
+  if(bc) bc.textContent = selectedColor === 'Schwarz/Weiß' ? 'Sw/Ws' : selectedColor;
   calc();
 }
 function updateBWLabel() {
@@ -1658,10 +1753,21 @@ function calc() {
   const preisOptText  = document.getElementById('optPreisText')?.value.trim() || 'Preis-Option';
   const preisOptBetrag = preisOptOn ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
 
-  const displayTotal = totalRound + aufschlagEuro + Math.round(preisOptBetrag);
+  // ── PAYPAL ──
+  const paypalOn = document.getElementById('paypalToggle')?.checked ?? false;
+  const baseForPaypal = totalRound + aufschlagEuro + Math.round(preisOptBetrag);
+  const paypalFee = paypalOn ? parseFloat((baseForPaypal * 0.0149 + 0.35).toFixed(2)) : 0;
+  const paypalFeeRound = Math.ceil(paypalFee); // aufrunden auf volle Euro
+  const displayTotal = baseForPaypal + paypalFeeRound;
 
   const banner = document.getElementById('rechnungBanner');
   if(banner) banner.style.display = rechnungOn ? 'block' : 'none';
+  const ppBanner = document.getElementById('paypalBanner');
+  if(ppBanner) {
+    ppBanner.style.display = paypalOn ? 'block' : 'none';
+    const ppFeeEl = document.getElementById('paypalBannerFee');
+    if(ppFeeEl && paypalOn) ppFeeEl.textContent = `+${paypalFeeRound} € (exakt: ${paypalFee.toFixed(2)} €)`;
+  }
 
   if(km > 0) {
     document.getElementById('kmInfoBox').style.display = 'block';
@@ -1687,11 +1793,16 @@ function calc() {
   if(heimfahrtAdd && heimfahrtKosten > 0) lines += `Heimfahrt Diesel (${heimfahrtKm} km): <span>+${heimfahrtKosten.toFixed(2)} €</span>\n`;
   if(rechnungOn && aufschlagEuro > 0) lines += `Rechnungsaufschlag (+${aufschlagPct}%): <span>${aufschlagEuro} €</span>\n`;
   if(preisOptOn && preisOptBetrag > 0) lines += `${preisOptText}: <span>+${preisOptBetrag.toFixed(2)} €</span>\n`;
+  if(paypalOn && paypalFeeRound > 0) lines += `<span style="color:#009cde">PayPal-Gebühren (1,49 % + 0,35 €): <span>+${paypalFeeRound} €</span></span>\n`;
   if(totalBilder > 0) lines += `${totalBilder} Bilder gesamt`;
   document.getElementById('totalLines').innerHTML = lines.trim().replace(/\n/g,'<br>');
 
   const totalLbl = document.getElementById('totalLbl');
-  if(totalLbl) totalLbl.textContent = rechnungOn ? 'Gesamtpreis (mit Rechnung)' : 'Gesamtpreis (Angebot)';
+  if(totalLbl) {
+    let lbl = rechnungOn ? 'Gesamtpreis (mit Rechnung)' : 'Gesamtpreis (Angebot)';
+    if(paypalOn) lbl += ' + PayPal';
+    totalLbl.textContent = lbl;
+  }
 
   const marge   = (n('pMarge') || 30) / 100;
   const diesel  = parseFloat(document.getElementById('dDiesel')?.value)    || 0;
@@ -1804,12 +1915,15 @@ function buildText() {
   const preisOptOnT    = document.getElementById('optPreisAn')?.checked;
   const preisOptTextT  = document.getElementById('optPreisText')?.value.trim() || 'Preis-Option';
   const preisOptBetragT = preisOptOnT ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
-  const sliderValFinal = sliderVal + Math.round(preisOptBetragT);
+  const paypalOnT = document.getElementById('paypalToggle')?.checked ?? false;
+  const paypalFeeT = paypalOnT ? Math.ceil((sliderVal + Math.round(preisOptBetragT)) * 0.0149 + 0.35) : 0;
+  const sliderValFinal = sliderVal + Math.round(preisOptBetragT) + paypalFeeT;
 
   let t = '';
   t += name ? `Hallo ${name},` : `Hallo,`;
   t += `\n\nhier dein Angebot für das Katzen-Fotoshooting bei dir Zuhause${ort && ort !== '–' ? ` in ${ort}` : ''}:`;
   t += `\n\nSHOOTINGKOSTEN inkl. Anfahrt: ${sliderValFinal} €`;
+  if(paypalOnT && paypalFeeT > 0) t += ` (inkl. ${paypalFeeT} € PayPal-Gebühren)`;
   if(preisOptOnT && preisOptBetragT > 0) t += `\ninkl. ${preisOptTextT} von ${preisOptBetragT.toFixed(2)} €`;
   t += `\n\nEnthaltene Leistungen:`;
   t += `\n* Hintergrundfarbe: ${selectedColor}`;
@@ -1825,6 +1939,8 @@ function buildText() {
   if(montage) t += `\n* Fotomontage (z. B. Gruppenbild >6 Katzen): auf Anfrage`;
   if(document.getElementById('optRueck')?.checked)
     t += `\n\nBitte Rückmeldung, ob ein Fototermin, wie oben beschrieben, infrage kommt.`;
+  if(document.getElementById('optBildbearbeitung')?.checked)
+    t += `\n\nIch bearbeite eure Bilder natürlich (Licht, Farben, kleine Verschmutzungen), ohne das Aussehen eures Tiers zu verändern. Optische Veränderungen wie Fellfarbe, Körperform oder das Entfernen dauerhafter Merkmale mache ich bewusst nicht.`;
   if(document.getElementById('optRate')?.checked)
     t += `\n\nRatenzahlung ist möglich — sprich uns gerne an.`;
   if(document.getElementById('optEigenAn')?.checked) {
