@@ -315,6 +315,69 @@ input::placeholder { color: var(--muted2); }
   color: var(--red);
 }
 
+/* ── HUBSPOT BUTTON ── */
+.btn-hubspot {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; margin-top: 10px; padding: 13px;
+  background: rgba(255,122,0,0.10); color: #ff7a00;
+  border: 1px solid rgba(255,122,0,0.35);
+  border-radius: var(--r); font-family: 'DM Mono', monospace;
+  font-size: 0.78rem; font-weight: 300; letter-spacing: 0.08em;
+  cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+.btn-hubspot:active { transform: scale(0.98); background: rgba(255,122,0,0.18); border-color: #ff7a00; }
+.btn-hubspot.ok { background: rgba(94,207,160,0.12); border-color: var(--green); color: var(--green); }
+.btn-hubspot.loading { opacity: 0.6; cursor: not-allowed; }
+
+/* ── HUBSPOT MODAL ── */
+.hs-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 1000; padding: 0;
+}
+.hs-sheet {
+  background: var(--s1); border: 1px solid var(--border2);
+  border-radius: 18px 18px 0 0; padding: 24px 20px 32px;
+  width: 100%; max-width: 520px;
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(60px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+.hs-sheet-title {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Cormorant Garamond', serif; font-size: 1.15rem;
+  font-weight: 400; color: var(--gold2); letter-spacing: 0.05em;
+  margin-bottom: 18px;
+}
+.hs-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.hs-field { flex: 1; }
+.hs-field label { display: block; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px; }
+.hs-field input, .hs-field select {
+  width: 100%; background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 7px; color: var(--text); font-family: 'DM Mono', monospace;
+  font-size: 14px; font-weight: 300; padding: 9px 12px; outline: none;
+  transition: border-color 0.2s;
+}
+.hs-field select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238891aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+  padding-right: 30px; cursor: pointer;
+}
+.hs-field input:focus, .hs-field select:focus { border-color: #ff7a00; }
+.hs-deal-amt {
+  background: var(--s2); border: 1px solid var(--border2); border-radius: 8px;
+  padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;
+}
+.hs-deal-amt-lbl { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+.hs-deal-amt-val { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: #ff7a00; font-weight: 300; }
+.hs-actions { display: flex; gap: 10px; margin-top: 16px; }
+.hs-btn-cancel { flex: 1; padding: 13px; border-radius: 8px; border: 1px solid var(--border2); background: var(--s3); color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; cursor: pointer; }
+.hs-btn-save { flex: 2; padding: 13px; border-radius: 8px; border: none; background: #ff7a00; color: #fff; font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.2s; }
+.hs-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+.hs-status { font-size: 0.68rem; margin-top: 10px; min-height: 18px; text-align: center; }
+.hs-status.ok  { color: var(--green); }
+.hs-status.err { color: var(--red); }
+
 .set-group-title {
   font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--muted); margin: 18px 0 8px; padding-left: 2px;
@@ -583,31 +646,6 @@ input::placeholder { color: var(--muted2); }
   font-size:3.2rem; font-weight:300; color:#fff; line-height:1;
 }
 .pp-hero-sub { font-size:0.68rem; color:rgba(255,255,255,0.6); margin-top:4px; }
-
-.pp-input-row { display:flex; gap:8px; align-items:center; margin-top:14px; }
-.pp-input-wrap { position:relative; flex:1; }
-.pp-input-wrap input {
-  width:100%; background:var(--s2); border:1px solid var(--border2);
-  border-radius:8px; color:var(--text); font-family:'DM Mono',monospace;
-  font-size:22px; font-weight:300; padding:12px 40px 12px 14px;
-  outline:none; transition:border-color 0.2s;
-  -moz-appearance:textfield;
-}
-.pp-input-wrap input::-webkit-outer-spin-button,
-.pp-input-wrap input::-webkit-inner-spin-button { -webkit-appearance:none; }
-.pp-input-wrap input:focus { border-color: #009cde; }
-.pp-input-wrap .pp-currency {
-  position:absolute; right:12px; top:50%; transform:translateY(-50%);
-  font-size:0.8rem; color:var(--muted); pointer-events:none;
-}
-
-.pp-result-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
-.pp-result-card {
-  background:var(--s1); border:1px solid var(--border);
-  border-radius:10px; padding:14px 14px 12px;
-}
-.pp-result-card.highlight { border-color:#009cde; background:rgba(0,156,222,0.08); }
-.pp-result-lbl { font-size:0.
 </style>
 </head>
 <body>
@@ -887,6 +925,11 @@ input::placeholder { color: var(--muted2); }
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:6px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Angebot als Link speichern / teilen
   </button>
 
+  <!-- ══ HUBSPOT BUTTON (Einfügung 2) ══ -->
+  <button class="btn-hubspot" id="hsBtn" onclick="hsOpenModal()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="12" y1="12" x2="12" y2="12"/><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg>💼 In HubSpot speichern
+  </button>
+
   <!-- PATCH 1: Neues Angebot Button -->
   <button class="btn-neues-angebot" onclick="neuesAngebot()">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Neues Angebot erstellen
@@ -905,6 +948,16 @@ input::placeholder { color: var(--muted2); }
     <div class="card-body">
       <div class="row"><label class="lbl">API Key<small>Wird lokal gespeichert</small></label></div>
       <input type="password" id="orsKey" placeholder="Hier API Key eintragen …" oninput="saveSettings()">
+    </div>
+  </div>
+
+  <!-- ══ HUBSPOT TOKEN (Einfügung 1) ══ -->
+  <div class="set-group-title">🟠 HubSpot</div>
+  <div class="api-note">Private App Token unter <strong>HubSpot → Einstellungen → Integrationen → Private Apps</strong> erstellen. Scopes: <code>crm.objects.contacts.write</code>, <code>crm.objects.deals.write</code></div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row"><label class="lbl">HubSpot Token<small>Wird lokal gespeichert</small></label></div>
+      <input type="password" id="hubspotToken" placeholder="pat-eu1-xxxxxxxx-xxxx-…" oninput="saveSettings()">
     </div>
   </div>
 
@@ -1188,6 +1241,66 @@ input::placeholder { color: var(--muted2); }
   </div>
 </div>
 
+<!-- ══ HUBSPOT MODAL (Einfügung 2) ══ -->
+<div class="hs-overlay" id="hsOverlay" style="display:none;" onclick="if(event.target===this)hsCloseModal()">
+  <div class="hs-sheet">
+    <div class="hs-sheet-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff7a00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="12" y1="12" x2="12" y2="12"/><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg>
+      In HubSpot speichern
+    </div>
+
+    <div class="hs-deal-amt">
+      <div>
+        <div class="hs-deal-amt-lbl">Deal-Betrag</div>
+        <div class="hs-deal-amt-val" id="hsDealAmt">— €</div>
+      </div>
+      <div style="text-align:right;font-size:0.65rem;color:var(--muted);line-height:1.6;" id="hsDealInfo"></div>
+    </div>
+
+    <div class="hs-row">
+      <div class="hs-field" style="flex:2;">
+        <label>Kontakt-Name</label>
+        <input type="text" id="hsContactName" placeholder="Maria Müller">
+      </div>
+    </div>
+    <div class="hs-row">
+      <div class="hs-field">
+        <label>E-Mail (optional)</label>
+        <input type="text" id="hsEmail" placeholder="email@beispiel.de">
+      </div>
+      <div class="hs-field">
+        <label>Telefon (optional)</label>
+        <input type="text" id="hsTel" placeholder="+49 …">
+      </div>
+    </div>
+    <div class="hs-row">
+      <div class="hs-field">
+        <label>Deal-Name</label>
+        <input type="text" id="hsDealName" placeholder="Katzen-Shooting Maria Müller">
+      </div>
+    </div>
+    <div class="hs-row">
+      <div class="hs-field">
+        <label>Pipeline-Stage</label>
+        <select id="hsStage">
+          <option value="appointmentscheduled">Termin anfragen</option>
+          <option value="qualifiedtobuy">Angebot gesendet</option>
+          <option value="presentationscheduled">In Verhandlung</option>
+          <option value="decisionmakerboughtin">Gewonnen</option>
+          <option value="closedlost">Verloren</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="hs-status" id="hsStatus"></div>
+
+    <div class="hs-actions">
+      <button class="hs-btn-cancel" onclick="hsCloseModal()">Abbrechen</button>
+      <button class="hs-btn-save" id="hsSaveBtn" onclick="hsSaveDeal()">💼 Deal speichern</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── COLLAPSIBLE ──
 function toggleCard(head) {
@@ -1224,9 +1337,6 @@ function updateSlider(std, min, max) {
   renderSliderAmt();
 }
 
-// ── PATCH 2: onSliderInput — Umsatz-Formel identisch zu calc() ──
-// baseVal enthält heimfahrtKosten bereits (calc() baut es in baseTotal ein)
-// → kein nochmaliges Addieren in displayVal oder kostenAmt
 function onSliderInput() {
   renderSliderAmt();
   const sl = document.getElementById('preisSlider');
@@ -1238,12 +1348,10 @@ function onSliderInput() {
   const preisOptBetrag = document.getElementById('optPreisAn')?.checked
     ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
 
-  // displayVal: baseVal enthält Heimfahrt bereits — NICHT nochmal addieren
   const displayVal = (rechnungOn ? Math.round(baseVal * (1 + aufschlag / 100)) : baseVal)
     + Math.round(preisOptBetrag);
   document.getElementById('totalAmt').textContent = displayVal + ' €';
 
-  // Gewinn — identisch zu calc()
   const diesel             = parseFloat(document.getElementById('dDiesel')?.value) || 0;
   const verbr              = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
   const km                 = parseFloat(document.getElementById('kmVal')?.value) || 0;
@@ -1255,7 +1363,6 @@ function onSliderInput() {
   const eigeneFahrt        = Math.round(km * 2 * (verbr / 100) * diesel);
   const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
 
-  // Gewinn: baseVal - Diesel Anfahrt - Heimfahrt Diesel
   const ka = document.getElementById('kostenAmt');
   if(ka) ka.textContent = (baseVal - eigeneFahrt - heimfahrtAbzugBetrag) + ' €';
 
@@ -1329,36 +1436,28 @@ function showTab(name, event) {
   if(event && event.currentTarget) event.currentTarget.classList.add('active');
 }
 
-// ── RESET (alles) ──
+// ── RESET ──
 function showResetConfirm() { document.getElementById('confirmOverlay').style.display = 'flex'; }
 function hideResetConfirm() { document.getElementById('confirmOverlay').style.display = 'none'; }
 function doReset() { try { localStorage.removeItem('ksp_settings'); } catch(e){} hideResetConfirm(); location.reload(); }
 
-// ── PATCH 1: Neues Angebot — nur Angebotsdaten zurücksetzen, Einstellungen bleiben ──
 function neuesAngebot() {
-  // Kundendaten
   document.getElementById('kundenName').value = '';
   document.getElementById('kundeAdresse').value = '';
-  // Bilder
   document.getElementById('einzeln').value = 21;
   document.getElementById('gruppe').value = 1;
   document.getElementById('montage').checked = false;
-  // Kilometer
   document.getElementById('kmVal').value = 0;
-  // Toggles
   document.getElementById('rechnungToggle').checked = false;
   document.getElementById('optRueck').checked = true;
   document.getElementById('optBildbearbeitung').checked = true;
   document.getElementById('optPark').checked = true;
   document.getElementById('optRate').checked = false;
-  // Eigener Text
   document.getElementById('optEigenAn').checked = false;
   document.getElementById('optEigenText').value = '';
-  // Preis-Option
   document.getElementById('optPreisAn').checked = false;
   document.getElementById('optPreisText').value = '';
   document.getElementById('optPreisBetrag').value = '';
-  // Farbe zurück auf Schwarz
   document.querySelectorAll('.color-btn').forEach(btn => {
     btn.classList.toggle('on', btn.dataset.color === 'Schwarz');
   });
@@ -1366,24 +1465,19 @@ function neuesAngebot() {
   colorExtra = 0;
   const bc = document.getElementById('badgeColor');
   if(bc) bc.textContent = 'Schwarz';
-  // Km-Status zurücksetzen
   lastKmAuto = null;
   resolvedOrtName = '';
   acSelectedCoords = null;
   setKmStatus('idle', 'Adresse eingeben → km wird automatisch berechnet');
   document.getElementById('kmInfoBox').style.display = 'none';
-  // UI-Toggles aktualisieren
   toggleEigenText();
   togglePreisOption();
   updatePreisPreview();
-  // URL-Parameter entfernen
   history.replaceState(null, '', location.pathname);
   document.title = 'Angebot';
-  // Neu berechnen
   calc();
 }
 
-// ── TITLE ──
 function updateTitle() {
   const name = document.getElementById('kundenName')?.value.trim() || '';
   document.title = name ? name + ' / Angebot' : 'Angebot';
@@ -1436,6 +1530,7 @@ function saveSettings() {
     optPreisText: v('optPreisText'),
     optPreisBetrag: v('optPreisBetrag'),
     paypalToggle: document.getElementById('paypalToggle')?.checked,
+    hubspotToken: v('hubspotToken'),
   };
   try { localStorage.setItem('ksp_settings', JSON.stringify(s)); } catch(e){}
 }
@@ -1647,7 +1742,6 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
   const bilderMin   = bilder * minProBild;
   const gesamtMin   = fahrzeitMin + bilderMin + pauschale;
   const gesamtStd     = gesamtMin / 60;
-  // Eigenkosten: nur reiner Diesel (Anfahrt + Heimfahrt) wird vom Gewinn abgezogen
   const dieselAnfahrt  = (verbr / 100) * diesel * km * 2;
   const heimfahrtAddSt = document.getElementById('heimfahrtAdd')?.checked ?? true;
   const heimfahrtAbzSt = document.getElementById('heimfahrtAbzug')?.checked ?? true;
@@ -1659,7 +1753,6 @@ function updateStundenlohnDisplay(preisStd, preisMin) {
   const minStundenPreisForDisplay = Math.round(gesamtStd * pMinStunde + gesamtEigenkosten);
   const effectiveMin = preisMin !== null ? Math.max(preisMin, minStundenPreisForDisplay) : null;
 
-  // Stundenlohn-Basis = Gewinn (Preis − Diesel Anfahrt − Heimfahrt-Diesel)
   const lohnStd = (preisStd - gesamtEigenkosten) / gesamtStd;
   const lohnMin = effectiveMin !== null ? (effectiveMin - gesamtEigenkosten) / gesamtStd : null;
 
@@ -1753,11 +1846,10 @@ function calc() {
   const preisOptText  = document.getElementById('optPreisText')?.value.trim() || 'Preis-Option';
   const preisOptBetrag = preisOptOn ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
 
-  // ── PAYPAL ──
   const paypalOn = document.getElementById('paypalToggle')?.checked ?? false;
   const baseForPaypal = totalRound + aufschlagEuro + Math.round(preisOptBetrag);
   const paypalFee = paypalOn ? parseFloat((baseForPaypal * 0.0149 + 0.35).toFixed(2)) : 0;
-  const paypalFeeRound = Math.ceil(paypalFee); // aufrunden auf volle Euro
+  const paypalFeeRound = Math.ceil(paypalFee);
   const displayTotal = baseForPaypal + paypalFeeRound;
 
   const banner = document.getElementById('rechnungBanner');
@@ -1835,7 +1927,6 @@ function calc() {
   const ml = document.getElementById('margeLabel');
   if(ml) ml.textContent = `−${Math.round(marge*100)}%`;
 
-  // Gewinn = Slider-Preis − reiner Diesel Anfahrt − Heimfahrt-Diesel
   const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
   const gewinn = totalRound - Math.round(eigeneFahrt) - heimfahrtAbzugBetrag;
   const ka = document.getElementById('kostenAmt');
@@ -1979,13 +2070,148 @@ function showToast() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// 🐈 WERBUNG — REFERENZLISTE HIER PFLEGEN!
-//
-// Aufbau: RassenKey: ["Cattery Name 1", "Cattery Name 2", ...]
-//
-// Neue Cattery ergänzen:  einfach mit Komma am Ende der Zeile
-// Neue Rasse ergänzen:    neue Zeile vor der schließenden }
-// Cattery löschen:        Zeile entfernen (Komma beim letzten Eintrag prüfen!)
+// 🟠 HUBSPOT INTEGRATION (Einfügung 4 — JS)
+// ══════════════════════════════════════════════════════════════
+function hsOpenModal() {
+  // Felder vorausfüllen
+  const name = v('kundenName').trim();
+  document.getElementById('hsContactName').value = name;
+  document.getElementById('hsDealName').value = name ? `Katzen-Shooting ${name}` : 'Katzen-Shooting';
+
+  // Betrag aus aktuellem totalAmt
+  const amtText = document.getElementById('totalAmt').textContent.replace(/[^0-9]/g, '');
+  const amt = amtText ? parseInt(amtText) : 0;
+  document.getElementById('hsDealAmt').textContent = amt ? `${amt} €` : '— €';
+
+  // Info-Zeile
+  const einzeln = n('einzeln'), gruppe = n('gruppe'), km = n('kmVal');
+  const parts = [];
+  if(einzeln > 0) parts.push(`${einzeln} Einzelbild${einzeln>1?'er':''}`);
+  if(gruppe  > 0) parts.push(`${gruppe} Gruppenbild${gruppe>1?'er':''}`);
+  if(km > 0)      parts.push(`${km} km Anfahrt`);
+  document.getElementById('hsDealInfo').textContent = parts.join(' · ') || '';
+
+  document.getElementById('hsStatus').textContent = '';
+  document.getElementById('hsStatus').className = 'hs-status';
+  document.getElementById('hsSaveBtn').disabled = false;
+  document.getElementById('hsOverlay').style.display = 'flex';
+}
+
+function hsCloseModal() {
+  document.getElementById('hsOverlay').style.display = 'none';
+}
+
+async function hsSaveDeal() {
+  const token = v('hubspotToken').trim();
+  if(!token) {
+    hsSetStatus('Kein HubSpot Token — bitte in Einstellungen eintragen.', 'err');
+    return;
+  }
+
+  const contactName = document.getElementById('hsContactName').value.trim();
+  const email       = document.getElementById('hsEmail').value.trim();
+  const tel         = document.getElementById('hsTel').value.trim();
+  const dealName    = document.getElementById('hsDealName').value.trim() || 'Katzen-Shooting';
+  const stage       = document.getElementById('hsStage').value;
+  const amtText     = document.getElementById('hsDealAmt').textContent.replace(/[^0-9]/g, '');
+  const amount      = amtText ? parseInt(amtText) : 0;
+
+  if(!contactName) { hsSetStatus('Bitte einen Kontakt-Namen eingeben.', 'err'); return; }
+
+  const btn = document.getElementById('hsSaveBtn');
+  btn.disabled = true;
+  btn.textContent = '… wird gespeichert';
+  hsSetStatus('', '');
+
+  const CORS_PROXY = 'https://corsproxy.io/?';
+  const HS_BASE    = 'https://api.hubapi.com';
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
+
+  try {
+    // 1. Kontakt anlegen / suchen
+    let contactId = null;
+    const nameParts = contactName.split(' ');
+    const firstname = nameParts[0] || '';
+    const lastname  = nameParts.slice(1).join(' ') || '';
+
+    const contactProps = { firstname, lastname };
+    if(email) contactProps.email = email;
+    if(tel)   contactProps.phone = tel;
+
+    hsSetStatus('Kontakt anlegen …', '');
+    const contactRes = await fetch(CORS_PROXY + encodeURIComponent(`${HS_BASE}/crm/v3/objects/contacts`), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ properties: contactProps })
+    });
+    const contactData = await contactRes.json();
+
+    if(contactRes.ok) {
+      contactId = contactData.id;
+    } else if(contactData.category === 'CONFLICT' && contactData.message?.includes('existing object')) {
+      // Kontakt existiert bereits — ID aus Fehlermeldung extrahieren
+      const match = contactData.message.match(/ID: (\d+)/);
+      if(match) contactId = match[1];
+      else contactId = null; // Deal trotzdem anlegen
+    } else {
+      throw new Error(contactData.message || 'Kontakt-Fehler');
+    }
+
+    // 2. Deal anlegen
+    hsSetStatus('Deal anlegen …', '');
+    const dealRes = await fetch(CORS_PROXY + encodeURIComponent(`${HS_BASE}/crm/v3/objects/deals`), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        properties: {
+          dealname:    dealName,
+          amount:      amount,
+          dealstage:   stage,
+          pipeline:    'default',
+          closedate:   new Date(Date.now() + 30 * 24 * 3600000).toISOString().split('T')[0]
+        }
+      })
+    });
+    const dealData = await dealRes.json();
+    if(!dealRes.ok) throw new Error(dealData.message || 'Deal-Fehler');
+    const dealId = dealData.id;
+
+    // 3. Kontakt mit Deal verknüpfen
+    if(contactId) {
+      hsSetStatus('Verknüpfung …', '');
+      await fetch(CORS_PROXY + encodeURIComponent(`${HS_BASE}/crm/v3/objects/deals/${dealId}/associations/contacts/${contactId}/3`), {
+        method: 'PUT', headers
+      });
+    }
+
+    hsSetStatus(`✓ Deal #${dealId} angelegt${contactId ? ` · Kontakt #${contactId}` : ''}`, 'ok');
+    const hsBtn = document.getElementById('hsBtn');
+    hsBtn.classList.add('ok');
+    hsBtn.textContent = '✓ In HubSpot gespeichert';
+    setTimeout(() => {
+      hsBtn.classList.remove('ok');
+      hsBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="12" y1="12" x2="12" y2="12"/><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg>💼 In HubSpot speichern';
+      hsCloseModal();
+    }, 2000);
+
+  } catch(e) {
+    hsSetStatus('Fehler: ' + e.message, 'err');
+    btn.disabled = false;
+    btn.textContent = '💼 Deal speichern';
+  }
+}
+
+function hsSetStatus(msg, type) {
+  const el = document.getElementById('hsStatus');
+  el.textContent = msg;
+  el.className = 'hs-status' + (type ? ' ' + type : '');
+}
+
+// ══════════════════════════════════════════════════════════════
+// 🐈 WERBUNG — REFERENZLISTE
 // ══════════════════════════════════════════════════════════════
 const WERB_RASSE_MAP = {
   Bengal:          ["Bella Vista Bengalen"],
@@ -2016,13 +2242,8 @@ const WERB_RASSE_MAP = {
                     "Sibirischen Katzen von Magical Lights",
                     "Sibierer – Cattery Dorofei (Niederlande)"],
   Siam:            ["Siam Door Willfamous (Niederlande)"],
-  // ── Neue Rasse: NeueRasse: ["Cattery 1", "Cattery 2"], ──
 };
 
-// ══════════════════════════════════════════════════════════════
-// 🐾 ALLE CATTERIES (für Liste 2 — optional wählbar)
-// Format: {name: "Cattery Name", rasse: "Kurzbezeichnung"}
-// ══════════════════════════════════════════════════════════════
 const WERB_ALL_REFS = [
   {name:"Bella Vista Bengalen",          rasse:"Bengal"},
   {name:"BKH Cattery from Dream of Colour", rasse:"BKH"},
@@ -2051,7 +2272,6 @@ const WERB_ALL_REFS = [
   {name:"Sibirischen Katzen von Magical Lights",      rasse:"Sibirier"},
   {name:"Sibierer – Cattery Dorofei (Niederlande)",   rasse:"Sibirier"},
   {name:"Siam Door Willfamous (Niederlande)",         rasse:"Siam"},
-  // ── Neue Cattery: {name:"Name", rasse:"Rasse"}, ──
 ];
 
 // ── WERBUNG STATE ──
@@ -2107,7 +2327,6 @@ function werbBuildExtraList() {
   }).join('');
 }
 
-// ── WERBUNG SPRACHE ──
 let werbLang = 'DE';
 
 function werbSetLang(lang) {
@@ -2115,19 +2334,11 @@ function werbSetLang(lang) {
   const btnDE = document.getElementById('werbLangDE');
   const btnEN = document.getElementById('werbLangEN');
   if (lang === 'DE') {
-    btnDE.style.border = '1px solid var(--gold)';
-    btnDE.style.background = 'var(--gold-dim)';
-    btnDE.style.color = 'var(--gold2)';
-    btnEN.style.border = '1px solid var(--border2)';
-    btnEN.style.background = 'var(--s2)';
-    btnEN.style.color = 'var(--muted)';
+    btnDE.style.border = '1px solid var(--gold)'; btnDE.style.background = 'var(--gold-dim)'; btnDE.style.color = 'var(--gold2)';
+    btnEN.style.border = '1px solid var(--border2)'; btnEN.style.background = 'var(--s2)'; btnEN.style.color = 'var(--muted)';
   } else {
-    btnEN.style.border = '1px solid var(--gold)';
-    btnEN.style.background = 'var(--gold-dim)';
-    btnEN.style.color = 'var(--gold2)';
-    btnDE.style.border = '1px solid var(--border2)';
-    btnDE.style.background = 'var(--s2)';
-    btnDE.style.color = 'var(--muted)';
+    btnEN.style.border = '1px solid var(--gold)'; btnEN.style.background = 'var(--gold-dim)'; btnEN.style.color = 'var(--gold2)';
+    btnDE.style.border = '1px solid var(--border2)'; btnDE.style.background = 'var(--s2)'; btnDE.style.color = 'var(--muted)';
   }
   werbRender();
 }
@@ -2174,7 +2385,6 @@ Sabine von fotoArtisan`;
   }
 
   document.getElementById('werbTextPreview').textContent = text;
-  // Button label anpassen
   const btn = document.getElementById('werbCopyBtn');
   if (!btn.classList.contains('ok')) {
     btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.68 3.41 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 16z"/></svg> ${werbLang === 'EN' ? 'Copy text for WhatsApp' : 'Text kopieren für WhatsApp'}`;
@@ -2197,7 +2407,7 @@ function werbCopyWA() {
   } else { fallback(text, done); }
 }
 
-// ── URL IMPORT (Claude AI live) ──
+// ── URL IMPORT ──
 let urlImportOpen = true;
 let urlImportPhone = '';
 
@@ -2383,7 +2593,6 @@ function loadFromURL() {
   calc();
   _loadingFromURL = false;
 
-  // Seitentitel mit Kundennamen für Link-Preview
   const nameForTitle = params.get('n') || '';
   if(nameForTitle.trim()) {
     document.title = nameForTitle.trim() + ' / Angebot';
