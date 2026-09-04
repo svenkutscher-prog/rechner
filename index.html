@@ -681,6 +681,9 @@ input::placeholder { color: var(--muted2); }
   <div class="tab" onclick="showTab('werbung',event)">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.68 3.41 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 16z"/></svg>Werbung
   </div>
+  <div class="tab" onclick="showTab('express',event)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Express
+  </div>
 </div>
 
 <!-- ══ TAB: ANGEBOT ══ -->
@@ -1228,6 +1231,84 @@ input::placeholder { color: var(--muted2); }
 </div>
 </div>
 
+<!-- ══ TAB: EXPRESS BILDBEARBEITUNG ══ -->
+<div class="panel" id="tab-express">
+<div class="wrap">
+
+  <div class="card">
+    <div class="card-head"><span class="ico">📸</span><h2>Einzelbilder</h2></div>
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Anzahl Bilder</label>
+        <div class="step">
+          <button onclick="exStep('exEinzelAnzahl',-1)">−</button>
+          <input type="number" id="exEinzelAnzahl" value="8" min="0" oninput="exCalc()">
+          <button onclick="exStep('exEinzelAnzahl',1)">+</button>
+        </div>
+      </div>
+      <div class="row">
+        <label class="lbl">Preis pro Bild</label>
+        <div class="euro-wrap">
+          <input type="number" id="exEinzelPreis" value="12" min="0" step="0.5" oninput="exCalc()">
+          <span>€</span>
+        </div>
+      </div>
+      <div style="font-size:0.65rem;color:var(--muted);margin:12px 0 6px;letter-spacing:0.1em;text-transform:uppercase;">Lieferzeit</div>
+      <select id="exEinzelLieferzeit" onchange="exCalc()">
+        <option value="0">Standard, 5–10 Tage (+0 %)</option>
+        <option value="20">1–3 Tage (+20 %)</option>
+        <option value="35">24–48 Stunden (+35 %)</option>
+        <option value="50">24 Std / sehr kurzfristig (+50 %)</option>
+        <option value="75">Same Day (+75 %)</option>
+      </select>
+      <div style="text-align:right;font-size:0.7rem;color:var(--muted);margin-top:10px;">Teilsumme: <span id="exEinzelSumme" style="color:var(--text);">96 €</span></div>
+      <div style="text-align:right;font-size:0.65rem;color:var(--muted);margin-top:2px;" id="exEinzelMehrkostenRow"><span id="exEinzelMehrkosten"></span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="ico">👥</span><h2>Gruppenbilder</h2></div>
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Anzahl Bilder</label>
+        <div class="step">
+          <button onclick="exStep('exGruppeAnzahl',-1)">−</button>
+          <input type="number" id="exGruppeAnzahl" value="2" min="0" oninput="exCalc()">
+          <button onclick="exStep('exGruppeAnzahl',1)">+</button>
+        </div>
+      </div>
+      <div class="row">
+        <label class="lbl">Preis pro Bild</label>
+        <div class="euro-wrap">
+          <input type="number" id="exGruppePreis" value="20" min="0" step="0.5" oninput="exCalc()">
+          <span>€</span>
+        </div>
+      </div>
+      <div style="font-size:0.65rem;color:var(--muted);margin:12px 0 6px;letter-spacing:0.1em;text-transform:uppercase;">Lieferzeit</div>
+      <select id="exGruppeLieferzeit" onchange="exCalc()">
+        <option value="0">Standard, 5–10 Tage (+0 %)</option>
+        <option value="20">1–3 Tage (+20 %)</option>
+        <option value="35">24–48 Stunden (+35 %)</option>
+        <option value="50">24 Std / sehr kurzfristig (+50 %)</option>
+        <option value="75">Same Day (+75 %)</option>
+      </select>
+      <div style="text-align:right;font-size:0.7rem;color:var(--muted);margin-top:10px;">Teilsumme: <span id="exGruppeSumme" style="color:var(--text);">40 €</span></div>
+      <div style="text-align:right;font-size:0.65rem;color:var(--muted);margin-top:2px;" id="exGruppeMehrkostenRow"><span id="exGruppeMehrkosten"></span></div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--gold);">
+    <div class="card-body" style="text-align:center;">
+      <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Gesamtpreis Express</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold2);margin-bottom:8px;" id="exTotal">136 €</div>
+      <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;" id="exTotalLines"></div>
+    </div>
+  </div>
+
+  <div style="height:20px;"></div>
+</div>
+</div>
+
 <div class="toast" id="toast">✓ Text kopiert! In WhatsApp einfügen.</div>
 
 <!-- Confirm Reset Overlay -->
@@ -1557,6 +1638,53 @@ function step(id, d) {
   calc();
 }
 
+// ── EXPRESS BILDBEARBEITUNG ──
+function exStep(id, d) {
+  const el = document.getElementById(id);
+  el.value = Math.max(0, (parseInt(el.value)||0) + d);
+  exCalc();
+}
+
+function exCalc() {
+  const einzelAnzahl = parseInt(document.getElementById('exEinzelAnzahl')?.value) || 0;
+  const einzelPreis  = parseFloat(document.getElementById('exEinzelPreis')?.value) || 0;
+  const einzelAufschlag = parseInt(document.getElementById('exEinzelLieferzeit')?.value) || 0;
+  const einzelBasis  = einzelAnzahl * einzelPreis;
+  const einzelMehrkosten = einzelBasis * (einzelAufschlag/100);
+  const einzelSumme  = einzelBasis + einzelMehrkosten;
+
+  const gruppeAnzahl = parseInt(document.getElementById('exGruppeAnzahl')?.value) || 0;
+  const gruppePreis  = parseFloat(document.getElementById('exGruppePreis')?.value) || 0;
+  const gruppeAufschlag = parseInt(document.getElementById('exGruppeLieferzeit')?.value) || 0;
+  const gruppeBasis  = gruppeAnzahl * gruppePreis;
+  const gruppeMehrkosten = gruppeBasis * (gruppeAufschlag/100);
+  const gruppeSumme  = gruppeBasis + gruppeMehrkosten;
+
+  const total = einzelSumme + gruppeSumme;
+  const totalMehrkosten = einzelMehrkosten + gruppeMehrkosten;
+
+  const elES = document.getElementById('exEinzelSumme');
+  if(elES) elES.textContent = einzelSumme.toFixed(2).replace(/\.00$/,'') + ' €';
+  const elGS = document.getElementById('exGruppeSumme');
+  if(elGS) elGS.textContent = gruppeSumme.toFixed(2).replace(/\.00$/,'') + ' €';
+  const elTot = document.getElementById('exTotal');
+  if(elTot) elTot.textContent = total.toFixed(2).replace(/\.00$/,'') + ' €';
+
+  const elEM = document.getElementById('exEinzelMehrkosten');
+  if(elEM) elEM.textContent = einzelAufschlag > 0 ? `davon Mehrkosten: +${einzelMehrkosten.toFixed(2)} €` : '';
+  const elGM = document.getElementById('exGruppeMehrkosten');
+  if(elGM) elGM.textContent = gruppeAufschlag > 0 ? `davon Mehrkosten: +${gruppeMehrkosten.toFixed(2)} €` : '';
+
+  let lines = '';
+  if(einzelAnzahl > 0) lines += `Einzelbilder (${einzelAnzahl} × ${einzelPreis} €${einzelAufschlag>0?' + '+einzelAufschlag+'%':''}): <span style="color:var(--text)">${einzelSumme.toFixed(2)} €</span><br>`;
+  if(gruppeAnzahl > 0) lines += `Gruppenbilder (${gruppeAnzahl} × ${gruppePreis} €${gruppeAufschlag>0?' + '+gruppeAufschlag+'%':''}): <span style="color:var(--text)">${gruppeSumme.toFixed(2)} €</span>`;
+  if(totalMehrkosten > 0) lines += `<br>Mehrkosten Express gesamt: <span style="color:var(--gold2)">+${totalMehrkosten.toFixed(2)} €</span>`;
+  const elLines = document.getElementById('exTotalLines');
+  if(elLines) elLines.innerHTML = lines;
+}
+document.addEventListener('DOMContentLoaded', exCalc);
+if(document.readyState !== 'loading') exCalc();
+
 // ── COLOR ──
 function pickColor(el) {
   document.querySelectorAll('.color-btn').forEach(c => c.classList.remove('on'));
@@ -1881,7 +2009,7 @@ function calc() {
   if(einzeln > 0) lines += `${einzeln} Einzelbild${einzeln>1?'er':''} × ${pBildE} €: <span>${bildKostenE.toFixed(0)} €</span>\n`;
   if(gruppe  > 0) lines += `${gruppe} Gruppenbild${gruppe>1?'er':''} × ${pBildG} €: <span>${bildKostenG.toFixed(0)} €</span>\n`;
   if(bwKosten > 0) lines += `Schwarz/Weiß Aufpreis: <span>${bwKosten.toFixed(0)} €</span>\n`;
-  if(km > 0)   lines += `Anfahrt (${km} km): <span>${fahrtKosten.toFixed(0)} €</span>\n`;
+  if(km > 0)   lines += `Anfahrt hin und zurück (${km*2} km): <span>${fahrtKosten.toFixed(0)} €</span>\n`;
   if(heimfahrtAdd && heimfahrtKosten > 0) lines += `Heimfahrt Diesel (${heimfahrtKm} km): <span>+${heimfahrtKosten.toFixed(2)} €</span>\n`;
   if(rechnungOn && aufschlagEuro > 0) lines += `Rechnungsaufschlag (+${aufschlagPct}%): <span>${aufschlagEuro} €</span>\n`;
   if(preisOptOn && preisOptBetrag > 0) lines += `${preisOptText}: <span>+${preisOptBetrag.toFixed(2)} €</span>\n`;
@@ -2022,6 +2150,9 @@ function buildText() {
   t += `\n* ${gruppe} Mensch/Tier- oder Gruppenbild${gruppe!==1?'er':''}`;
   t += `\n* ${totalBilder} professionell bearbeitete Bilder im typischen FotoArtisan-Stil: detailreich, hochwertig und in maximaler Auflösung (digital, Format: jpg)`;
   t += `\n* Zeit für Auf-/Abbau und Kennenlernen ist inklusive`;
+  t += `\n\nBILDBEARBEITUNG & LIEFERZEIT`;
+  t += `\nDie reguläre Bearbeitungszeit beträgt bis zu 14 Tage nach dem Fototermin.`;
+  t += `\nExpress-Bearbeitung ist auf Anfrage und gegen Aufpreis möglich.`;
   t += `\n\nNUTZUNGSRECHTE`;
   t += `\nDu darfst deine Fotos zeitlich und örtlich unbegrenzt für private Zwecke nutzen. Eine kommerzielle Nutzung durch Dritte ist nur nach Rücksprache erlaubt. Das Urheberrecht bleibt beim Fotografen.`;
   t += `\n\nOPTIONALE ZUSATZLEISTUNGEN`;
