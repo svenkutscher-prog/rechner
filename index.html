@@ -685,6 +685,24 @@ input::placeholder { color: var(--muted2); }
   .tab { padding:10px 2px; font-size:0.52rem; letter-spacing:0.03em; overflow-wrap:anywhere; }
   .tab svg { display:block !important; margin:0 auto 4px !important; }
 }
+/* ── GEWINN / MINIMUM BOX ── */
+.gb-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+.gb-col { padding:14px 16px; }
+.gb-col + .gb-col { border-left:1px solid var(--border); }
+.gb-cap { font-size:0.6rem; color:var(--muted); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
+.gb-l { display:flex; justify-content:space-between; gap:8px; font-size:0.68rem; color:var(--muted); line-height:2; }
+.gb-l b { font-weight:300; color:var(--text); white-space:nowrap; }
+.gb-sum { display:flex; justify-content:space-between; align-items:baseline; gap:8px; border-top:1px solid var(--border2); margin-top:6px; padding-top:8px; }
+.gb-big { font-family:'Cormorant Garamond',serif; font-size:1.75rem; font-weight:300; line-height:1.1; }
+.gb-note { font-size:0.62rem; color:var(--muted); line-height:1.8; margin-top:8px; }
+.gb-note span { color:var(--text); }
+.gb-chip { display:inline-block; font-size:0.62rem; padding:3px 9px; border-radius:20px; margin-top:8px; line-height:1.5; }
+.gb-chip.ok  { background:rgba(94,207,160,0.15); color:var(--green); }
+.gb-chip.low { background:rgba(240,112,112,0.15); color:var(--red); }
+/* ── KUNDENPREISE-HINWEIS ── */
+.sb-preise { margin-top:10px; background:rgba(94,207,160,0.08); border:1px solid rgba(94,207,160,0.3); border-radius:8px; padding:10px 14px; font-size:0.68rem; color:var(--muted); line-height:1.7; }
+.sb-preise strong { color:var(--green); font-weight:400; }
+.sb-preise a { color:var(--gold); }
 </style>
 </head>
 <body>
@@ -743,6 +761,7 @@ input::placeholder { color: var(--muted2); }
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Name</div>
       <input type="text" id="kundenName" placeholder="z. B. Maria Müller" oninput="calc();updateTitle()">
       <div class="sb-info" id="sbKundeInfo" style="display:none;"></div>
+      <div class="sb-preise" id="sbPreiseBanner" style="display:none;"></div>
     </div>
   </div>
 
@@ -907,16 +926,20 @@ input::placeholder { color: var(--muted2); }
 
   <!-- Kosten & Minimum -->
   <div id="kostenBox" style="display:none;margin-top:14px;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;">
-    <div style="display:flex;">
-      <div style="flex:1;padding:14px 16px;border-right:1px solid var(--border);">
-        <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Gewinn</div>
-        <div id="kostenAmt" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--gold2);line-height:1.1;">—</div>
-        <div id="kostenDetail" style="font-size:0.62rem;color:var(--muted);margin-top:4px;line-height:1.8;"></div>
+    <div class="gb-grid">
+      <div class="gb-col">
+        <div class="gb-cap">Gewinn</div>
+        <div class="gb-l"><span>Angebotspreis <span id="gwStufe"></span></span><b id="gwPreis">—</b></div>
+        <div class="gb-l" id="gwRowAn"><span>− Diesel Anfahrt</span><b id="gwDieselAn">—</b></div>
+        <div class="gb-l" id="gwRowHeim"><span>− Diesel Heimfahrt</span><b id="gwDieselHeim">—</b></div>
+        <div class="gb-sum"><span class="gb-cap" style="margin:0;">= Gewinn</span><span id="kostenAmt" class="gb-big" style="color:var(--gold2);">—</span></div>
+        <div id="gwDavon" class="gb-note"></div>
       </div>
-      <div style="flex:1;padding:14px 16px;">
-        <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Minimum <span id="margeLabel" style="color:var(--gold)">−30%</span></div>
-        <div id="minimumAmt" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--green);line-height:1.1;">—</div>
-        <div id="minimumDetail" style="font-size:0.62rem;color:var(--muted);margin-top:4px;line-height:1.8;"></div>
+      <div class="gb-col">
+        <div class="gb-cap">Minimum <span id="margeLabel" style="color:var(--gold)">−30%</span></div>
+        <div id="minimumAmt" class="gb-big" style="color:var(--green);">—</div>
+        <div id="minimumDetail" class="gb-note"></div>
+        <span id="gbPuffer" class="gb-chip" style="display:none;"></span>
       </div>
     </div>
   </div>
@@ -1494,19 +1517,31 @@ function updateSlider(std, min, max) {
   if(!box) return;
   box.style.display = (std > 0) ? 'block' : 'none';
   const sl = document.getElementById('preisSlider');
-  sl.min = min; sl.max = max;
-  if(parseInt(sl.value) < min || parseInt(sl.value) > max) sl.value = std;
-  document.getElementById('sliderLblMin').textContent = min + ' €';
+  // 5-%-Stufen: Schieber reicht von −20 % bis +20 % des Standardpreises
+  sl.min = Math.round(std * (1 - SLIDER_STUFE * SLIDER_MAX_STUFEN));
+  sl.max = Math.round(std * (1 + SLIDER_STUFE * SLIDER_MAX_STUFEN));
+  sl.value = snapSliderVal(parseInt(sl.value) || std);
+  document.getElementById('sliderLblMin').textContent = `−20 % · ${sl.min} €`;
   document.getElementById('sliderLblStd').textContent = std + ' € (Standard)';
-  document.getElementById('sliderLblMax').textContent = max + ' €';
+  document.getElementById('sliderLblMax').textContent = `+20 % · ${sl.max} €`;
   renderSliderAmt();
 }
 
+// ── 5-%-STUFEN (−20 % … +20 %, keine Zwischenwerte) ──
+const SLIDER_STUFE = 0.05, SLIDER_MAX_STUFEN = 4;
+function sliderStufe(val) {
+  if(!sliderStd) return 0;
+  const st = Math.round((val / sliderStd - 1) / SLIDER_STUFE);
+  return Math.max(-SLIDER_MAX_STUFEN, Math.min(SLIDER_MAX_STUFEN, st));
+}
+function sliderStufenPreis(stufe) { return Math.round(sliderStd * (1 + stufe * SLIDER_STUFE)); }
+function snapSliderVal(val) { return sliderStufenPreis(sliderStufe(val)); }
+
 function onSliderInput() {
-  renderSliderAmt();
   const sl = document.getElementById('preisSlider');
-  const baseVal = Math.max(parseInt(sl.value), parseInt(sl.min));
+  const baseVal = snapSliderVal(parseInt(sl.value));   // rastet in 5-%-Stufen ein, −20 % erlaubt
   sl.value = baseVal;
+  renderSliderAmt();
 
   const rechnungOn     = document.getElementById('rechnungToggle')?.checked ?? false;
   const aufschlag      = n('pRechnungAufschlag') || 10;
@@ -1517,21 +1552,9 @@ function onSliderInput() {
     + Math.round(preisOptBetrag);
   document.getElementById('totalAmt').textContent = displayVal + ' €';
 
-  const diesel             = parseFloat(document.getElementById('dDiesel')?.value) || 0;
-  const verbr              = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
-  const km                 = parseFloat(document.getElementById('kmVal')?.value) || 0;
-  const heimfahrtAdd       = document.getElementById('heimfahrtAdd')?.checked ?? true;
-  const heimfahrtAbzug     = document.getElementById('heimfahrtAbzug')?.checked ?? true;
-  const heimfahrtKm        = n('pHeimfahrt') || 0;
-  const heimfahrtKosten    = heimfahrtAdd && heimfahrtKm > 0
-    ? parseFloat(((verbr / 100) * diesel * heimfahrtKm).toFixed(2)) : 0;
-  const eigeneFahrt        = Math.round(km * 2 * (verbr / 100) * diesel);
-  const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
+  renderGewinnBox(baseVal);
 
-  const ka = document.getElementById('kostenAmt');
-  if(ka) ka.textContent = (baseVal - eigeneFahrt - heimfahrtAbzugBetrag) + ' €';
-
-  const minRound = parseInt(document.getElementById('preisSlider').min);
+  const minRound = sliderMin;
   updateStundenlohnDisplay(baseVal, minRound);
 }
 
@@ -1539,9 +1562,14 @@ function renderSliderAmt() {
   const val = parseInt(document.getElementById('preisSlider').value);
   document.getElementById('sliderPreisAmt').textContent = val + ' €';
   const hint = document.getElementById('sliderPreisHint');
-  if(val === sliderStd)      { hint.textContent = 'Standardpreis'; hint.style.color = 'var(--muted)'; }
-  else if(val < sliderStd)   { hint.textContent = '▼ Unter Standardpreis'; hint.style.color = 'var(--red)'; }
-  else                       { hint.textContent = '▲ Über Standardpreis'; hint.style.color = 'var(--green)'; }
+  const pct = sliderStufe(val) * 5;
+  if(pct === 0)      { hint.textContent = 'Standardpreis (0 %)'; hint.style.color = 'var(--muted)'; }
+  else if(pct < 0)   { hint.textContent = `▼ −${-pct} %`; hint.style.color = 'var(--red)'; }
+  else               { hint.textContent = `▲ +${pct} %`; hint.style.color = 'var(--green)'; }
+  if(sliderMin > 0 && val < sliderMin) {
+    hint.textContent += ` · ⚠ unter Minimum (${sliderMin} €)`;
+    hint.style.color = 'var(--red)';
+  }
 }
 
 // ── DIESEL ──
@@ -1701,6 +1729,7 @@ function saveSettings() {
     supabaseKey: v('supabaseKey'),
     hsShowBtn: document.getElementById('hsShowBtn')?.checked,
   };
+  if(typeof sbStdPreise !== 'undefined' && sbStdPreise) { s.pExtraE = sbStdPreise.e; s.pExtraG = sbStdPreise.g; } // Kundenpreise nicht als Standard speichern
   try { localStorage.setItem('ksp_settings', JSON.stringify(s)); } catch(e){}
 }
 function loadSettings() {
@@ -2143,41 +2172,77 @@ function calc() {
   const ml = document.getElementById('margeLabel');
   if(ml) ml.textContent = `−${Math.round(marge*100)}%`;
 
-  const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
-  const gewinn = totalRound - Math.round(eigeneFahrt) - heimfahrtAbzugBetrag;
-  const ka = document.getElementById('kostenAmt');
-  if(ka) ka.textContent = gewinn + ' €';
-
-  const kd = document.getElementById('kostenDetail');
-  if(kd) {
-    let kdParts = [];
-    if(km > 0) {
-      kdParts.push(`−Diesel Anfahrt: ${eigeneFahrt.toFixed(2)} €`);
-      kdParts.push(`+Fahrtkosten: ${fahrtKosten.toFixed(2)} €`);
-    }
-    if(heimfahrtAbzug && heimfahrtKosten > 0) {
-      kdParts.push(`−Heimfahrt: ${heimfahrtKosten.toFixed(2)} €`);
-    }
-    kd.innerHTML = kdParts.length ? kdParts.join('<br>') : '–';
-  }
-
-  const ma = document.getElementById('minimumAmt');
-  if(ma) ma.textContent = sliderMinVal + ' €';
-
-  const md = document.getElementById('minimumDetail');
-  if(md) {
-    let detail = `Shooting −${Math.round(marge*100)}%: ${shootingNachRabatt.toFixed(0)} €`;
-    if(km > 0) detail += `<br>Fahrt: ${fahrtKosten.toFixed(0)} €`;
-    if(heimfahrtAdd && heimfahrtKosten > 0) detail += `<br>Heimfahrt: ${heimfahrtKosten.toFixed(2)} €`;
-    if(minStundenPreis > minRound) detail += `<br><span style="color:var(--gold)">▲ ${pMinStunde} €/h Mindestlohn aktiv</span>`;
-    md.innerHTML = detail;
-  }
+  gbMindestlohnAktiv = minStundenPreis > minRound;
+  gbMindestlohn      = pMinStunde;
+  renderGewinnBox(parseInt(document.getElementById('preisSlider').value) || totalRound);
 
   document.getElementById('infoEinzeln').textContent = `${pBildE} €/Bild`;
   document.getElementById('infoGruppe').textContent  = `${pBildG} €/Bild`;
   updateBWLabel();
 
   updateStundenlohnDisplay(totalRound, sliderMinVal);
+}
+
+// ── GEWINN / MINIMUM BOX ──
+let gbMindestlohnAktiv = false, gbMindestlohn = 25;
+function renderGewinnBox(preis) {
+  const km      = n('kmVal');
+  const diesel  = parseFloat(document.getElementById('dDiesel')?.value) || 0;
+  const verbr   = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const heimKm  = n('pHeimfahrt') || 0;
+  const heimAdd = document.getElementById('heimfahrtAdd')?.checked ?? true;
+  const heimAbz = document.getElementById('heimfahrtAbzug')?.checked ?? true;
+
+  const dieselAn     = Math.round(km * 2 * (verbr / 100) * diesel);          // echte Ausgabe Anfahrt
+  const heimKosten   = heimKm > 0 ? Math.round((verbr / 100) * diesel * heimKm) : 0;
+  const heimAbzug    = heimAbz ? heimKosten : 0;                               // echte Ausgabe Heimfahrt
+  const heimZuschlag = heimAdd ? heimKosten : 0;                               // im Preis enthalten
+  const fahrtKosten  = Math.round(km * 2 * n('pKm'));                          // Kunde zahlt (Diesel + Fahrzeit)
+  const gewinn       = preis - dieselAn - heimAbzug;
+  const fahrzeitLohn = fahrtKosten - dieselAn;
+  const bildhonorar  = preis - fahrtKosten - heimZuschlag;
+
+  const set = (id, t) => { const el = document.getElementById(id); if(el) el.textContent = t; };
+  const show = (id, on) => { const el = document.getElementById(id); if(el) el.style.display = on ? 'flex' : 'none'; };
+
+  // Gewinn
+  set('gwPreis', preis + ' €');
+  const stEl = document.getElementById('gwStufe');
+  if(stEl) {
+    const st = sliderStd ? sliderStufe(preis) * 5 : 0;
+    stEl.textContent = st === 0 ? '(Standard)' : `(${st > 0 ? '+' : '−'}${Math.abs(st)} %)`;
+    stEl.style.color = st === 0 ? 'var(--muted)' : (st > 0 ? 'var(--green)' : 'var(--red)');
+  }
+  show('gwRowAn', km > 0);
+  show('gwRowHeim', heimAbzug > 0);
+  set('gwDieselAn', dieselAn + ' €');
+  set('gwDieselHeim', heimAbzug + ' €');
+  set('kostenAmt', gewinn + ' €');
+  const davon = document.getElementById('gwDavon');
+  if(davon) davon.innerHTML = `davon Bildhonorar <span>${bildhonorar} €</span>`
+    + (km > 0 ? `<br>davon Fahrzeit-Lohn <span>${fahrzeitLohn} €</span>` : '');
+
+  // Minimum
+  set('minimumAmt', sliderMin + ' €');
+  const md = document.getElementById('minimumDetail');
+  if(md) md.innerHTML = 'Reisekosten: kein Rabatt'
+    + (gbMindestlohnAktiv ? `<br><span style="color:var(--gold)">▲ ${gbMindestlohn} €/h Mindestlohn greift</span>` : '');
+
+  // Abstand zum Minimum
+  const chip = document.getElementById('gbPuffer');
+  if(chip) {
+    if(sliderMin > 0) {
+      const puffer = preis - sliderMin;
+      const pct = Math.round(Math.abs(puffer) / sliderMin * 100);
+      chip.style.display = 'inline-block';
+      chip.className = 'gb-chip ' + (puffer >= 0 ? 'ok' : 'low');
+      chip.textContent = puffer >= 0
+        ? `✓ ${pct} % über Minimum (+${puffer} €)`
+        : `⚠ ${pct} % unter Minimum (−${-puffer} €)`;
+    } else {
+      chip.style.display = 'none';
+    }
+  }
 }
 
 // ── TEXT ──
@@ -2823,7 +2888,7 @@ function loadFromURL() {
       const savedVal = parseInt(params.get('sl'));
       const minVal = parseInt(sl.min) || 0;
       const maxVal = parseInt(sl.max) || 9999;
-      sl.value = Math.max(minVal, Math.min(maxVal, savedVal));
+      sl.value = snapSliderVal(savedVal);
       renderSliderAmt();
       const rechnungOn = document.getElementById('rechnungToggle')?.checked ?? false;
       const aufschlag = parseFloat(document.getElementById('pRechnungAufschlag')?.value) || 10;
@@ -2924,6 +2989,7 @@ async function sbSuche(q) {
 // ── Kunde auswählen → Stammdaten eintragen, letzte Angebote laden ──
 async function sbSelectKunde(k) {
   sbCloseDropdown();
+  sbResetKundenPreise(false);
   sbKunde = k;
   document.getElementById('sbKundeSuche').value = '';
   document.getElementById('kundenName').value   = k.name || '';
@@ -2968,6 +3034,10 @@ function sbRenderInfo(rows, loading = false, err = '') {
        + `<div class="sb-info-main">${a.preis_final ?? '—'} €</div>`
        + `<div class="sb-info-line">${a.einzeln} Einzel · ${a.gruppe} Gruppe · ${sbEsc(a.farbe || '')}`
        + `${extras.length ? ' · ' + sbEsc(extras.join(' · ')) : ''}</div>`;
+    if(o.preisEinzel !== undefined) {
+      const stufeTxt = parseInt(o.stufe) ? ` · ${o.stufe > 0 ? '+' : '−'}${Math.abs(o.stufe)} %` : ' · Standardpreis';
+      h += `<div class="sb-info-line">${sbEsc(o.preisEinzel)} € Einzel · ${sbEsc(o.preisGruppe)} € Gruppe${stufeTxt}</div>`;
+    }
     if(rows.length > 1) {
       h += `<div class="sb-info-hist">Davor: ${rows.slice(1).map(r => `${sbDatum(r.erstellt_am)} (${r.preis_final} €)`).join(' · ')}</div>`;
     }
@@ -2980,6 +3050,7 @@ function sbClearKunde() {
   sbKunde = null;
   sbLetztesAngebot = null;
   sbRenderInfo();
+  sbResetKundenPreise();
 }
 
 // ── Letztes Angebot als Startpunkt übernehmen ──
@@ -3011,12 +3082,14 @@ function sbUebernehmen() {
   togglePreisOption();
   updatePreisPreview();
 
+  if(o.preisEinzel !== undefined) sbSetKundenPreise(o.preisEinzel, o.preisGruppe);
+
   _loadingFromURL = true; calc(); _loadingFromURL = false;
 
-  // Slider nur anfassen, wenn damals vom Standardpreis abgewichen wurde
-  if(a.slider_wert && parseInt(a.slider_wert) !== sliderStd) {
-    const sl = document.getElementById('preisSlider');
-    sl.value = Math.max(parseInt(sl.min) || 0, Math.min(parseInt(sl.max) || 9999, parseInt(a.slider_wert)));
+  // Gleiche Prozent-Stufe wie beim letzten Angebot (bezogen auf den neuen Standardpreis)
+  const stufe = parseInt(o.stufe);
+  if(stufe) {
+    document.getElementById('preisSlider').value = sliderStufenPreis(Math.round(stufe / 5));
     onSliderInput();
   }
   saveSettings();
@@ -3088,7 +3161,8 @@ async function sbSaveAngebot() {
         preisBetrag: v('optPreisBetrag'),
         preisEinzel: n('pExtraE'),
         preisGruppe: n('pExtraG'),
-        km: n('kmVal')
+        km: n('kmVal'),
+        stufe: sliderStd ? sliderStufe(parseInt(document.getElementById('preisSlider').value)) * 5 : 0
       },
       angebot_text: buildText()
     };
@@ -3183,6 +3257,45 @@ function hsApplyVisibility() {
 }
 window.addEventListener('DOMContentLoaded', hsApplyVisibility);
 
+
+// ══════════════════════════════════════════════════════════════
+// 🟢 KUNDENPREISE – gelten nur für den geladenen Kunden
+// ══════════════════════════════════════════════════════════════
+var sbStdPreise = null;   // Standardpreise aus den Einstellungen, solange Kundenpreise aktiv sind
+
+function sbSetKundenPreise(e, g) {
+  const stdE = sbStdPreise ? sbStdPreise.e : v('pExtraE');
+  const stdG = sbStdPreise ? sbStdPreise.g : v('pExtraG');
+  const neuE = (e === undefined || e === null || e === '') ? stdE : e;
+  const neuG = (g === undefined || g === null || g === '') ? stdG : g;
+  if(parseFloat(neuE) === parseFloat(stdE) && parseFloat(neuG) === parseFloat(stdG)) {
+    sbResetKundenPreise(false);   // gleich wie Standard → kein Hinweis nötig
+    return;
+  }
+  if(!sbStdPreise) sbStdPreise = { e: stdE, g: stdG };
+  document.getElementById('pExtraE').value = neuE;
+  document.getElementById('pExtraG').value = neuG;
+  sbRenderPreiseBanner();
+}
+
+function sbResetKundenPreise(recalc = true) {
+  if(!sbStdPreise) return;
+  document.getElementById('pExtraE').value = sbStdPreise.e;
+  document.getElementById('pExtraG').value = sbStdPreise.g;
+  sbStdPreise = null;
+  sbRenderPreiseBanner();
+  if(recalc) calc();
+}
+
+function sbRenderPreiseBanner() {
+  const b = document.getElementById('sbPreiseBanner');
+  if(!b) return;
+  if(!sbStdPreise) { b.style.display = 'none'; b.innerHTML = ''; return; }
+  b.style.display = 'block';
+  b.innerHTML = `<strong>Kundenpreise aktiv:</strong> ${sbEsc(v('pExtraE'))} € Einzel · ${sbEsc(v('pExtraG'))} € Gruppe<br>`
+    + `Standard: ${sbEsc(sbStdPreise.e)} € / ${sbEsc(sbStdPreise.g)} € · `
+    + `<a href="#" onclick="sbResetKundenPreise();return false;">zurücksetzen</a>`;
+}
 </script>
 </body>
 </html>
