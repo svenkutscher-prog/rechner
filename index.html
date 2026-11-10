@@ -723,6 +723,12 @@ input::placeholder { color: var(--muted2); }
 .gb-zeit { font-size:0.6rem; color:var(--muted); margin-top:10px; line-height:1.6; }
 #stundenBox { display:none !important; }   /* Stundenlohn-Analyse vorerst ausgeblendet – Zeile entfernen zum Einblenden */
 .row:has(#pMarge) { display:none; }         /* Mindestmarge wird nicht mehr verwendet (Minimum = Mindeststundenlohn) */
+/* ── GEWINN-KACHEL KOMPAKT ── */
+.gb-top { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; padding:16px 16px 10px; }
+.gb-top .gb-cap { margin-bottom:4px; }
+.gb-hero { font-family:'Cormorant Garamond',serif; font-size:2.3rem; font-weight:300; line-height:1.05; }
+.gb-herl { padding:0 16px 14px; font-size:0.65rem; color:var(--muted); line-height:1.6; }
+.gb-herl span { color:var(--text); }
 </style>
 </head>
 <body>
@@ -946,25 +952,21 @@ input::placeholder { color: var(--muted2); }
 
   <!-- Kosten & Minimum -->
   <div id="kostenBox" style="display:none;margin-top:14px;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;">
-    <div class="gb-grid">
-      <div class="gb-col">
+    <div class="gb-top">
+      <div>
         <div class="gb-cap">Gewinn</div>
-        <div class="gb-l"><span>Angebotspreis <span id="gwStufe"></span></span><b id="gwPreis">—</b></div>
-        <div class="gb-l" id="gwRowDiesel"><span>− Diesel gesamt</span><b id="gwDiesel">—</b></div>
-        <div class="gb-sum"><span class="gb-cap" style="margin:0;">= Gewinn</span><span id="kostenAmt" class="gb-big" style="color:var(--gold2);">—</span></div>
-        <div class="gb-l" style="margin-top:6px;"><span id="gwZeit">÷ —</span><b id="gwLohn">—</b></div>
+        <div id="kostenAmt" class="gb-hero" style="color:var(--gold2);">—</div>
       </div>
-      <div class="gb-col">
-        <div class="gb-cap">Minimum <span id="margeLabel" style="color:var(--gold)">25 €/h</span></div>
-        <div id="minimumAmt" class="gb-big" style="color:var(--text);">—</div>
-        <div id="minimumDetail" class="gb-note">Zeit × Mindestlohn + Diesel.<br>Darunter nie anbieten.</div>
-        <span id="gbPuffer" class="gb-chip" style="display:none;"></span>
+      <div style="text-align:right;">
+        <div class="gb-cap">Stundenlohn</div>
+        <div id="gwLohn" class="gb-hero">—</div>
+        <span id="gbLohnChip" class="gb-chip" style="display:none;"></span>
       </div>
     </div>
+    <div id="gwHerleitung" class="gb-herl"></div>
     <div class="gb-stufen">
       <div class="gb-stufen-head"><span>Preisstufe</span><span id="gbRunter"></span></div>
       <div class="gb-pills" id="gbPills"></div>
-      <div class="gb-zeit" id="gbZeit"></div>
     </div>
   </div>
 
@@ -2243,35 +2245,28 @@ function renderGewinnBox(preis) {
   const lohn      = gesMin > 0 ? Math.round(gewinn / (gesMin / 60)) : 0;
 
   const set = (id, t) => { const el = document.getElementById(id); if(el) el.textContent = t; };
-
-  // ── Gewinn ──
-  set('gwPreis', preis + ' €');
-  const stEl = document.getElementById('gwStufe');
   const aktStufe = sliderStd ? sliderStufe(preis) : 0;
-  if(stEl) {
-    const st = aktStufe * 5;
-    stEl.textContent = st === 0 ? '(Standard)' : `(${st > 0 ? '+' : '−'}${Math.abs(st)} %)`;
-    stEl.style.color = st === 0 ? 'var(--muted)' : (st > 0 ? 'var(--green)' : 'var(--red)');
-  }
-  const rowD = document.getElementById('gwRowDiesel');
-  if(rowD) rowD.style.display = dieselGes > 0 ? 'flex' : 'none';
-  set('gwDiesel', dieselGes + ' €');
-  set('kostenAmt', gewinn + ' €');
-  set('gwZeit', `÷ ${formatDauer(gesMin)}`);
-  const lohnEl = document.getElementById('gwLohn');
-  if(lohnEl) { lohnEl.textContent = lohn + ' €/h'; lohnEl.style.color = lohn >= minLohn ? 'var(--green)' : 'var(--red)'; }
 
-  // ── Minimum (neutral, keine Bewertungsfarbe) ──
-  set('minimumAmt', sliderMin + ' €');
-  const chip = document.getElementById('gbPuffer');
+  // ── Gewinn + Stundenlohn ──
+  set('kostenAmt', gewinn + ' €');
+  const ok = lohn >= minLohn;
+  const lohnEl = document.getElementById('gwLohn');
+  if(lohnEl) { lohnEl.textContent = lohn + ' €/h'; lohnEl.style.color = ok ? 'var(--green)' : 'var(--red)'; }
+  const chip = document.getElementById('gbLohnChip');
   if(chip) {
-    if(sliderMin > 0) {
-      const puffer = preis - sliderMin;
-      const pct = Math.round(Math.abs(puffer) / sliderMin * 100);
-      chip.style.display = 'inline-block';
-      chip.className = 'gb-chip ' + (puffer >= 0 ? 'ok' : 'low');
-      chip.textContent = puffer >= 0 ? `✓ ${pct} % über Minimum (+${puffer} €)` : `⚠ ${pct} % unter Minimum (−${-puffer} €)`;
-    } else chip.style.display = 'none';
+    chip.style.display = gesMin > 0 ? 'inline-block' : 'none';
+    chip.className = 'gb-chip ' + (ok ? 'ok' : 'low');
+    chip.textContent = ok ? `✓ über ${minLohn} €/h Mindestlohn` : `⚠ unter ${minLohn} €/h Mindestlohn`;
+  }
+
+  // ── Herleitung in einer Zeile ──
+  const herl = document.getElementById('gwHerleitung');
+  if(herl) {
+    const st = aktStufe * 5;
+    const stTxt = st === 0 ? 'Standard' : `${st > 0 ? '+' : '−'}${Math.abs(st)} %`;
+    herl.innerHTML = `Angebotspreis <span>${preis} €</span> (${stTxt})`
+      + (dieselGes > 0 ? ` − Diesel <span>${dieselGes} €</span>` : '')
+      + ` · Zeit <span>${formatDauer(gesMin)}</span>`;
   }
 
   // ── Preisstufen: unter Minimum gesperrt ──
@@ -2279,27 +2274,20 @@ function renderGewinnBox(preis) {
   if(pills && sliderStd) {
     let html = '', low = null;
     for(let st = -SLIDER_MAX_STUFEN; st <= SLIDER_MAX_STUFEN; st++) {
-      const ok = !(sliderMin > 0) || sliderStufenPreis(st) >= sliderMin;
-      if(ok && low === null) low = st;
+      const okSt = !(sliderMin > 0) || sliderStufenPreis(st) >= sliderMin;
+      if(okSt && low === null) low = st;
       const lbl = st === 0 ? '0' : (st > 0 ? '+' : '−') + Math.abs(st * 5);
-      const cls = 'gb-pill' + (st === aktStufe ? ' on' : '') + (!ok ? ' lock' : '');
-      html += `<button class="${cls}" ${ok ? `onclick="gbSetStufe(${st})"` : 'disabled'} title="${sliderStufenPreis(st)} €">${lbl}</button>`;
+      const cls = 'gb-pill' + (st === aktStufe ? ' on' : '') + (!okSt ? ' lock' : '');
+      html += `<button class="${cls}" ${okSt ? `onclick="gbSetStufe(${st})"` : 'disabled'} title="${sliderStufenPreis(st)} €">${lbl}</button>`;
     }
     pills.innerHTML = html;
     let txt;
-    if(low === null)      txt = 'auch +20 % liegt unter Minimum';
-    else if(low === 0)    txt = 'kein Rabatt möglich';
-    else if(low > 0)      txt = `erst ab +${low * 5} % über Minimum`;
-    else                  txt = `runter bis −${-low * 5} % (${sliderStufenPreis(low)} €)`;
+    if(low === null)   txt = 'auch +20 % liegt unter Mindestlohn';
+    else if(low === 0) txt = 'kein Rabatt möglich';
+    else if(low > 0)   txt = `erst ab +${low * 5} %`;
+    else               txt = `runter bis −${-low * 5} %`;
     set('gbRunter', txt);
   }
-
-  // ── Zeitaufschlüsselung ──
-  const zeit = [];
-  if(km > 0) zeit.push(`Fahrt ${formatDauer(fahrMin)}`);
-  if(bilder > 0) zeit.push(`${bilder} Bilder ${formatDauer(bildMin)}`);
-  zeit.push(`Pauschale ${formatDauer(pauschMin)}`);
-  set('gbZeit', 'Zeit: ' + zeit.join(' · '));
 }
 
 // ── TEXT ──
