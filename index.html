@@ -667,6 +667,24 @@ input::placeholder { color: var(--muted2); }
 }
 .btn-supabase:active { transform:scale(0.98); background:rgba(94,207,160,0.18); border-color:var(--green); }
 .btn-supabase:disabled { opacity:0.5; cursor:not-allowed; }
+/* ── KUNDEN-TAB (Supabase) ── */
+.sb-liste-bar { display:flex; justify-content:space-between; align-items:center; margin:12px 2px 8px; font-size:0.62rem; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; }
+.sb-liste-reload { background:none; border:none; color:var(--gold); font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; padding:4px 0; }
+.sb-liste { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; }
+.sb-liste-row { display:flex; align-items:center; gap:12px; padding:12px 14px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
+.sb-liste-row:last-child { border-bottom:none; }
+.sb-liste-row:hover, .sb-liste-row:active { background:var(--s2); }
+.sb-liste-ini { width:36px; height:36px; border-radius:50%; background:var(--gold-dim); color:var(--gold2); display:flex; align-items:center; justify-content:center; font-size:0.7rem; flex-shrink:0; }
+.sb-liste-main { flex:1; min-width:0; }
+.sb-liste-name { font-size:0.78rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sb-liste-sub { font-size:0.65rem; color:var(--muted); margin-top:2px; }
+.sb-liste-preis { font-family:'Cormorant Garamond',serif; font-size:1.35rem; font-weight:300; color:var(--gold2); flex-shrink:0; }
+.sb-liste-leer { padding:16px; font-size:0.7rem; color:var(--muted); text-align:center; }
+/* 5 Tabs auf dem Handy: Icon über Text, etwas kompakter */
+@media (max-width: 480px) {
+  .tab { padding:10px 2px; font-size:0.52rem; letter-spacing:0.03em; overflow-wrap:anywhere; }
+  .tab svg { display:block !important; margin:0 auto 4px !important; }
+}
 </style>
 </head>
 <body>
@@ -704,6 +722,9 @@ input::placeholder { color: var(--muted2); }
   </div>
   <div class="tab" onclick="showTab('express',event)">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Express
+  </div>
+  <div class="tab" onclick="showTab('kunden',event);sbLoadKundenListe()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Kunden
   </div>
 </div>
 
@@ -956,7 +977,7 @@ input::placeholder { color: var(--muted2); }
   </button>
 
   <!-- ══ HUBSPOT BUTTON (Einfügung 2) ══ -->
-  <button class="btn-hubspot" id="hsBtn" onclick="hsOpenModal()">
+  <button class="btn-hubspot" id="hsBtn" onclick="hsOpenModal()" style="display:none;">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="12" y1="12" x2="12" y2="12"/><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg>💼 In HubSpot speichern
   </button>
 
@@ -991,6 +1012,11 @@ input::placeholder { color: var(--muted2); }
     <div class="card-body">
       <div class="row"><label class="lbl">HubSpot Token<small>Wird lokal gespeichert</small></label></div>
       <input type="password" id="hubspotToken" placeholder="pat-eu1-xxxxxxxx-xxxx-…" oninput="saveSettings()">
+      <div class="div"></div>
+      <div class="tog-row" style="margin:0;">
+        <label class="lbl">HubSpot-Button anzeigen<small>Im Tab Angebot (Standard: aus)</small></label>
+        <label class="tog"><input type="checkbox" id="hsShowBtn" onchange="saveSettings();hsApplyVisibility()"><span class="tog-sl"></span></label>
+      </div>
     </div>
   </div>
 
@@ -1350,6 +1376,23 @@ input::placeholder { color: var(--muted2); }
 </div>
 </div>
 
+<!-- ══ TAB: KUNDEN (Supabase) ══ -->
+<div class="panel" id="tab-kunden">
+<div class="wrap">
+  <div style="position:relative;margin-top:14px;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="sbListeFilter" placeholder="Name oder Ort filtern …" oninput="sbRenderKundenListe()" autocomplete="off" style="padding-left:36px;">
+  </div>
+  <div class="sb-liste-bar">
+    <span id="sbListeCount">—</span>
+    <button class="sb-liste-reload" onclick="sbLoadKundenListe()">↻ Neu laden</button>
+  </div>
+  <div class="sb-liste" id="sbListe"></div>
+  <div class="werb-info-note">Tippen öffnet den Kunden im Tab Angebot. Dort mit „Details übernehmen“ das letzte Angebot laden.</div>
+  <div style="height:20px;"></div>
+</div>
+</div>
+
 <div class="toast" id="toast">✓ Text kopiert! In WhatsApp einfügen.</div>
 
 <!-- Confirm Reset Overlay -->
@@ -1656,6 +1699,7 @@ function saveSettings() {
     hubspotToken: v('hubspotToken'),
     supabaseUrl: v('supabaseUrl'),
     supabaseKey: v('supabaseKey'),
+    hsShowBtn: document.getElementById('hsShowBtn')?.checked,
   };
   try { localStorage.setItem('ksp_settings', JSON.stringify(s)); } catch(e){}
 }
@@ -3063,6 +3107,81 @@ async function sbSaveAngebot() {
   btn.disabled = false;
   btn.innerHTML = oldHtml;
 }
+
+
+// ══════════════════════════════════════════════════════════════
+// 🟢 SUPABASE – KUNDEN-TAB (Liste)
+// ══════════════════════════════════════════════════════════════
+let sbKundenListe = [];
+
+async function sbLoadKundenListe() {
+  const list = document.getElementById('sbListe');
+  const cnt  = document.getElementById('sbListeCount');
+  if(!sbCfg()) {
+    cnt.textContent = '—';
+    list.innerHTML = '<div class="sb-liste-leer">Supabase nicht konfiguriert – URL und Key in den Einstellungen eintragen.</div>';
+    return;
+  }
+  list.innerHTML = '<div class="sb-liste-leer">Lade Kunden …</div>';
+  try {
+    sbKundenListe = await sbFetch(
+      'kunden?select=id,name,adresse,ort,km,geaendert_am,angebote(erstellt_am,preis_final)' +
+      '&order=geaendert_am.desc.nullslast&angebote.order=erstellt_am.desc&limit=500'
+    );
+    sbRenderKundenListe();
+  } catch(e) {
+    list.innerHTML = `<div class="sb-liste-leer" style="color:var(--red)">Fehler: ${sbEsc(e.message)}</div>`;
+  }
+}
+
+function sbRenderKundenListe() {
+  const list = document.getElementById('sbListe');
+  const cnt  = document.getElementById('sbListeCount');
+  const q = v('sbListeFilter').trim().toLowerCase();
+  const f = sbKundenListe.filter(k =>
+    !q || `${k.name || ''} ${k.ort || ''} ${k.adresse || ''}`.toLowerCase().includes(q)
+  );
+  cnt.textContent = `${f.length} Kunde${f.length === 1 ? '' : 'n'}`;
+  if(!f.length) {
+    list.innerHTML = `<div class="sb-liste-leer">${sbKundenListe.length ? 'Kein Kunde gefunden' : 'Noch keine Kunden gespeichert'}</div>`;
+    return;
+  }
+  list.innerHTML = '';
+  f.forEach(k => {
+    const ang  = k.angebote || [];
+    const last = ang[0];
+    const ini  = (k.name || '?').split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    const ortKm = [k.ort, k.km ? `${k.km} km` : ''].filter(Boolean).join(' · ') || (k.adresse || 'ohne Adresse');
+    const row = document.createElement('div');
+    row.className = 'sb-liste-row';
+    row.innerHTML =
+      `<div class="sb-liste-ini">${sbEsc(ini)}</div>` +
+      `<div class="sb-liste-main">` +
+        `<div class="sb-liste-name">${sbEsc(k.name)}</div>` +
+        `<div class="sb-liste-sub">${sbEsc(ortKm)}</div>` +
+        `<div class="sb-liste-sub">${last ? `Letztes: ${sbDatum(last.erstellt_am)} · ${ang.length} Angebot${ang.length > 1 ? 'e' : ''}` : 'Noch kein Angebot'}</div>` +
+      `</div>` +
+      `<div class="sb-liste-preis">${last && last.preis_final != null ? last.preis_final + ' €' : '—'}</div>`;
+    row.addEventListener('click', () => sbAusListeOeffnen(k));
+    list.appendChild(row);
+  });
+}
+
+// Kunde aus der Liste → Tab Angebot öffnen und Kunden laden (wie über die Suche)
+function sbAusListeOeffnen(k) {
+  showTab('angebot', { currentTarget: document.querySelector(".tab[onclick*=\"'angebot'\"]") });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  sbSelectKunde({ id: k.id, name: k.name, adresse: k.adresse, ort: k.ort, km: k.km });
+}
+
+// ══════════════════════════════════════════════════════════════
+// 🟠 HUBSPOT-BUTTON EIN-/AUSBLENDEN (Einstellung, Standard: aus)
+// ══════════════════════════════════════════════════════════════
+function hsApplyVisibility() {
+  const b = document.getElementById('hsBtn');
+  if(b) b.style.display = document.getElementById('hsShowBtn')?.checked ? 'flex' : 'none';
+}
+window.addEventListener('DOMContentLoaded', hsApplyVisibility);
 
 </script>
 </body>
