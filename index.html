@@ -712,6 +712,17 @@ input::placeholder { color: var(--muted2); }
 .sb-ang-txt { flex:1; min-width:0; }
 .sb-ang-del { background:none; border:none; color:var(--muted); cursor:pointer; padding:4px; display:flex; flex-shrink:0; border-radius:6px; }
 .sb-ang-del:hover, .sb-ang-del:active { color:var(--red); background:rgba(240,112,112,0.12); }
+/* ── PREISSTUFEN IN DER GEWINN-BOX ── */
+.gb-stufen { border-top:1px solid var(--border); padding:12px 16px 14px; }
+.gb-stufen-head { display:flex; justify-content:space-between; gap:8px; font-size:0.65rem; color:var(--muted); }
+.gb-stufen-head span:last-child { color:var(--text); text-align:right; }
+.gb-pills { display:grid; grid-template-columns:repeat(9,minmax(0,1fr)); gap:4px; margin-top:8px; }
+.gb-pill { font-family:'DM Mono',monospace; font-size:0.62rem; padding:7px 0; border-radius:6px; text-align:center; border:1px solid var(--border2); background:none; color:var(--text); cursor:pointer; min-width:0; }
+.gb-pill.on { background:var(--gold); border-color:var(--gold); color:#0f1117; }
+.gb-pill.lock { color:var(--muted2); text-decoration:line-through; cursor:not-allowed; background:rgba(240,112,112,0.08); border-color:rgba(240,112,112,0.25); }
+.gb-zeit { font-size:0.6rem; color:var(--muted); margin-top:10px; line-height:1.6; }
+#stundenBox { display:none !important; }   /* Stundenlohn-Analyse vorerst ausgeblendet – Zeile entfernen zum Einblenden */
+.row:has(#pMarge) { display:none; }         /* Mindestmarge wird nicht mehr verwendet (Minimum = Mindeststundenlohn) */
 </style>
 </head>
 <body>
@@ -939,17 +950,21 @@ input::placeholder { color: var(--muted2); }
       <div class="gb-col">
         <div class="gb-cap">Gewinn</div>
         <div class="gb-l"><span>Angebotspreis <span id="gwStufe"></span></span><b id="gwPreis">—</b></div>
-        <div class="gb-l" id="gwRowAn"><span>− Diesel Anfahrt</span><b id="gwDieselAn">—</b></div>
-        <div class="gb-l" id="gwRowHeim"><span>− Diesel Heimfahrt</span><b id="gwDieselHeim">—</b></div>
+        <div class="gb-l" id="gwRowDiesel"><span>− Diesel gesamt</span><b id="gwDiesel">—</b></div>
         <div class="gb-sum"><span class="gb-cap" style="margin:0;">= Gewinn</span><span id="kostenAmt" class="gb-big" style="color:var(--gold2);">—</span></div>
-        <div id="gwDavon" class="gb-note"></div>
+        <div class="gb-l" style="margin-top:6px;"><span id="gwZeit">÷ —</span><b id="gwLohn">—</b></div>
       </div>
       <div class="gb-col">
-        <div class="gb-cap">Minimum <span id="margeLabel" style="color:var(--gold)">−30%</span></div>
-        <div id="minimumAmt" class="gb-big" style="color:var(--green);">—</div>
-        <div id="minimumDetail" class="gb-note"></div>
+        <div class="gb-cap">Minimum <span id="margeLabel" style="color:var(--gold)">25 €/h</span></div>
+        <div id="minimumAmt" class="gb-big" style="color:var(--text);">—</div>
+        <div id="minimumDetail" class="gb-note">Zeit × Mindestlohn + Diesel.<br>Darunter nie anbieten.</div>
         <span id="gbPuffer" class="gb-chip" style="display:none;"></span>
       </div>
+    </div>
+    <div class="gb-stufen">
+      <div class="gb-stufen-head"><span>Preisstufe</span><span id="gbRunter"></span></div>
+      <div class="gb-pills" id="gbPills"></div>
+      <div class="gb-zeit" id="gbZeit"></div>
     </div>
   </div>
 
@@ -1544,7 +1559,16 @@ function sliderStufe(val) {
   return Math.max(-SLIDER_MAX_STUFEN, Math.min(SLIDER_MAX_STUFEN, st));
 }
 function sliderStufenPreis(stufe) { return Math.round(sliderStd * (1 + stufe * SLIDER_STUFE)); }
-function snapSliderVal(val) { return sliderStufenPreis(sliderStufe(val)); }
+function snapSliderVal(val) {
+  let st = sliderStufe(val);
+  // Stufen unter dem Minimum sind gesperrt → auf die niedrigste erlaubte Stufe
+  if(sliderMin > 0) { while(st < SLIDER_MAX_STUFEN && sliderStufenPreis(st) < sliderMin) st++; }
+  return sliderStufenPreis(st);
+}
+function gbSetStufe(st) {
+  document.getElementById('preisSlider').value = sliderStufenPreis(st);
+  onSliderInput();
+}
 
 function onSliderInput() {
   const sl = document.getElementById('preisSlider');
@@ -2165,9 +2189,9 @@ function calc() {
   const _bilderMin   = totalBilder * _minProBild;
   const gesamtStd    = (_fahrzeitMin + _bilderMin + _pauschale) / 60;
   const dieselNetto  = (verbr / 100) * diesel * km * 2;
-  const minStundenPreis = Math.round(gesamtStd * pMinStunde + dieselNetto + Math.round(heimfahrtZuschlag));
+  const minStundenPreis = Math.round(gesamtStd * pMinStunde + dieselNetto + (heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0));
 
-  const sliderMinVal = (totalBilder > 0 || km > 0) ? Math.max(minRound, minStundenPreis) : 0;
+  const sliderMinVal = (totalBilder > 0 || km > 0) ? minStundenPreis : 0;   // Minimum = Mindeststundenlohn (Marge nicht mehr verwendet)
   const maxRound     = Math.max(Math.round(baseTotal * 1.3), sliderMinVal);
 
   updateSlider(totalRound, sliderMinVal, maxRound);
@@ -2179,7 +2203,7 @@ function calc() {
   if(kb) kb.style.display = (totalBilder > 0 || km > 0) ? 'block' : 'none';
 
   const ml = document.getElementById('margeLabel');
-  if(ml) ml.textContent = `−${Math.round(marge*100)}%`;
+  if(ml) ml.textContent = `${pMinStunde} €/h`;
 
   gbMindestlohnAktiv = minStundenPreis > minRound;
   gbMindestlohn      = pMinStunde;
@@ -2199,45 +2223,46 @@ function renderGewinnBox(preis) {
   const diesel  = parseFloat(document.getElementById('dDiesel')?.value) || 0;
   const verbr   = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
   const heimKm  = n('pHeimfahrt') || 0;
-  const heimAdd = document.getElementById('heimfahrtAdd')?.checked ?? true;
   const heimAbz = document.getElementById('heimfahrtAbzug')?.checked ?? true;
 
-  const dieselAn     = Math.round(km * 2 * (verbr / 100) * diesel);          // echte Ausgabe Anfahrt
-  const heimKosten   = heimKm > 0 ? Math.round((verbr / 100) * diesel * heimKm) : 0;
-  const heimAbzug    = heimAbz ? heimKosten : 0;                               // echte Ausgabe Heimfahrt
-  const heimZuschlag = heimAdd ? heimKosten : 0;                               // im Preis enthalten
-  const fahrtKosten  = Math.round(km * 2 * n('pKm'));                          // Kunde zahlt (Diesel + Fahrzeit)
-  const gewinn       = preis - dieselAn - heimAbzug;
-  const fahrzeitLohn = fahrtKosten - dieselAn;
-  const bildhonorar  = preis - fahrtKosten - heimZuschlag;
+  // echte Ausgaben
+  const dieselAn   = Math.round(km * 2 * (verbr / 100) * diesel);
+  const heimKosten = heimKm > 0 ? Math.round((verbr / 100) * diesel * heimKm) : 0;
+  const dieselGes  = dieselAn + (heimAbz ? heimKosten : 0);
+  const gewinn     = preis - dieselGes;
+
+  // Arbeitszeit (gleiche Formel wie in calc)
+  const speed     = n('pSpeed') || 75;
+  const bilder    = n('einzeln') + n('gruppe');
+  const minBild   = n('pMinProBild') || 8;
+  const fahrMin   = (km * 2 / speed) * 60;
+  const bildMin   = bilder * minBild;
+  const pauschMin = n('pPauschale') || 180;
+  const gesMin    = fahrMin + bildMin + pauschMin;
+  const minLohn   = n('pMinStunde') || 25;
+  const lohn      = gesMin > 0 ? Math.round(gewinn / (gesMin / 60)) : 0;
 
   const set = (id, t) => { const el = document.getElementById(id); if(el) el.textContent = t; };
-  const show = (id, on) => { const el = document.getElementById(id); if(el) el.style.display = on ? 'flex' : 'none'; };
 
-  // Gewinn
+  // ── Gewinn ──
   set('gwPreis', preis + ' €');
   const stEl = document.getElementById('gwStufe');
+  const aktStufe = sliderStd ? sliderStufe(preis) : 0;
   if(stEl) {
-    const st = sliderStd ? sliderStufe(preis) * 5 : 0;
+    const st = aktStufe * 5;
     stEl.textContent = st === 0 ? '(Standard)' : `(${st > 0 ? '+' : '−'}${Math.abs(st)} %)`;
     stEl.style.color = st === 0 ? 'var(--muted)' : (st > 0 ? 'var(--green)' : 'var(--red)');
   }
-  show('gwRowAn', km > 0);
-  show('gwRowHeim', heimAbzug > 0);
-  set('gwDieselAn', dieselAn + ' €');
-  set('gwDieselHeim', heimAbzug + ' €');
+  const rowD = document.getElementById('gwRowDiesel');
+  if(rowD) rowD.style.display = dieselGes > 0 ? 'flex' : 'none';
+  set('gwDiesel', dieselGes + ' €');
   set('kostenAmt', gewinn + ' €');
-  const davon = document.getElementById('gwDavon');
-  if(davon) davon.innerHTML = `davon Bildhonorar <span>${bildhonorar} €</span>`
-    + (km > 0 ? `<br>davon Fahrzeit-Lohn <span>${fahrzeitLohn} €</span>` : '');
+  set('gwZeit', `÷ ${formatDauer(gesMin)}`);
+  const lohnEl = document.getElementById('gwLohn');
+  if(lohnEl) { lohnEl.textContent = lohn + ' €/h'; lohnEl.style.color = lohn >= minLohn ? 'var(--green)' : 'var(--red)'; }
 
-  // Minimum
+  // ── Minimum (neutral, keine Bewertungsfarbe) ──
   set('minimumAmt', sliderMin + ' €');
-  const md = document.getElementById('minimumDetail');
-  if(md) md.innerHTML = 'Reisekosten: kein Rabatt'
-    + (gbMindestlohnAktiv ? `<br><span style="color:var(--gold)">▲ ${gbMindestlohn} €/h Mindestlohn greift</span>` : '');
-
-  // Abstand zum Minimum
   const chip = document.getElementById('gbPuffer');
   if(chip) {
     if(sliderMin > 0) {
@@ -2245,13 +2270,36 @@ function renderGewinnBox(preis) {
       const pct = Math.round(Math.abs(puffer) / sliderMin * 100);
       chip.style.display = 'inline-block';
       chip.className = 'gb-chip ' + (puffer >= 0 ? 'ok' : 'low');
-      chip.textContent = puffer >= 0
-        ? `✓ ${pct} % über Minimum (+${puffer} €)`
-        : `⚠ ${pct} % unter Minimum (−${-puffer} €)`;
-    } else {
-      chip.style.display = 'none';
-    }
+      chip.textContent = puffer >= 0 ? `✓ ${pct} % über Minimum (+${puffer} €)` : `⚠ ${pct} % unter Minimum (−${-puffer} €)`;
+    } else chip.style.display = 'none';
   }
+
+  // ── Preisstufen: unter Minimum gesperrt ──
+  const pills = document.getElementById('gbPills');
+  if(pills && sliderStd) {
+    let html = '', low = null;
+    for(let st = -SLIDER_MAX_STUFEN; st <= SLIDER_MAX_STUFEN; st++) {
+      const ok = !(sliderMin > 0) || sliderStufenPreis(st) >= sliderMin;
+      if(ok && low === null) low = st;
+      const lbl = st === 0 ? '0' : (st > 0 ? '+' : '−') + Math.abs(st * 5);
+      const cls = 'gb-pill' + (st === aktStufe ? ' on' : '') + (!ok ? ' lock' : '');
+      html += `<button class="${cls}" ${ok ? `onclick="gbSetStufe(${st})"` : 'disabled'} title="${sliderStufenPreis(st)} €">${lbl}</button>`;
+    }
+    pills.innerHTML = html;
+    let txt;
+    if(low === null)      txt = 'auch +20 % liegt unter Minimum';
+    else if(low === 0)    txt = 'kein Rabatt möglich';
+    else if(low > 0)      txt = `erst ab +${low * 5} % über Minimum`;
+    else                  txt = `runter bis −${-low * 5} % (${sliderStufenPreis(low)} €)`;
+    set('gbRunter', txt);
+  }
+
+  // ── Zeitaufschlüsselung ──
+  const zeit = [];
+  if(km > 0) zeit.push(`Fahrt ${formatDauer(fahrMin)}`);
+  if(bilder > 0) zeit.push(`${bilder} Bilder ${formatDauer(bildMin)}`);
+  zeit.push(`Pauschale ${formatDauer(pauschMin)}`);
+  set('gbZeit', 'Zeit: ' + zeit.join(' · '));
 }
 
 // ── TEXT ──
