@@ -646,6 +646,3005 @@ input::placeholder { color: var(--muted2); }
   font-size:3.2rem; font-weight:300; color:#fff; line-height:1;
 }
 .pp-hero-sub { font-size:0.68rem; color:rgba(255,255,255,0.6); margin-top:4px; }
+/* ── SUPABASE KUNDENDATEN ── */
+.sb-info { margin-top:12px; background:var(--s3); border:1px solid var(--border2); border-radius:8px; padding:12px 14px; }
+.sb-info-head { display:flex; align-items:center; justify-content:space-between; font-size:0.72rem; color:var(--gold2); margin-bottom:8px; }
+.sb-info-x { background:none; border:none; color:var(--muted); font-size:0.85rem; cursor:pointer; padding:4px 6px; }
+.sb-info-lbl { font-size:0.6rem; color:var(--muted); letter-spacing:0.15em; text-transform:uppercase; }
+.sb-info-main { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:300; color:var(--text); line-height:1.2; }
+.sb-info-line { font-size:0.67rem; color:var(--muted); line-height:1.7; }
+.sb-info-hist { font-size:0.62rem; color:var(--muted); line-height:1.7; margin-top:4px; opacity:0.8; }
+.sb-info-btn { width:100%; margin-top:10px; padding:10px; background:var(--gold-dim); border:1px solid rgba(124,159,255,0.3); border-radius:7px; color:var(--gold2); font-family:'DM Mono',monospace; font-size:0.72rem; letter-spacing:0.08em; cursor:pointer; }
+.sb-info-btn:active { background:rgba(124,159,255,0.22); }
+.btn-supabase {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; margin-top:10px; padding:13px;
+  background:rgba(94,207,160,0.10); color:var(--green);
+  border:1px solid rgba(94,207,160,0.35);
+  border-radius:var(--r); font-family:'DM Mono',monospace;
+  font-size:0.78rem; font-weight:300; letter-spacing:0.08em;
+  cursor:pointer; transition:background 0.2s, border-color 0.2s, transform 0.1s;
+}
+.btn-supabase:active { transform:scale(0.98); background:rgba(94,207,160,0.18); border-color:var(--green); }
+.btn-supabase:disabled { opacity:0.5; cursor:not-allowed; }
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <div style="display:flex;align-items:center;gap:11px;">
+      <div style="width:38px;height:38px;border-radius:10px;background:var(--gold-dim);border:1px solid rgba(124,159,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+      <div style="text-align:left;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--text);letter-spacing:0.03em;line-height:1.1;">FotoArtisan</div>
+        <div style="font-size:0.58rem;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-top:2px;">Angebotsrechner</div>
+      </div>
+    </div>
+    <button class="reset-btn" onclick="showResetConfirm()" title="Alles zurücksetzen">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="1 4 1 10 7 10"></polyline>
+        <path d="M3.51 15a9 9 0 1 0 .49-3.54"></path>
+      </svg>
+      Reset
+    </button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('angebot',event)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Angebot
+  </div>
+  <div class="tab" onclick="showTab('einstellungen',event)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Einstellungen
+  </div>
+  <div class="tab" onclick="showTab('werbung',event)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.68 3.41 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 16z"/></svg>Werbung
+  </div>
+  <div class="tab" onclick="showTab('express',event)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:5px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Express
+  </div>
+</div>
+
+<!-- ══ TAB: ANGEBOT ══ -->
+<div class="panel active" id="tab-angebot">
+<div class="wrap">
+
+  <div class="card">
+    <div class="card-head"><span class="ico">👤</span><h2>Kunde</h2></div>
+    <div class="card-body">
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Bestandskunde</div>
+      <div class="autocomplete-wrap" style="margin-bottom:12px;">
+        <input type="text" id="sbKundeSuche" placeholder="Kunde suchen (Name, Ort) …" oninput="sbOnSuche()" autocomplete="off">
+        <div class="autocomplete-dropdown" id="sbKundeDropdown"></div>
+      </div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Name</div>
+      <input type="text" id="kundenName" placeholder="z. B. Maria Müller" oninput="calc();updateTitle()">
+      <div class="sb-info" id="sbKundeInfo" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="ico">🚗</span><h2>Anfahrt</h2></div>
+    <div class="card-body">
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Kundenadresse</div>
+      <div class="autocomplete-wrap">
+        <input type="text" id="kundeAdresse" placeholder="Straße, PLZ, Stadt" oninput="onAdresseChange()" autocomplete="off">
+        <div class="autocomplete-dropdown" id="adresseDropdown"></div>
+      </div>
+      <button class="btn-maps" onclick="openMaps()">🗺 In Google Maps öffnen</button>
+
+      <div id="kmInfoBox" style="display:none;margin-top:12px;background:var(--s3);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;">
+          <div>
+            <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px;">Entfernung</div>
+            <div id="kmInfoKm" style="font-size:1rem;color:var(--text);font-weight:400;">—</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:3px;">Anfahrtskosten gesamt</div>
+            <div id="kmInfoKosten" style="font-size:1rem;color:var(--gold2);font-weight:400;">—</div>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--border);margin-bottom:8px;"></div>
+        <div id="kmInfoDetail" style="font-size:0.67rem;color:var(--muted);line-height:2;"></div>
+      </div>
+
+      <div class="km-status" style="margin-top:10px;">
+        <div class="dot dot-idle" id="kmDot"></div>
+        <span id="kmStatusText" style="color:var(--muted)">Adresse eingeben → km wird automatisch berechnet</span>
+      </div>
+      <input type="number" id="kmVal" value="0" min="0" oninput="calc()" style="display:none;">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head collapsible closed" onclick="toggleCard(this)">
+      <span class="ico">📸</span>
+      <h2>Shooting</h2>
+      <span class="bilder-badge" id="bilderBadge">
+        <span id="badgeColor">Schwarz</span> · E<span id="badgeE">21</span> · G<span id="badgeG">1</span>
+      </span>
+      <span class="collapse-arrow">▼</span>
+    </div>
+    <div class="collapsible-body closed">
+    <div class="card-body">
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:8px;letter-spacing:0.1em;text-transform:uppercase;">Hintergrundfarbe</div>
+      <div style="display:flex;gap:10px;">
+        <div class="color-btn on" data-color="Schwarz" data-extra="0" onclick="pickColor(this)" style="flex:1;">
+          <div class="color-preview" style="background:#1a1a1a;"></div>
+          <div class="color-label">Schwarz</div><div class="color-price"></div>
+        </div>
+        <div class="color-btn" data-color="Weiß" data-extra="0" onclick="pickColor(this)" style="flex:1;">
+          <div class="color-preview" style="background:#f0ede6;"></div>
+          <div class="color-label">Weiß</div><div class="color-price"></div>
+        </div>
+        <div class="color-btn" data-color="Schwarz/Weiß" data-extra="1" onclick="pickColor(this)" style="flex:1;">
+          <div class="color-preview" style="background:linear-gradient(135deg,#1a1a1a 50%,#f0ede6 50%);"></div>
+          <div class="color-label">Sw/Ws</div>
+          <div class="color-price" id="bwPriceLabel">+30 €</div>
+        </div>
+      </div>
+      <div class="div"></div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:10px;letter-spacing:0.1em;text-transform:uppercase;">Bilder</div>
+      <div class="row">
+        <label class="lbl">Katzen-Einzelaufnahmen<small id="infoEinzeln">12 €/Bild</small></label>
+        <div class="step">
+          <button onclick="step('einzeln',-1)">−</button>
+          <input type="number" id="einzeln" value="21" min="0" oninput="calc()">
+          <button onclick="step('einzeln',1)">+</button>
+        </div>
+      </div>
+      <div class="row">
+        <label class="lbl">Mensch/Tier- oder Gruppenbilder<small id="infoGruppe">12 €/Bild</small></label>
+        <div class="step">
+          <button onclick="step('gruppe',-1)">−</button>
+          <input type="number" id="gruppe" value="1" min="0" oninput="calc()">
+          <button onclick="step('gruppe',1)">+</button>
+        </div>
+      </div>
+      <div class="div"></div>
+      <div class="tog-row">
+        <label class="lbl">Fotomontage (Gruppe &gt;6 Katzen)<small>Auf Anfrage – im Text erwähnt</small></label>
+        <label class="tog"><input type="checkbox" id="montage" onchange="calc()"><span class="tog-sl"></span></label>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;">
+    <div class="card-head collapsible closed" onclick="toggleCard(this)">
+      <span class="ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+      <h2>Angebot-Optionen</h2>
+      <span class="collapse-arrow">▼</span>
+    </div>
+    <div class="collapsible-body closed" style="padding:0;">
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
+        <label class="lbl">Rechnung ausstellen<small>+10 % auf den Gesamtpreis (MwSt./Verwaltung)</small></label>
+        <label class="tog tog-rechnung"><input type="checkbox" id="rechnungToggle" onchange="calc();saveSettings()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="rechnung-banner" id="rechnungBanner" style="margin:0 16px 12px;border-radius:6px;">
+        <strong>+10 % Rechnungsaufschlag</strong> wird auf den Gesamtpreis addiert und im Angebot sowie im Kopiertext ausgewiesen.
+      </div>
+      <!-- ── PAYPAL TOGGLE ── -->
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
+        <label class="lbl">
+          <span style="display:inline-flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .92-.787h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.773-4.472z" fill="#009cde"/></svg>
+            PayPal-Zahlung
+          </span>
+          <small>Gebühren werden auf den Betrag aufgeschlagen (1,49 % + 0,35 €)</small>
+        </label>
+        <label class="tog tog-paypal"><input type="checkbox" id="paypalToggle" onchange="calc();saveSettings()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="paypal-banner" id="paypalBanner">
+        <strong id="paypalBannerFee"></strong> PayPal-Gebühren werden aufgeschlagen.<br>
+        <span class="pp-formula">Formel: Betrag × 1,49 % + 0,35 € → aufgerundet auf volle Euro</span>
+      </div>
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
+        <label class="lbl">Rückmeldung<small>Bitte Rückmeldung, ob ein Fototermin … in Frage kommt.</small></label>
+        <label class="tog"><input type="checkbox" id="optRueck" checked onchange="saveSettings()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
+        <label class="lbl">Bildbearbeitung<small>Hinweis zu natürlicher Bearbeitung & keine Veränderungen</small></label>
+        <label class="tog"><input type="checkbox" id="optBildbearbeitung" checked onchange="saveSettings()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
+        <label class="lbl">Parkgebühren<small>HINWEIS: Eventuell anfallende Parkgebühren …</small></label>
+        <label class="tog"><input type="checkbox" id="optPark" checked onchange="saveSettings()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row" style="padding:13px 16px;margin:0;border-bottom:1px solid var(--border);">
+        <label class="lbl">Ratenzahlung<small>Ratenzahlung ist möglich — sprich uns gerne an.</small></label>
+        <label class="tog"><input type="checkbox" id="optRate" onchange="saveSettings()"><span class="tog-sl"></span></label>
+      </div>
+      <div style="padding:13px 16px;">
+        <div class="tog-row" style="margin:0 0 10px;">
+          <label class="lbl">Eigener Text<small>Wird direkt so ins Angebot übernommen</small></label>
+          <label class="tog"><input type="checkbox" id="optEigenAn" onchange="toggleEigenText();saveSettings()"><span class="tog-sl"></span></label>
+        </div>
+        <textarea id="optEigenText" placeholder="Deinen Text hier eingeben …" oninput="saveSettings()" style="display:none;width:100%;background:var(--s3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Mono',monospace;font-size:16px;font-weight:300;padding:10px 12px;resize:vertical;min-height:70px;outline:none;line-height:1.6;"></textarea>
+      </div>
+
+      <!-- ── PREIS-OPTION ── -->
+      <div style="border-top:1px solid var(--border);padding:13px 16px 0;">
+        <div class="tog-row" style="margin:0 0 10px;">
+          <label class="lbl">Preis-Option<small id="optPreisPreview">z. B. CH Vignette — wird zur Summe addiert</small></label>
+          <label class="tog"><input type="checkbox" id="optPreisAn" onchange="togglePreisOption();saveSettings();calc()"><span class="tog-sl"></span></label>
+        </div>
+        <div id="optPreisFields" style="display:none;margin-bottom:13px;">
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <input type="text" id="optPreisText" placeholder="Bezeichnung, z. B. CH Vignette …" oninput="updatePreisPreview();saveSettings();calc()" style="flex:1;font-size:14px;padding:9px 12px;">
+            <div class="euro-wrap" style="width:90px;flex-shrink:0;">
+              <input type="number" id="optPreisBetrag" placeholder="0" min="0" step="0.01" oninput="updatePreisPreview();saveSettings();calc()">
+              <span>€</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kosten & Minimum -->
+  <div id="kostenBox" style="display:none;margin-top:14px;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;">
+    <div style="display:flex;">
+      <div style="flex:1;padding:14px 16px;border-right:1px solid var(--border);">
+        <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Gewinn</div>
+        <div id="kostenAmt" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--gold2);line-height:1.1;">—</div>
+        <div id="kostenDetail" style="font-size:0.62rem;color:var(--muted);margin-top:4px;line-height:1.8;"></div>
+      </div>
+      <div style="flex:1;padding:14px 16px;">
+        <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Minimum <span id="margeLabel" style="color:var(--gold)">−30%</span></div>
+        <div id="minimumAmt" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--green);line-height:1.1;">—</div>
+        <div id="minimumDetail" style="font-size:0.62rem;color:var(--muted);margin-top:4px;line-height:1.8;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preis-Slider -->
+  <div id="preisSliderBox" style="display:none;margin-top:14px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;">
+    <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;">Angebotspreis anpassen</div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+      <div id="sliderPreisAmt" style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;color:var(--gold2);line-height:1;">— €</div>
+      <div id="sliderPreisHint" style="font-size:0.67rem;color:var(--muted);"></div>
+    </div>
+    <input type="range" id="preisSlider" min="0" max="100" step="1" value="0"
+      oninput="onSliderInput()"
+      style="width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:3px;background:var(--border2);outline:none;cursor:pointer;">
+    <div style="display:flex;justify-content:space-between;margin-top:10px;">
+      <span id="sliderLblMin" style="font-size:0.65rem;color:var(--red);">—</span>
+      <span id="sliderLblStd" style="font-size:0.65rem;color:var(--gold);">Standardpreis</span>
+      <span id="sliderLblMax" style="font-size:0.65rem;color:var(--muted);">—</span>
+    </div>
+  </div>
+
+  <!-- ══ STUNDENLOHN ANALYSE ══ -->
+  <div class="stunden-box" id="stundenBox" style="display:none;">
+    <div class="stunden-header">
+      <span style="font-size:0.85rem;">⏱</span>
+      <h3>Stundenlohn-Analyse</h3>
+      <span class="sub" id="stundenZeitTotal">—</span>
+    </div>
+    <div class="stunden-grid">
+      <div class="stunden-col">
+        <div class="stunden-col-label">Standard-Preis</div>
+        <div class="stunden-col-price ok" id="stundenStdAmt">—</div>
+        <div class="stunden-col-badge badge-ok" id="stundenStdBadge">—</div>
+      </div>
+      <div class="stunden-col">
+        <div class="stunden-col-label">Minimum-Preis</div>
+        <div class="stunden-col-price ok" id="stundenMinAmt">—</div>
+        <div class="stunden-col-badge badge-ok" id="stundenMinBadge">—</div>
+      </div>
+    </div>
+    <div class="stunden-zeit-row" id="stundenZeitRow"></div>
+    <div class="stunden-detail" id="stundenDetail"></div>
+  </div>
+
+  <!-- Total -->
+  <div class="total-card">
+    <div class="total-lbl" id="totalLbl">Gesamtpreis (Angebot)</div>
+    <div class="total-amt" id="totalAmt">— €</div>
+    <div class="total-lines" id="totalLines"></div>
+  </div>
+
+  <button class="btn-copy" id="copyBtn" onclick="copyText()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:6px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>Text kopieren für WhatsApp
+  </button>
+
+  <button class="btn-share" id="shareBtn" onclick="shareLink()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:6px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Angebot als Link speichern / teilen
+  </button>
+
+  <!-- ══ HUBSPOT BUTTON (Einfügung 2) ══ -->
+  <button class="btn-hubspot" id="hsBtn" onclick="hsOpenModal()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="12" y1="12" x2="12" y2="12"/><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg>💼 In HubSpot speichern
+  </button>
+
+  <!-- ══ SUPABASE: Angebot speichern ══ -->
+  <button class="btn-supabase" id="sbSaveBtn" onclick="sbSaveAngebot()">💾 Kunde &amp; Angebot speichern</button>
+
+  <!-- PATCH 1: Neues Angebot Button -->
+  <button class="btn-neues-angebot" onclick="neuesAngebot()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Neues Angebot erstellen
+  </button>
+
+</div>
+</div>
+
+<!-- ══ TAB: EINSTELLUNGEN ══ -->
+<div class="panel" id="tab-einstellungen">
+<div class="wrap">
+
+  <div class="set-group-title">🔑 OpenRouteService API</div>
+  <div class="api-note">Kostenlos unter <strong>openrouteservice.org</strong> registrieren → API Key kopieren → hier eintragen.</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row"><label class="lbl">API Key<small>Wird lokal gespeichert</small></label></div>
+      <input type="password" id="orsKey" placeholder="Hier API Key eintragen …" oninput="saveSettings()">
+    </div>
+  </div>
+
+  <!-- ══ HUBSPOT TOKEN (Einfügung 1) ══ -->
+  <div class="set-group-title">🟠 HubSpot</div>
+  <div class="api-note">Private App Token unter <strong>HubSpot → Einstellungen → Integrationen → Private Apps</strong> erstellen. Scopes: <code>crm.objects.contacts.write</code>, <code>crm.objects.deals.write</code></div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row"><label class="lbl">HubSpot Token<small>Wird lokal gespeichert</small></label></div>
+      <input type="password" id="hubspotToken" placeholder="pat-eu1-xxxxxxxx-xxxx-…" oninput="saveSettings()">
+    </div>
+  </div>
+
+  <div class="set-group-title">🟢 Supabase (Kundendaten)</div>
+  <div class="api-note">Supabase → <strong>Project Settings → API Keys</strong>: Project URL und den <strong>Publishable Key</strong> (bzw. „anon public“) kopieren. Nie den Secret- oder service_role-Key eintragen.</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row"><label class="lbl">Project URL<small>z. B. https://abcd1234.supabase.co</small></label></div>
+      <input type="text" id="supabaseUrl" placeholder="https://xxxx.supabase.co" oninput="saveSettings()" style="margin-bottom:12px;">
+      <div class="row"><label class="lbl">Publishable / anon Key<small>Wird lokal gespeichert</small></label></div>
+      <input type="password" id="supabaseKey" placeholder="sb_publishable_… oder eyJ…" oninput="saveSettings()">
+    </div>
+  </div>
+
+  <div class="set-group-title">📍 Startadresse</div>
+  <div class="card">
+    <div class="card-body">
+      <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Deine Adresse (Startpunkt)</div>
+      <input type="text" id="startAdresse" value="Linnich, Deutschland" oninput="saveSettings()">
+    </div>
+  </div>
+
+  <div class="set-group-title">💶 Bildpreise</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Preis pro Einzelaufnahme</label>
+        <div class="euro-wrap"><input type="number" id="pExtraE" value="12" oninput="saveSettings();calc()"><span>€</span></div>
+      </div>
+      <div class="row">
+        <label class="lbl">Preis pro Gruppenbild</label>
+        <div class="euro-wrap"><input type="number" id="pExtraG" value="20" oninput="saveSettings();calc()"><span>€</span></div>
+      </div>
+      <div class="div"></div>
+      <div class="row">
+        <label class="lbl">Extra Einzelaufnahme<small>Optionaler Zusatz im Angebot</small></label>
+        <div class="euro-wrap"><input type="number" id="pExtraOptE" value="15" oninput="saveSettings()"><span>€</span></div>
+      </div>
+      <div class="row">
+        <label class="lbl">Extra Gruppenbild<small>Optionaler Zusatz im Angebot</small></label>
+        <div class="euro-wrap"><input type="number" id="pExtraOptG" value="20" oninput="saveSettings()"><span>€</span></div>
+      </div>
+      <div class="div"></div>
+      <div class="row">
+        <label class="lbl">Aufpreis Schwarz/Weiß</label>
+        <div class="euro-wrap"><input type="number" id="pBW" value="30" oninput="saveSettings();calc();updateBWLabel()"><span>€</span></div>
+      </div>
+      <div class="div"></div>
+      <div class="row">
+        <label class="lbl">Mindestmarge<small>Rabatt auf Shooting (nicht auf Fahrt)</small></label>
+        <div class="euro-wrap" style="width:74px;"><input type="number" id="pMarge" value="30" min="0" max="99" oninput="saveSettings();calc()"><span>%</span></div>
+      </div>
+      <div class="div"></div>
+      <div class="row">
+        <label class="lbl">Rechnungsaufschlag<small>Wird bei aktiviertem Rechnungs-Toggle addiert</small></label>
+        <div class="euro-wrap" style="width:74px;"><input type="number" id="pRechnungAufschlag" value="10" min="0" max="99" oninput="saveSettings();calc()"><span>%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="set-group-title">⛽ Fahrtkosten-Formel</div>
+  <div class="api-note">€/km = (Verbrauch ÷ 100 × Diesel) + (Stundenlohn ÷ Speed)</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Dieselpreis<small>€ pro Liter</small></label>
+        <div class="euro-wrap" style="width:100px;"><input type="number" id="dDiesel" value="1.65" step="0.01" oninput="recalcDiesel();saveSettings()"><span>€/L</span></div>
+      </div>
+      <div class="row">
+        <label class="lbl">Verbrauch<small>Liter pro 100 km</small></label>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <input type="number" id="dVerbrauch" value="6" step="0.1" oninput="recalcDiesel();saveSettings()" style="width:64px;text-align:right;-moz-appearance:textfield;background:var(--s2);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Mono',monospace;font-size:16px;padding:9px 10px;outline:none;">
+          <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">L/100km</span>
+        </div>
+      </div>
+      <div class="div"></div>
+      <div class="row" style="align-items:center;">
+        <label class="lbl">Berechneter €/km<small id="dFormel">–</small></label>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold2);min-width:70px;text-align:right;" id="dResult">–</div>
+      </div>
+      <button onclick="fetchDieselPreis()" id="dieselBtn" style="width:100%;padding:10px;margin-top:6px;background:var(--s3);border:1px solid var(--border2);border-radius:7px;color:var(--gold);font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"
+        onmouseover="this.style.background='var(--gold-dim)';this.style.borderColor='var(--gold)'"
+        onmouseout="this.style.background='var(--s3)';this.style.borderColor='var(--border2)'">
+        ⛽ &nbsp;Aktuellen Dieselpreis laden (Linnich)
+      </button>
+      <div id="dieselStatus" style="font-size:0.67rem;color:var(--muted);margin-top:6px;min-height:14px;text-align:center;"></div>
+    </div>
+  </div>
+
+  <div class="set-group-title">🚗 Fahrtkosten-Parameter</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Stundenlohn Fahrzeit<small>Hin- und Rückfahrt</small></label>
+        <div class="euro-wrap"><input type="number" id="pStunde" value="20" oninput="saveSettings();recalcDiesel();calc()"><span>€</span></div>
+      </div>
+      <div class="row">
+        <label class="lbl">Durchschnittsgeschwindigkeit<small>für Fahrzeitberechnung</small></label>
+        <div class="euro-wrap" style="width:90px;"><input type="number" id="pSpeed" value="75" oninput="saveSettings();recalcDiesel();calc()" style="padding-right:36px;"><span>km/h</span></div>
+      </div>
+      <div class="div"></div>
+      <div class="row">
+        <label class="lbl">Km-Pauschale<small style="color:var(--gold)">⟵ automatisch berechnet</small></label>
+        <div class="euro-wrap"><input type="number" id="pKm" value="0.35" step="0.001" readonly tabindex="-1" style="opacity:0.5;cursor:not-allowed;border-style:dashed;"><span>€</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="set-group-title">⏱ Zeitaufwand pro Bild</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Minuten pro Bild<small>Bildbearbeitung gesamt</small></label>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <input type="number" id="pMinProBild" value="8" min="1" max="120" oninput="saveSettings();calc()" style="width:64px;text-align:right;-moz-appearance:textfield;background:var(--s2);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Mono',monospace;font-size:16px;padding:9px 10px;outline:none;">
+          <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Min/Bild</span>
+        </div>
+      </div>
+      <div class="row">
+        <label class="lbl">Shooting-Pauschale<small>Auf-/Abbau, Kennenlernen, Puffer</small></label>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <input type="number" id="pPauschale" value="180" min="0" step="15" oninput="saveSettings();calc()" style="width:64px;text-align:right;-moz-appearance:textfield;background:var(--s2);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Mono',monospace;font-size:16px;padding:9px 10px;outline:none;">
+          <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Min</span>
+        </div>
+      </div>
+      <div class="div"></div>
+      <div class="row">
+        <label class="lbl">Mindeststundenlohn<small>Unter diesem Wert → „Zu niedrig" (rot)</small></label>
+        <div class="euro-wrap"><input type="number" id="pMinStunde" value="25" min="1" oninput="saveSettings();calc()"><span>€/h</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="set-group-title">🏠 Heimfahrt (Eupen → Linnich)</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Heimfahrt-Strecke<small>Feste Strecke, unabhängig vom Kunden</small></label>
+        <div class="euro-wrap" style="width:90px;"><input type="number" id="pHeimfahrt" value="150" min="0" oninput="saveSettings();calc()"><span>km</span></div>
+      </div>
+      <div class="div"></div>
+      <div class="row" style="background:var(--s2);border-radius:7px;padding:10px 12px;margin-bottom:8px;">
+        <div class="lbl">Diesel-Kosten Heimfahrt<small id="heimfahrtDetail" style="color:var(--gold);">—</small></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;color:var(--gold2);" id="heimfahrtKosten">—</div>
+      </div>
+      <div class="div"></div>
+      <div class="tog-row" style="margin:8px 0 0;">
+        <label class="lbl">Zum Angebotspreis addieren<small>Heimfahrt-Kosten auf den Gesamtpreis</small></label>
+        <label class="tog"><input type="checkbox" id="heimfahrtAdd" checked onchange="saveSettings();calc()"><span class="tog-sl"></span></label>
+      </div>
+      <div class="tog-row" style="margin:8px 0 0;">
+        <label class="lbl">Vom Gewinn abziehen<small>Als Eigenkosten in der Analyse</small></label>
+        <label class="tog"><input type="checkbox" id="heimfahrtAbzug" checked onchange="saveSettings();calc()"><span class="tog-sl"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:20px;"></div>
+</div>
+</div>
+
+<!-- ══ TAB: WERBUNG ══ -->
+<div class="panel" id="tab-werbung">
+<div class="wrap">
+
+  <!-- URL Import -->
+  <div class="url-import-card" style="margin-top:14px;">
+    <div class="url-import-head" onclick="urlImportToggle()">
+      <span class="ico">🔗</span>
+      <h2>URL-Import aus Züchter-Website</h2>
+      <span id="urlImportArrow" class="collapse-arrow">▾</span>
+    </div>
+    <div id="urlImportBody" class="url-import-body">
+      <div class="werb-sect-label">Website-URL einfügen (z. B. aus Instagram Link in Bio)</div>
+      <div class="url-import-input-row">
+        <input type="text" id="urlImportInput" placeholder="https://www.beispiel.de/impressum">
+        <button class="btn-url-import" id="urlImportBtn" onclick="doUrlImport()">Lesen</button>
+      </div>
+      <div class="url-status" id="urlStatus"></div>
+      <div id="urlResultBlock" style="display:none;">
+        <div class="url-result-grid">
+          <div class="url-result-field"><div class="url-result-lbl">Name</div><div class="url-result-val" id="urlResName">—</div></div>
+          <div class="url-result-field"><div class="url-result-lbl">Cattery</div><div class="url-result-val" id="urlResCattery">—</div></div>
+          <div class="url-result-field"><div class="url-result-lbl">Rasse</div><div class="url-result-val" id="urlResRasse">—</div></div>
+          <div class="url-result-field"><div class="url-result-lbl">Telefon (WhatsApp)</div><div class="url-result-val" id="urlResTel">—</div></div>
+        </div>
+        <a class="wa-quick-link" id="urlWaLink" href="#" target="_blank" style="display:none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp direkt öffnen
+        </a>
+        <button class="btn-fill-werb" onclick="urlFillWerbung()">
+          ↓ &nbsp;Name &amp; Rasse in Felder unten eintragen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empfängerin -->
+  <div class="card">
+    <div class="card-head"><span class="ico">👤</span><h2>Empfängerin</h2></div>
+    <div class="card-body">
+      <div class="werb-sect-label">Name(n)</div>
+      <input type="text" id="werbName" placeholder="z. B. Melanie  oder  Sofie and Kris" oninput="werbRender()">
+    </div>
+  </div>
+
+  <!-- Sprache -->
+  <div class="card">
+    <div class="card-head"><span class="ico">🌐</span><h2>Sprache</h2></div>
+    <div class="card-body" style="padding:10px 16px;">
+      <div style="display:flex;gap:8px;">
+        <button id="werbLangDE" onclick="werbSetLang('DE')" style="flex:1;padding:11px;border-radius:8px;border:1px solid var(--gold);background:var(--gold-dim);color:var(--gold2);font-family:'DM Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;">🇩🇪 &nbsp;Deutsch</button>
+        <button id="werbLangEN" onclick="werbSetLang('EN')" style="flex:1;padding:11px;border-radius:8px;border:1px solid var(--border2);background:var(--s2);color:var(--muted);font-family:'DM Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;">🇬🇧 &nbsp;English</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Referenzen -->
+  <div class="card">
+    <div class="card-head"><span class="ico">🐈</span><h2>Referenzen</h2></div>
+    <div class="card-body">
+
+      <div class="werb-sect-label">1 · Rasse der Züchterin</div>
+      <select id="werbRasse" onchange="werbOnRasseChange()">
+        <option value="">— Rasse wählen —</option>
+        <option value="Bengal">Bengal</option>
+        <option value="BKH">Britisch Kurzhaar (BKH)</option>
+        <option value="Birma">Birma</option>
+        <option value="Burma">Burma</option>
+        <option value="DeutschLanghaar">Deutsch Langhaar</option>
+        <option value="DevonRex">Devon Rex</option>
+        <option value="MCO">Maine Coon</option>
+        <option value="NFO">Norwegische Waldkatze</option>
+        <option value="Peterbald">Peterbald</option>
+        <option value="Ragdoll">Ragdoll</option>
+        <option value="RussischBlau">Russisch Blau</option>
+        <option value="Savannah">Savannah</option>
+        <option value="Selkirk">Selkirk Rex</option>
+        <option value="Sibirier">Sibirier / Neva Masquerade</option>
+        <option value="Siam">Siam</option>
+      </select>
+
+      <div id="werbAutoBox" style="display:none;margin-top:10px;">
+        <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px;">Automatisch gewählt</div>
+        <div style="display:flex;flex-direction:column;gap:6px;" id="werbAutoList"></div>
+      </div>
+
+      <div class="werb-divider"></div>
+
+      <div class="werb-sect-label">2 · Weitere Referenzen (optional)</div>
+
+      <div class="werb-acc-head" id="werbAccHead" onclick="werbToggleAcc()">
+        <span class="werb-acc-title">Alle Catteries</span>
+        <span class="werb-acc-badge" id="werbExtraBadge">0 gewählt</span>
+        <span class="werb-acc-arrow">▼</span>
+      </div>
+      <div class="werb-acc-body" id="werbAccBody">
+        <div class="werb-acc-inner" id="werbExtraList"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Text Vorschau -->
+  <div class="card">
+    <div class="card-head"><span class="ico">💬</span><h2>WhatsApp-Nachricht</h2></div>
+    <div class="card-body">
+      <div class="werb-sect-label">Vorschau</div>
+      <div class="werb-text-preview" id="werbTextPreview"></div>
+      <div class="werb-info-note">Name und Referenzen werden automatisch eingesetzt.</div>
+      <button class="btn-copy-wa" id="werbCopyBtn" onclick="werbCopyWA()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.68 3.41 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 16z"/></svg>
+        Text kopieren für WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <div style="height:20px;"></div>
+</div>
+</div>
+
+<!-- ══ TAB: EXPRESS BILDBEARBEITUNG ══ -->
+<div class="panel" id="tab-express">
+<div class="wrap">
+
+  <div class="card">
+    <div class="card-head"><span class="ico">📸</span><h2>Einzelbilder</h2></div>
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Anzahl Bilder</label>
+        <div class="step">
+          <button onclick="exStep('exEinzelAnzahl',-1)">−</button>
+          <input type="number" id="exEinzelAnzahl" value="8" min="0" oninput="exCalc()">
+          <button onclick="exStep('exEinzelAnzahl',1)">+</button>
+        </div>
+      </div>
+      <div class="row">
+        <label class="lbl">Preis pro Bild</label>
+        <div class="euro-wrap">
+          <input type="number" id="exEinzelPreis" value="12" min="0" step="0.5" oninput="exCalc()">
+          <span>€</span>
+        </div>
+      </div>
+      <div style="font-size:0.65rem;color:var(--muted);margin:12px 0 6px;letter-spacing:0.1em;text-transform:uppercase;">Lieferzeit</div>
+      <select id="exEinzelLieferzeit" onchange="exCalc()">
+        <option value="0">Standard, 5–10 Tage (+0 %)</option>
+        <option value="20">1–3 Tage (+20 %)</option>
+        <option value="35">24–48 Stunden (+35 %)</option>
+        <option value="50">24 Std / sehr kurzfristig (+50 %)</option>
+        <option value="75">Same Day (+75 %)</option>
+      </select>
+      <div style="text-align:right;font-size:0.7rem;color:var(--muted);margin-top:10px;">Teilsumme: <span id="exEinzelSumme" style="color:var(--text);">96 €</span></div>
+      <div style="text-align:right;font-size:0.65rem;color:var(--muted);margin-top:2px;" id="exEinzelMehrkostenRow"><span id="exEinzelMehrkosten"></span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="ico">👥</span><h2>Gruppenbilder</h2></div>
+    <div class="card-body">
+      <div class="row">
+        <label class="lbl">Anzahl Bilder</label>
+        <div class="step">
+          <button onclick="exStep('exGruppeAnzahl',-1)">−</button>
+          <input type="number" id="exGruppeAnzahl" value="2" min="0" oninput="exCalc()">
+          <button onclick="exStep('exGruppeAnzahl',1)">+</button>
+        </div>
+      </div>
+      <div class="row">
+        <label class="lbl">Preis pro Bild</label>
+        <div class="euro-wrap">
+          <input type="number" id="exGruppePreis" value="20" min="0" step="0.5" oninput="exCalc()">
+          <span>€</span>
+        </div>
+      </div>
+      <div style="font-size:0.65rem;color:var(--muted);margin:12px 0 6px;letter-spacing:0.1em;text-transform:uppercase;">Lieferzeit</div>
+      <select id="exGruppeLieferzeit" onchange="exCalc()">
+        <option value="0">Standard, 5–10 Tage (+0 %)</option>
+        <option value="20">1–3 Tage (+20 %)</option>
+        <option value="35">24–48 Stunden (+35 %)</option>
+        <option value="50">24 Std / sehr kurzfristig (+50 %)</option>
+        <option value="75">Same Day (+75 %)</option>
+      </select>
+      <div style="text-align:right;font-size:0.7rem;color:var(--muted);margin-top:10px;">Teilsumme: <span id="exGruppeSumme" style="color:var(--text);">40 €</span></div>
+      <div style="text-align:right;font-size:0.65rem;color:var(--muted);margin-top:2px;" id="exGruppeMehrkostenRow"><span id="exGruppeMehrkosten"></span></div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--gold);">
+    <div class="card-body" style="text-align:center;">
+      <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Gesamtpreis Express</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold2);margin-bottom:8px;" id="exTotal">136 €</div>
+      <div style="font-size:0.7rem;color:var(--muted);line-height:1.7;" id="exTotalLines"></div>
+    </div>
+  </div>
+
+  <div style="height:20px;"></div>
+</div>
+</div>
+
+<div class="toast" id="toast">✓ Text kopiert! In WhatsApp einfügen.</div>
+
+<!-- Confirm Reset Overlay -->
+<div class="confirm-overlay" id="confirmOverlay" style="display:none;">
+  <div class="confirm-box">
+    <p>Alle <strong>Einstellungen und Angebotsdaten</strong> werden zurückgesetzt.<br>Dieser Schritt kann nicht rückgängig gemacht werden.</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="hideResetConfirm()">Abbrechen</button>
+      <button class="btn-confirm-reset" onclick="doReset()">Zurücksetzen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HUBSPOT MODAL (Einfügung 2) ══ -->
+<div class="hs-overlay" id="hsOverlay" style="display:none;" onclick="if(event.target===this)hsCloseModal()">
+  <div class="hs-sheet">
+    <div class="hs-sheet-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff7a00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="12" y1="12" x2="12" y2="12"/><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg>
+      In HubSpot speichern
+    </div>
+
+    <div class="hs-deal-amt">
+      <div>
+        <div class="hs-deal-amt-lbl">Deal-Betrag</div>
+        <div class="hs-deal-amt-val" id="hsDealAmt">— €</div>
+      </div>
+      <div style="text-align:right;font-size:0.65rem;color:var(--muted);line-height:1.6;" id="hsDealInfo"></div>
+    </div>
+
+    <div class="hs-row">
+      <div class="hs-field" style="flex:2;">
+        <label>Kontakt-Name</label>
+        <input type="text" id="hsContactName" placeholder="Maria Müller">
+      </div>
+    </div>
+    <div class="hs-row">
+      <div class="hs-field">
+        <label>E-Mail (optional)</label>
+        <input type="text" id="hsEmail" placeholder="email@beispiel.de">
+      </div>
+      <div class="hs-field">
+        <label>Telefon (optional)</label>
+        <input type="text" id="hsTel" placeholder="+49 …">
+      </div>
+    </div>
+    <div class="hs-row">
+      <div class="hs-field">
+        <label>Deal-Name</label>
+        <input type="text" id="hsDealName" placeholder="Katzen-Shooting Maria Müller">
+      </div>
+    </div>
+    <div class="hs-row">
+      <div class="hs-field">
+        <label>Pipeline-Stage</label>
+        <select id="hsStage">
+          <option value="appointmentscheduled">Termin anfragen</option>
+          <option value="qualifiedtobuy">Angebot gesendet</option>
+          <option value="presentationscheduled">In Verhandlung</option>
+          <option value="decisionmakerboughtin">Gewonnen</option>
+          <option value="closedlost">Verloren</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="hs-status" id="hsStatus"></div>
+
+    <div class="hs-actions">
+      <button class="hs-btn-cancel" onclick="hsCloseModal()">Abbrechen</button>
+      <button class="hs-btn-save" id="hsSaveBtn" onclick="hsSaveDeal()">💼 Deal speichern</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── COLLAPSIBLE ──
+function toggleCard(head) {
+  const body = head.nextElementSibling;
+  const isOpen = !head.classList.contains('closed');
+  head.classList.toggle('closed', isOpen);
+  body.classList.toggle('closed', isOpen);
+}
+
+// ── SLIDER STATE ──
+let sliderMin = 0, sliderMax = 0, sliderStd = 0;
+let selectedColor = 'Schwarz';
+let colorExtra = 0;
+let orsTimeout = null;
+let lastKmAuto = null;
+let resolvedOrtName = '';
+let _loadingFromURL = false;
+
+// ── AUTOCOMPLETE STATE ──
+let acTimeout = null;
+let acSelectedCoords = null;
+
+function updateSlider(std, min, max) {
+  sliderStd = std; sliderMin = min; sliderMax = max;
+  const box = document.getElementById('preisSliderBox');
+  if(!box) return;
+  box.style.display = (std > 0) ? 'block' : 'none';
+  const sl = document.getElementById('preisSlider');
+  sl.min = min; sl.max = max;
+  if(parseInt(sl.value) < min || parseInt(sl.value) > max) sl.value = std;
+  document.getElementById('sliderLblMin').textContent = min + ' €';
+  document.getElementById('sliderLblStd').textContent = std + ' € (Standard)';
+  document.getElementById('sliderLblMax').textContent = max + ' €';
+  renderSliderAmt();
+}
+
+function onSliderInput() {
+  renderSliderAmt();
+  const sl = document.getElementById('preisSlider');
+  const baseVal = Math.max(parseInt(sl.value), parseInt(sl.min));
+  sl.value = baseVal;
+
+  const rechnungOn     = document.getElementById('rechnungToggle')?.checked ?? false;
+  const aufschlag      = n('pRechnungAufschlag') || 10;
+  const preisOptBetrag = document.getElementById('optPreisAn')?.checked
+    ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
+
+  const displayVal = (rechnungOn ? Math.round(baseVal * (1 + aufschlag / 100)) : baseVal)
+    + Math.round(preisOptBetrag);
+  document.getElementById('totalAmt').textContent = displayVal + ' €';
+
+  const diesel             = parseFloat(document.getElementById('dDiesel')?.value) || 0;
+  const verbr              = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const km                 = parseFloat(document.getElementById('kmVal')?.value) || 0;
+  const heimfahrtAdd       = document.getElementById('heimfahrtAdd')?.checked ?? true;
+  const heimfahrtAbzug     = document.getElementById('heimfahrtAbzug')?.checked ?? true;
+  const heimfahrtKm        = n('pHeimfahrt') || 0;
+  const heimfahrtKosten    = heimfahrtAdd && heimfahrtKm > 0
+    ? parseFloat(((verbr / 100) * diesel * heimfahrtKm).toFixed(2)) : 0;
+  const eigeneFahrt        = Math.round(km * 2 * (verbr / 100) * diesel);
+  const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
+
+  const ka = document.getElementById('kostenAmt');
+  if(ka) ka.textContent = (baseVal - eigeneFahrt - heimfahrtAbzugBetrag) + ' €';
+
+  const minRound = parseInt(document.getElementById('preisSlider').min);
+  updateStundenlohnDisplay(baseVal, minRound);
+}
+
+function renderSliderAmt() {
+  const val = parseInt(document.getElementById('preisSlider').value);
+  document.getElementById('sliderPreisAmt').textContent = val + ' €';
+  const hint = document.getElementById('sliderPreisHint');
+  if(val === sliderStd)      { hint.textContent = 'Standardpreis'; hint.style.color = 'var(--muted)'; }
+  else if(val < sliderStd)   { hint.textContent = '▼ Unter Standardpreis'; hint.style.color = 'var(--red)'; }
+  else                       { hint.textContent = '▲ Über Standardpreis'; hint.style.color = 'var(--green)'; }
+}
+
+// ── DIESEL ──
+function recalcDiesel() {
+  const diesel    = parseFloat(document.getElementById('dDiesel')?.value)    || 0;
+  const verbrauch = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const stunde    = n('pStunde');
+  const speed     = n('pSpeed') || 75;
+  const dieselAnteil = (verbrauch / 100) * diesel;
+  const zeitAnteil   = stunde / speed;
+  const kmPreis      = dieselAnteil + zeitAnteil;
+  const elR = document.getElementById('dResult');
+  const elF = document.getElementById('dFormel');
+  if(elR) elR.textContent = kmPreis > 0 ? kmPreis.toFixed(3) + ' €' : '–';
+  if(elF) elF.textContent = kmPreis > 0
+    ? `(${verbrauch}÷100×${diesel.toFixed(2)}) + (${stunde}÷${speed}) = ${kmPreis.toFixed(3)} €/km`
+    : 'Werte eingeben';
+  const pKmEl = document.getElementById('pKm');
+  if(pKmEl && kmPreis > 0) { pKmEl.value = kmPreis.toFixed(3); saveSettings(); calc(); }
+}
+
+async function fetchDieselPreis() {
+  const btn = document.getElementById('dieselBtn');
+  const st  = document.getElementById('dieselStatus');
+  if(btn) btn.style.opacity = '0.5';
+  if(st) { st.textContent = 'Lade Dieselpreis …'; st.style.color = 'var(--gold)'; }
+  const apiKey = "c5e49ed8-d412-d598-7f86-e87609a12d6e";
+  const lat = 50.9806294, lng = 6.2676208;
+  try {
+    const res  = await fetch(`https://creativecommons.tankerkoenig.de/json/list.php?lat=${lat}&lng=${lng}&rad=2&sort=price&type=diesel&apikey=${apiKey}`);
+    const data = await res.json();
+    if(!data.ok || !data.stations?.length) throw new Error('Keine Tankstellen');
+    const preis = data.stations[0].price;
+    const name  = data.stations[0].name;
+    document.getElementById('dDiesel').value = preis;
+    recalcDiesel();
+    if(st) { st.textContent = `⛽ ${name}: ${preis} €/L`; st.style.color = 'var(--green)'; }
+  } catch(e) {
+    if(st) { st.textContent = 'Fehler beim Laden – manuell eingeben'; st.style.color = 'var(--red)'; }
+  } finally {
+    if(btn) btn.style.opacity = '1';
+  }
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => { loadSettings(); loadFromURL(); recalcDiesel(); calc(); });
+
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.autocomplete-wrap')) closeDropdown();
+});
+
+// ── TABS ──
+function showTab(name, event) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if(event && event.currentTarget) event.currentTarget.classList.add('active');
+}
+
+// ── RESET ──
+function showResetConfirm() { document.getElementById('confirmOverlay').style.display = 'flex'; }
+function hideResetConfirm() { document.getElementById('confirmOverlay').style.display = 'none'; }
+function doReset() { try { localStorage.removeItem('ksp_settings'); } catch(e){} hideResetConfirm(); location.reload(); }
+
+function neuesAngebot() {
+  document.getElementById('kundenName').value = '';
+  document.getElementById('kundeAdresse').value = '';
+  document.getElementById('einzeln').value = 21;
+  document.getElementById('gruppe').value = 1;
+  document.getElementById('montage').checked = false;
+  document.getElementById('kmVal').value = 0;
+  document.getElementById('rechnungToggle').checked = false;
+  document.getElementById('optRueck').checked = true;
+  document.getElementById('optBildbearbeitung').checked = true;
+  document.getElementById('optPark').checked = true;
+  document.getElementById('optRate').checked = false;
+  document.getElementById('optEigenAn').checked = false;
+  document.getElementById('optEigenText').value = '';
+  document.getElementById('optPreisAn').checked = false;
+  document.getElementById('optPreisText').value = '';
+  document.getElementById('optPreisBetrag').value = '';
+  document.querySelectorAll('.color-btn').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.color === 'Schwarz');
+  });
+  selectedColor = 'Schwarz';
+  colorExtra = 0;
+  const bc = document.getElementById('badgeColor');
+  if(bc) bc.textContent = 'Schwarz';
+  lastKmAuto = null;
+  resolvedOrtName = '';
+  acSelectedCoords = null;
+  setKmStatus('idle', 'Adresse eingeben → km wird automatisch berechnet');
+  document.getElementById('kmInfoBox').style.display = 'none';
+  toggleEigenText();
+  togglePreisOption();
+  updatePreisPreview();
+  history.replaceState(null, '', location.pathname);
+  document.title = 'Angebot';
+  sbClearKunde();
+  calc();
+}
+
+function updateTitle() {
+  const name = document.getElementById('kundenName')?.value.trim() || '';
+  document.title = name ? name + ' / Angebot' : 'Angebot';
+}
+
+// ── SETTINGS ──
+function togglePreisOption() {
+  const on = document.getElementById('optPreisAn').checked;
+  document.getElementById('optPreisFields').style.display = on ? 'block' : 'none';
+  updatePreisPreview();
+}
+function updatePreisPreview() {
+  const on     = document.getElementById('optPreisAn').checked;
+  const text   = document.getElementById('optPreisText')?.value.trim();
+  const betrag = parseFloat(document.getElementById('optPreisBetrag')?.value) || 0;
+  const small  = document.getElementById('optPreisPreview');
+  if (!small) return;
+  if (on && text && betrag > 0) {
+    small.textContent = `${text}: +${betrag.toFixed(2)} € → wird zur Summe addiert`;
+    small.style.color = 'var(--gold)';
+  } else {
+    small.textContent = 'z. B. CH Vignette — wird zur Summe addiert';
+    small.style.color = '';
+  }
+}
+function toggleEigenText() {
+  const on = document.getElementById('optEigenAn').checked;
+  document.getElementById('optEigenText').style.display = on ? 'block' : 'none';
+}
+function saveSettings() {
+  const s = {
+    orsKey: v('orsKey'), startAdresse: v('startAdresse'),
+    pExtraE: v('pExtraE'), pExtraG: v('pExtraG'),
+    pExtraOptE: v('pExtraOptE'), pExtraOptG: v('pExtraOptG'),
+    pBW: v('pBW'), pMarge: v('pMarge'), pRechnungAufschlag: v('pRechnungAufschlag'),
+    pKm: v('pKm'), pStunde: v('pStunde'), pSpeed: v('pSpeed'),
+    dDiesel: v('dDiesel'), dVerbrauch: v('dVerbrauch'),
+    pMinProBild: v('pMinProBild'), pPauschale: v('pPauschale'), pMinStunde: v('pMinStunde'),
+    pHeimfahrt: v('pHeimfahrt'),
+    heimfahrtAdd: document.getElementById('heimfahrtAdd')?.checked,
+    heimfahrtAbzug: document.getElementById('heimfahrtAbzug')?.checked,
+    optRueck: document.getElementById('optRueck')?.checked,
+    optBildbearbeitung: document.getElementById('optBildbearbeitung')?.checked,
+    optPark:  document.getElementById('optPark')?.checked,
+    optRate:  document.getElementById('optRate')?.checked,
+    rechnungToggle: document.getElementById('rechnungToggle')?.checked,
+    optEigenAn: document.getElementById('optEigenAn')?.checked,
+    optEigenText: v('optEigenText'),
+    optPreisAn: document.getElementById('optPreisAn')?.checked,
+    optPreisText: v('optPreisText'),
+    optPreisBetrag: v('optPreisBetrag'),
+    paypalToggle: document.getElementById('paypalToggle')?.checked,
+    hubspotToken: v('hubspotToken'),
+    supabaseUrl: v('supabaseUrl'),
+    supabaseKey: v('supabaseKey'),
+  };
+  try { localStorage.setItem('ksp_settings', JSON.stringify(s)); } catch(e){}
+}
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem('ksp_settings') || '{}');
+    Object.entries(s).forEach(([k, val]) => {
+      const el = document.getElementById(k);
+      if(!el) return;
+      if(el.type === 'checkbox') el.checked = !!val;
+      else el.value = val;
+    });
+    toggleEigenText();
+    togglePreisOption();
+  } catch(e){}
+}
+
+// ── HELPERS ──
+function v(id) { return document.getElementById(id)?.value ?? ''; }
+function n(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+function step(id, d) {
+  const el = document.getElementById(id);
+  el.value = Math.max(0, (parseInt(el.value)||0) + d);
+  calc();
+}
+
+// ── EXPRESS BILDBEARBEITUNG ──
+function exStep(id, d) {
+  const el = document.getElementById(id);
+  el.value = Math.max(0, (parseInt(el.value)||0) + d);
+  exCalc();
+}
+
+function exCalc() {
+  const einzelAnzahl = parseInt(document.getElementById('exEinzelAnzahl')?.value) || 0;
+  const einzelPreis  = parseFloat(document.getElementById('exEinzelPreis')?.value) || 0;
+  const einzelAufschlag = parseInt(document.getElementById('exEinzelLieferzeit')?.value) || 0;
+  const einzelBasis  = einzelAnzahl * einzelPreis;
+  const einzelMehrkosten = einzelBasis * (einzelAufschlag/100);
+  const einzelSumme  = einzelBasis + einzelMehrkosten;
+
+  const gruppeAnzahl = parseInt(document.getElementById('exGruppeAnzahl')?.value) || 0;
+  const gruppePreis  = parseFloat(document.getElementById('exGruppePreis')?.value) || 0;
+  const gruppeAufschlag = parseInt(document.getElementById('exGruppeLieferzeit')?.value) || 0;
+  const gruppeBasis  = gruppeAnzahl * gruppePreis;
+  const gruppeMehrkosten = gruppeBasis * (gruppeAufschlag/100);
+  const gruppeSumme  = gruppeBasis + gruppeMehrkosten;
+
+  const total = einzelSumme + gruppeSumme;
+  const totalMehrkosten = einzelMehrkosten + gruppeMehrkosten;
+
+  const elES = document.getElementById('exEinzelSumme');
+  if(elES) elES.textContent = einzelSumme.toFixed(2).replace(/\.00$/,'') + ' €';
+  const elGS = document.getElementById('exGruppeSumme');
+  if(elGS) elGS.textContent = gruppeSumme.toFixed(2).replace(/\.00$/,'') + ' €';
+  const elTot = document.getElementById('exTotal');
+  if(elTot) elTot.textContent = total.toFixed(2).replace(/\.00$/,'') + ' €';
+
+  const elEM = document.getElementById('exEinzelMehrkosten');
+  if(elEM) elEM.textContent = einzelAufschlag > 0 ? `davon Mehrkosten: +${einzelMehrkosten.toFixed(2)} €` : '';
+  const elGM = document.getElementById('exGruppeMehrkosten');
+  if(elGM) elGM.textContent = gruppeAufschlag > 0 ? `davon Mehrkosten: +${gruppeMehrkosten.toFixed(2)} €` : '';
+
+  let lines = '';
+  if(einzelAnzahl > 0) lines += `Einzelbilder (${einzelAnzahl} × ${einzelPreis} €${einzelAufschlag>0?' + '+einzelAufschlag+'%':''}): <span style="color:var(--text)">${einzelSumme.toFixed(2)} €</span><br>`;
+  if(gruppeAnzahl > 0) lines += `Gruppenbilder (${gruppeAnzahl} × ${gruppePreis} €${gruppeAufschlag>0?' + '+gruppeAufschlag+'%':''}): <span style="color:var(--text)">${gruppeSumme.toFixed(2)} €</span>`;
+  if(totalMehrkosten > 0) lines += `<br>Mehrkosten Express gesamt: <span style="color:var(--gold2)">+${totalMehrkosten.toFixed(2)} €</span>`;
+  const elLines = document.getElementById('exTotalLines');
+  if(elLines) elLines.innerHTML = lines;
+}
+document.addEventListener('DOMContentLoaded', exCalc);
+if(document.readyState !== 'loading') exCalc();
+
+// ── COLOR ──
+function pickColor(el) {
+  document.querySelectorAll('.color-btn').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  selectedColor = el.dataset.color;
+  colorExtra = parseInt(el.dataset.extra) || 0;
+  const bc = document.getElementById('badgeColor');
+  if(bc) bc.textContent = selectedColor === 'Schwarz/Weiß' ? 'Sw/Ws' : selectedColor;
+  calc();
+}
+function updateBWLabel() {
+  document.getElementById('bwPriceLabel').textContent = `+${n('pBW')} €`;
+}
+
+// ── AUTOCOMPLETE / ORS ──
+function closeDropdown() {
+  const dd = document.getElementById('adresseDropdown');
+  if(dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
+}
+
+function onAdresseChange() {
+  resolvedOrtName = '';
+  acSelectedCoords = null;
+  const addr = v('kundeAdresse').trim();
+  clearTimeout(orsTimeout);
+  clearTimeout(acTimeout);
+  closeDropdown();
+  if(addr.length < 4) {
+    setKmStatus('idle', 'Adresse eingeben → km wird automatisch berechnet');
+    return;
+  }
+  setKmStatus('loading', 'Suche Vorschläge …');
+  acTimeout = setTimeout(() => fetchSuggestions(addr), 500);
+}
+
+async function fetchSuggestions(query) {
+  const key = v('orsKey').trim();
+  if(!key) { setKmStatus('err', 'Kein API Key – in Einstellungen eintragen'); return; }
+  try {
+    const res  = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${key}&text=${encodeURIComponent(query)}&size=5`);
+    const data = await res.json();
+    const features = data.features || [];
+    if(!features.length) { setKmStatus('err', 'Keine Adresse gefunden'); return; }
+    showDropdown(features);
+    setKmStatus('idle', 'Bitte Adresse aus der Liste auswählen');
+  } catch(e) { setKmStatus('err', 'Fehler: ' + e.message); }
+}
+
+function showDropdown(features) {
+  const dd = document.getElementById('adresseDropdown');
+  dd.innerHTML = '';
+  features.forEach(feat => {
+    const props  = feat.properties;
+    const coords = feat.geometry.coordinates;
+    const name   = props.name || props.label || '';
+    const sub    = [props.locality || props.localadmin, props.region, props.country].filter(Boolean).join(', ');
+    const city   = props.locality || props.localadmin || props.name || '';
+    const item = document.createElement('div');
+    item.className = 'autocomplete-item';
+    item.innerHTML = `${name}<small>${sub}</small>`;
+    item.addEventListener('click', () => {
+      document.getElementById('kundeAdresse').value = props.label || name;
+      resolvedOrtName = city ? city.charAt(0).toUpperCase() + city.slice(1) : '';
+      acSelectedCoords = coords;
+      closeDropdown();
+      calcDistanceFromCoords(coords);
+    });
+    dd.appendChild(item);
+  });
+  dd.classList.add('open');
+}
+
+async function calcDistanceFromCoords(destCoords) {
+  const key = v('orsKey').trim();
+  if(!key) { setKmStatus('err', 'Kein API Key'); return; }
+  const start = v('startAdresse') || 'Linnich, Deutschland';
+  setKmStatus('loading', 'Berechne Entfernung …');
+  try {
+    const geo1 = await geocode(start, key);
+    if(!geo1) { setKmStatus('err', 'Startadresse nicht gefunden'); return; }
+    const res = await fetch('https://api.openrouteservice.org/v2/directions/driving-car', {
+      method: 'POST',
+      headers: { 'Authorization': key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ coordinates: [geo1, destCoords] })
+    });
+    const data = await res.json();
+    if(!data.routes?.[0]) { setKmStatus('err', 'Route nicht berechenbar'); return; }
+    const km  = Math.round(data.routes[0].summary.distance / 100) / 10;
+    const min = Math.round(data.routes[0].summary.duration / 60);
+    document.getElementById('kmVal').value = km;
+    lastKmAuto = { km, min };
+    setKmStatus('ok', `${km} km · ca. ${min} min (automatisch)`);
+    calc();
+  } catch(e) { setKmStatus('err', 'Fehler: ' + e.message); }
+}
+
+function setKmStatus(state, text) {
+  document.getElementById('kmDot').className = 'dot dot-' + state;
+  const el = document.getElementById('kmStatusText');
+  el.textContent = text;
+  el.style.color = state === 'ok' ? 'var(--green)' : state === 'err' ? 'var(--red)' : 'var(--muted)';
+}
+
+async function fetchDistance(destination) {
+  const key = v('orsKey').trim();
+  if(!key) { setKmStatus('err', 'Kein API Key – in Einstellungen eintragen'); return; }
+  const start = v('startAdresse') || 'Eupen, Belgien';
+  try {
+    const geo1     = await geocode(start, key);
+    const geo2res  = await geocodeWithName(destination, key);
+    if(!geo1 || !geo2res) { setKmStatus('err', 'Adresse nicht gefunden'); return; }
+    if(geo2res.name) resolvedOrtName = geo2res.name.charAt(0).toUpperCase() + geo2res.name.slice(1);
+    const res = await fetch('https://api.openrouteservice.org/v2/directions/driving-car', {
+      method: 'POST',
+      headers: { 'Authorization': key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ coordinates: [geo1, geo2res.coords] })
+    });
+    const data = await res.json();
+    if(!data.routes?.[0]) { setKmStatus('err', 'Route nicht berechenbar'); return; }
+    const km  = Math.round(data.routes[0].summary.distance / 100) / 10;
+    const min = Math.round(data.routes[0].summary.duration / 60);
+    document.getElementById('kmVal').value = km;
+    lastKmAuto = { km, min };
+    setKmStatus('ok', `${km} km · ca. ${min} min (automatisch)`);
+    calc();
+  } catch(e) { setKmStatus('err', 'Fehler: ' + e.message); }
+}
+
+async function geocode(query, key) {
+  const res  = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${key}&text=${encodeURIComponent(query)}&size=1`);
+  const data = await res.json();
+  const feat = data.features?.[0];
+  return feat ? feat.geometry.coordinates : null;
+}
+async function geocodeWithName(query, key) {
+  const res  = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${key}&text=${encodeURIComponent(query)}&size=1`);
+  const data = await res.json();
+  const feat = data.features?.[0];
+  if(!feat) return null;
+  const props = feat.properties;
+  const name = props.locality || props.localadmin || props.name || '';
+  return { coords: feat.geometry.coordinates, name };
+}
+function openMaps() {
+  const addr  = v('kundeAdresse').trim();
+  const start = v('startAdresse') || 'Eupen, Belgien';
+  window.open(`https://www.google.com/maps/dir/${encodeURIComponent(start)}/${encodeURIComponent(addr||'')}`, '_blank');
+}
+
+// ── STUNDENLOHN ──
+function formatDauer(min) {
+  const h = Math.floor(min / 60), m = Math.round(min % 60);
+  if(h === 0) return `${m} Min.`;
+  if(m === 0) return `${h} Std.`;
+  return `${h} Std. ${m} Min.`;
+}
+function bewertung(eurH) {
+  const minStunde = parseFloat(document.getElementById('pMinStunde')?.value) || 25;
+  const gutStunde = minStunde * 1.4;
+  if(eurH >= gutStunde) return { cls:'good', badge:'badge-good', label:'Sehr gut' };
+  if(eurH >= minStunde) return { cls:'ok',   badge:'badge-ok',   label:'OK' };
+  return                       { cls:'low',  badge:'badge-low',  label:'Zu niedrig' };
+}
+
+function updateStundenlohnDisplay(preisStd, preisMin) {
+  const km         = n('kmVal');
+  const einzeln    = n('einzeln');
+  const gruppe     = n('gruppe');
+  const bilder     = einzeln + gruppe;
+  const minProBild = n('pMinProBild') || 8;
+  const pauschale  = n('pPauschale') || 180;
+  const speed      = n('pSpeed') || 75;
+  const diesel     = parseFloat(document.getElementById('dDiesel')?.value) || 0;
+  const verbr      = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const pMinStunde = parseFloat(document.getElementById('pMinStunde')?.value) || 25;
+
+  if(bilder === 0 && km === 0) {
+    document.getElementById('stundenBox').style.display = 'none';
+    return;
+  }
+
+  const fahrzeitMin = (km * 2 / speed) * 60;
+  const bilderMin   = bilder * minProBild;
+  const gesamtMin   = fahrzeitMin + bilderMin + pauschale;
+  const gesamtStd     = gesamtMin / 60;
+  const dieselAnfahrt  = (verbr / 100) * diesel * km * 2;
+  const heimfahrtAddSt = document.getElementById('heimfahrtAdd')?.checked ?? true;
+  const heimfahrtAbzSt = document.getElementById('heimfahrtAbzug')?.checked ?? true;
+  const heimfahrtKmSt  = parseFloat(document.getElementById('pHeimfahrt')?.value) || 0;
+  const heimfahrtDiesel = (heimfahrtAddSt && heimfahrtAbzSt && heimfahrtKmSt > 0)
+    ? (verbr / 100) * diesel * heimfahrtKmSt : 0;
+  const gesamtEigenkosten = dieselAnfahrt + heimfahrtDiesel;
+
+  const minStundenPreisForDisplay = Math.round(gesamtStd * pMinStunde + gesamtEigenkosten);
+  const effectiveMin = preisMin !== null ? Math.max(preisMin, minStundenPreisForDisplay) : null;
+
+  const lohnStd = (preisStd - gesamtEigenkosten) / gesamtStd;
+  const lohnMin = effectiveMin !== null ? (effectiveMin - gesamtEigenkosten) / gesamtStd : null;
+
+  const box = document.getElementById('stundenBox');
+  box.style.display = 'block';
+  document.getElementById('stundenZeitTotal').textContent = `Gesamt: ${formatDauer(gesamtMin)}`;
+
+  const bStd = bewertung(lohnStd);
+  const stdEl = document.getElementById('stundenStdAmt');
+  stdEl.textContent = `${Math.ceil(lohnStd)} €/h`;
+  stdEl.className   = `stunden-col-price ${bStd.cls}`;
+  const stdBdg = document.getElementById('stundenStdBadge');
+  stdBdg.textContent = bStd.label;
+  stdBdg.className   = `stunden-col-badge ${bStd.badge}`;
+
+  const minEl  = document.getElementById('stundenMinAmt');
+  const minBdg = document.getElementById('stundenMinBadge');
+  if(lohnMin !== null) {
+    const bMin = bewertung(lohnMin);
+    minEl.textContent = `${Math.ceil(lohnMin)} €/h`;
+    minEl.className   = `stunden-col-price ${bMin.cls}`;
+    minBdg.textContent = bMin.label;
+    minBdg.className   = `stunden-col-badge ${bMin.badge}`;
+  } else {
+    minEl.textContent = '—'; minEl.className = 'stunden-col-price';
+    minBdg.textContent = ''; minBdg.className = 'stunden-col-badge';
+  }
+
+  const zr = document.getElementById('stundenZeitRow');
+  let zeitCols = '';
+  if(km > 0)     zeitCols += `<div class="stunden-zeit-col">Fahrzeit<span>${formatDauer(fahrzeitMin)}</span></div>`;
+  if(bilder > 0) zeitCols += `<div class="stunden-zeit-col">${bilder} Bilder × ${minProBild}'<span>${formatDauer(bilderMin)}</span></div>`;
+  zeitCols += `<div class="stunden-zeit-col">Pauschale<span>${formatDauer(pauschale)}</span></div>`;
+  zr.innerHTML = zeitCols;
+
+  const detail = document.getElementById('stundenDetail');
+  let d = `Gesamtzeit: <span>${formatDauer(gesamtMin)}</span>`;
+  if(dieselAnfahrt > 0) d += ` · Diesel Anfahrt: <span>−${dieselAnfahrt.toFixed(2)} €</span>`;
+  if(heimfahrtDiesel > 0) d += ` · Heimfahrt: <span>−${heimfahrtDiesel.toFixed(2)} €</span>`;
+  detail.innerHTML = d;
+}
+
+// ── CALC ──
+function calc() {
+  const pBildE  = n('pExtraE');
+  const pBildG  = n('pExtraG');
+  const pKm     = n('pKm');
+  const pStunde = n('pStunde');
+  const pSpeed  = n('pSpeed') || 75;
+  const pBW     = n('pBW');
+  const einzeln = n('einzeln');
+  const gruppe  = n('gruppe');
+  const km      = n('kmVal');
+  const rechnungOn    = document.getElementById('rechnungToggle')?.checked ?? false;
+  const aufschlagPct  = n('pRechnungAufschlag') || 10;
+
+  const badgeE = document.getElementById('badgeE');
+  const badgeG = document.getElementById('badgeG');
+  if(badgeE) badgeE.textContent = einzeln;
+  if(badgeG) badgeG.textContent = gruppe;
+
+  const bildKostenE = einzeln * pBildE;
+  const bildKostenG = gruppe  * pBildG;
+  const bildKosten  = bildKostenE + bildKostenG;
+  const bwKosten    = colorExtra ? pBW : 0;
+  const fahrtKosten = km * 2 * pKm;
+
+  const heimfahrtKm    = n('pHeimfahrt') || 0;
+  const dieselPreis    = parseFloat(document.getElementById('dDiesel')?.value) || 0;
+  const verbrauchL     = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const heimfahrtAdd   = document.getElementById('heimfahrtAdd')?.checked ?? true;
+  const heimfahrtAbzug = document.getElementById('heimfahrtAbzug')?.checked ?? true;
+  const heimfahrtKosten = heimfahrtKm > 0
+    ? parseFloat(((verbrauchL / 100) * dieselPreis * heimfahrtKm).toFixed(2)) : 0;
+  const heimfahrtZuschlag = heimfahrtAdd ? heimfahrtKosten : 0;
+
+  const hkEl = document.getElementById('heimfahrtKosten');
+  const hdEl = document.getElementById('heimfahrtDetail');
+  if(hkEl) hkEl.textContent = heimfahrtKosten > 0 ? heimfahrtKosten.toFixed(2) + ' €' : '—';
+  if(hdEl) hdEl.textContent = heimfahrtKosten > 0
+    ? `${heimfahrtKm} km × ${verbrauchL}÷100 × ${dieselPreis.toFixed(2)} €/L`
+    : 'Strecke oder Diesel eingeben';
+
+  const baseShootingAndTravel = bildKosten + bwKosten + fahrtKosten;
+  const baseTotal = baseShootingAndTravel + Math.round(heimfahrtZuschlag);
+  const totalBilder = einzeln + gruppe;
+  const totalRound  = Math.round(baseTotal);
+
+  const aufschlagEuro = rechnungOn ? Math.round(baseShootingAndTravel * aufschlagPct / 100) : 0;
+  const preisOptOn    = document.getElementById('optPreisAn')?.checked;
+  const preisOptText  = document.getElementById('optPreisText')?.value.trim() || 'Preis-Option';
+  const preisOptBetrag = preisOptOn ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
+
+  const paypalOn = document.getElementById('paypalToggle')?.checked ?? false;
+  const baseForPaypal = totalRound + aufschlagEuro + Math.round(preisOptBetrag);
+  const paypalFee = paypalOn ? parseFloat((baseForPaypal * 0.0149 + 0.35).toFixed(2)) : 0;
+  const paypalFeeRound = Math.ceil(paypalFee);
+  const displayTotal = baseForPaypal + paypalFeeRound;
+
+  const banner = document.getElementById('rechnungBanner');
+  if(banner) banner.style.display = rechnungOn ? 'block' : 'none';
+  const ppBanner = document.getElementById('paypalBanner');
+  if(ppBanner) {
+    ppBanner.style.display = paypalOn ? 'block' : 'none';
+    const ppFeeEl = document.getElementById('paypalBannerFee');
+    if(ppFeeEl && paypalOn) ppFeeEl.textContent = `+${paypalFeeRound} € (exakt: ${paypalFee.toFixed(2)} €)`;
+  }
+
+  if(km > 0) {
+    document.getElementById('kmInfoBox').style.display = 'block';
+    document.getElementById('kmInfoKm').textContent = `${km} km einfach · ${km*2} km gesamt`;
+    document.getElementById('kmInfoKosten').textContent = `${fahrtKosten.toFixed(2)} €`;
+    const diesel    = parseFloat(document.getElementById('dDiesel')?.value)    || 0;
+    const verbrauch = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+    const dA = (verbrauch / 100) * diesel;
+    const zA = pStunde / pSpeed;
+    const detail = document.getElementById('kmInfoDetail');
+    if(detail) detail.innerHTML =
+      `Diesel: (${verbrauch}÷100×${diesel.toFixed(2)}) × ${km*2} km = <span style="color:var(--text)">${(dA*km*2).toFixed(2)} €</span><br>` +
+      `Fahrzeit: (${pStunde}÷${pSpeed}) × ${km*2} km = <span style="color:var(--text)">${(zA*km*2).toFixed(2)} €</span>`;
+  } else {
+    document.getElementById('kmInfoBox').style.display = 'none';
+  }
+
+  let lines = '';
+  if(einzeln > 0) lines += `${einzeln} Einzelbild${einzeln>1?'er':''} × ${pBildE} €: <span>${bildKostenE.toFixed(0)} €</span>\n`;
+  if(gruppe  > 0) lines += `${gruppe} Gruppenbild${gruppe>1?'er':''} × ${pBildG} €: <span>${bildKostenG.toFixed(0)} €</span>\n`;
+  if(bwKosten > 0) lines += `Schwarz/Weiß Aufpreis: <span>${bwKosten.toFixed(0)} €</span>\n`;
+  if(km > 0)   lines += `Anfahrt hin und zurück (${km*2} km): <span>${fahrtKosten.toFixed(0)} €</span>\n`;
+  if(heimfahrtAdd && heimfahrtKosten > 0) lines += `Heimfahrt Diesel (${heimfahrtKm} km): <span>+${heimfahrtKosten.toFixed(2)} €</span>\n`;
+  if(rechnungOn && aufschlagEuro > 0) lines += `Rechnungsaufschlag (+${aufschlagPct}%): <span>${aufschlagEuro} €</span>\n`;
+  if(preisOptOn && preisOptBetrag > 0) lines += `${preisOptText}: <span>+${preisOptBetrag.toFixed(2)} €</span>\n`;
+  if(paypalOn && paypalFeeRound > 0) lines += `<span style="color:#009cde">PayPal-Gebühren (1,49 % + 0,35 €): <span>+${paypalFeeRound} €</span></span>\n`;
+  if(totalBilder > 0) lines += `${totalBilder} Bilder gesamt`;
+  document.getElementById('totalLines').innerHTML = lines.trim().replace(/\n/g,'<br>');
+
+  const totalLbl = document.getElementById('totalLbl');
+  if(totalLbl) {
+    let lbl = rechnungOn ? 'Gesamtpreis (mit Rechnung)' : 'Gesamtpreis (Angebot)';
+    if(paypalOn) lbl += ' + PayPal';
+    totalLbl.textContent = lbl;
+  }
+
+  const marge   = (n('pMarge') || 30) / 100;
+  const diesel  = parseFloat(document.getElementById('dDiesel')?.value)    || 0;
+  const verbr   = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const eigeneFahrt         = km * 2 * (verbr / 100) * diesel;
+  const shootingNachRabatt  = (bildKosten + bwKosten) * (1 - marge);
+  const minimum             = shootingNachRabatt + fahrtKosten + Math.round(heimfahrtZuschlag);
+  const minRound            = Math.round(minimum);
+
+  const pMinStunde   = n('pMinStunde') || 25;
+  const _minProBild  = n('pMinProBild') || 8;
+  const _pauschale   = n('pPauschale') || 180;
+  const _fahrzeitMin = (km * 2 / pSpeed) * 60;
+  const _bilderMin   = totalBilder * _minProBild;
+  const gesamtStd    = (_fahrzeitMin + _bilderMin + _pauschale) / 60;
+  const dieselNetto  = (verbr / 100) * diesel * km * 2;
+  const minStundenPreis = Math.round(gesamtStd * pMinStunde + dieselNetto + Math.round(heimfahrtZuschlag));
+
+  const sliderMinVal = (totalBilder > 0 || km > 0) ? Math.max(minRound, minStundenPreis) : 0;
+  const maxRound     = Math.max(Math.round(baseTotal * 1.3), sliderMinVal);
+
+  updateSlider(totalRound, sliderMinVal, maxRound);
+  if(!_loadingFromURL) document.getElementById('preisSlider').value = totalRound;
+  document.getElementById('totalAmt').textContent = displayTotal + ' €';
+  renderSliderAmt();
+
+  const kb = document.getElementById('kostenBox');
+  if(kb) kb.style.display = (totalBilder > 0 || km > 0) ? 'block' : 'none';
+
+  const ml = document.getElementById('margeLabel');
+  if(ml) ml.textContent = `−${Math.round(marge*100)}%`;
+
+  const heimfahrtAbzugBetrag = heimfahrtAbzug ? Math.round(heimfahrtKosten) : 0;
+  const gewinn = totalRound - Math.round(eigeneFahrt) - heimfahrtAbzugBetrag;
+  const ka = document.getElementById('kostenAmt');
+  if(ka) ka.textContent = gewinn + ' €';
+
+  const kd = document.getElementById('kostenDetail');
+  if(kd) {
+    let kdParts = [];
+    if(km > 0) {
+      kdParts.push(`−Diesel Anfahrt: ${eigeneFahrt.toFixed(2)} €`);
+      kdParts.push(`+Fahrtkosten: ${fahrtKosten.toFixed(2)} €`);
+    }
+    if(heimfahrtAbzug && heimfahrtKosten > 0) {
+      kdParts.push(`−Heimfahrt: ${heimfahrtKosten.toFixed(2)} €`);
+    }
+    kd.innerHTML = kdParts.length ? kdParts.join('<br>') : '–';
+  }
+
+  const ma = document.getElementById('minimumAmt');
+  if(ma) ma.textContent = sliderMinVal + ' €';
+
+  const md = document.getElementById('minimumDetail');
+  if(md) {
+    let detail = `Shooting −${Math.round(marge*100)}%: ${shootingNachRabatt.toFixed(0)} €`;
+    if(km > 0) detail += `<br>Fahrt: ${fahrtKosten.toFixed(0)} €`;
+    if(heimfahrtAdd && heimfahrtKosten > 0) detail += `<br>Heimfahrt: ${heimfahrtKosten.toFixed(2)} €`;
+    if(minStundenPreis > minRound) detail += `<br><span style="color:var(--gold)">▲ ${pMinStunde} €/h Mindestlohn aktiv</span>`;
+    md.innerHTML = detail;
+  }
+
+  document.getElementById('infoEinzeln').textContent = `${pBildE} €/Bild`;
+  document.getElementById('infoGruppe').textContent  = `${pBildG} €/Bild`;
+  updateBWLabel();
+
+  updateStundenlohnDisplay(totalRound, sliderMinVal);
+}
+
+// ── TEXT ──
+function buildText() {
+  const adresse = v('kundeAdresse').trim();
+  const parts = adresse.split(',');
+  const ortRaw = parts.length > 1 ? parts[parts.length-1].trim().replace(/^\d+\s*/,'') : adresse || '–';
+  const ort = resolvedOrtName
+    ? resolvedOrtName
+    : (ortRaw && ortRaw !== '–' ? ortRaw.charAt(0).toUpperCase() + ortRaw.slice(1) : ortRaw);
+
+  const einzeln    = n('einzeln');
+  const gruppe     = n('gruppe');
+  const montage    = document.getElementById('montage').checked;
+  const pBildE     = n('pExtraE');
+  const pBildG     = n('pExtraG');
+  const pKm        = n('pKm');
+  const pBW        = n('pBW');
+  const km         = n('kmVal');
+  const bildKostenE= einzeln * pBildE;
+  const bildKostenG= gruppe  * pBildG;
+  const bwKosten   = colorExtra ? pBW : 0;
+  const fahrtKosten= km * 2 * pKm;
+  const baseShootingAndTravel = bildKostenE + bildKostenG + bwKosten + fahrtKosten;
+  const rechnungOn = document.getElementById('rechnungToggle')?.checked ?? false;
+  const aufschlagPct = n('pRechnungAufschlag') || 10;
+  const aufschlagEuro = rechnungOn ? Math.round(baseShootingAndTravel * aufschlagPct / 100) : 0;
+
+  const heimfahrtAddT  = document.getElementById('heimfahrtAdd')?.checked ?? true;
+  const heimfahrtKmT   = parseFloat(document.getElementById('pHeimfahrt')?.value) || 0;
+  const dieselT        = parseFloat(document.getElementById('dDiesel')?.value) || 0;
+  const verbrT         = parseFloat(document.getElementById('dVerbrauch')?.value) || 0;
+  const heimfahrtKostenT = heimfahrtAddT && heimfahrtKmT > 0
+    ? parseFloat(((verbrT/100)*dieselT*heimfahrtKmT).toFixed(2)) : 0;
+
+  const sliderBase = parseInt(document.getElementById('preisSlider')?.value) || Math.round(baseShootingAndTravel + heimfahrtKostenT);
+  const sliderVal  = rechnungOn ? sliderBase + Math.round(sliderBase * aufschlagPct / 100) : sliderBase;
+  const totalBilder= einzeln + gruppe;
+  const pExtraOptE = n('pExtraOptE');
+  const pExtraOptG = n('pExtraOptG');
+  const name = v('kundenName').trim();
+  const preisOptOnT    = document.getElementById('optPreisAn')?.checked;
+  const preisOptTextT  = document.getElementById('optPreisText')?.value.trim() || 'Preis-Option';
+  const preisOptBetragT = preisOptOnT ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
+  const paypalOnT = document.getElementById('paypalToggle')?.checked ?? false;
+  const paypalFeeT = paypalOnT ? Math.ceil((sliderVal + Math.round(preisOptBetragT)) * 0.0149 + 0.35) : 0;
+  const sliderValFinal = sliderVal + Math.round(preisOptBetragT) + paypalFeeT;
+
+  let t = '';
+  t += name ? `Hallo ${name},` : `Hallo,`;
+  t += `\n\nhier dein Angebot für das Katzen-Fotoshooting bei dir Zuhause${ort && ort !== '–' ? ` in ${ort}` : ''}:`;
+  t += `\n\nSHOOTINGKOSTEN inkl. Anfahrt: ${sliderValFinal} €`;
+  if(paypalOnT && paypalFeeT > 0) t += ` (inkl. ${paypalFeeT} € PayPal-Gebühren)`;
+  if(preisOptOnT && preisOptBetragT > 0) t += `\ninkl. ${preisOptTextT} von ${preisOptBetragT.toFixed(2)} €`;
+  t += `\n\nEnthaltene Leistungen:`;
+  t += `\n* Hintergrundfarbe: ${selectedColor}`;
+  t += `\n* ${einzeln} Katzen-Einzelaufnahmen`;
+  t += `\n* ${gruppe} Mensch/Tier- oder Gruppenbild${gruppe!==1?'er':''}`;
+  t += `\n* ${totalBilder} professionell bearbeitete Bilder im typischen FotoArtisan-Stil: detailreich, hochwertig und in maximaler Auflösung (digital, Format: jpg)`;
+  t += `\n* Zeit für Auf-/Abbau und Kennenlernen ist inklusive`;
+  t += `\n\nBILDBEARBEITUNG & LIEFERZEIT`;
+  t += `\nDie reguläre Bearbeitungszeit beträgt bis zu 14 Tage nach dem Fototermin.`;
+  t += `\nExpress-Bearbeitung ist auf Anfrage und gegen Aufpreis möglich.`;
+  t += `\n\nNUTZUNGSRECHTE`;
+  t += `\nDu darfst deine Fotos zeitlich und örtlich unbegrenzt für private Zwecke nutzen. Eine kommerzielle Nutzung durch Dritte ist nur nach Rücksprache erlaubt. Das Urheberrecht bleibt beim Fotografen.`;
+  t += `\n\nOPTIONALE ZUSATZLEISTUNGEN`;
+  t += `\n* Jedes weitere Einzelbild: ${pExtraOptE} €`;
+  t += `\n* Jedes weitere Gruppenbild: ${pExtraOptG} €`;
+  if(montage) t += `\n* Fotomontage (z. B. Gruppenbild >6 Katzen): auf Anfrage`;
+  if(document.getElementById('optRueck')?.checked)
+    t += `\n\nBitte Rückmeldung, ob ein Fototermin, wie oben beschrieben, infrage kommt.`;
+  if(document.getElementById('optBildbearbeitung')?.checked)
+    t += `\n\nIch bearbeite eure Bilder natürlich (Licht, Farben, kleine Verschmutzungen), ohne das Aussehen eures Tiers zu verändern. Optische Veränderungen wie Fellfarbe, Körperform oder das Entfernen dauerhafter Merkmale mache ich bewusst nicht.`;
+  if(document.getElementById('optRate')?.checked)
+    t += `\n\nRatenzahlung ist möglich — sprich uns gerne an.`;
+  if(document.getElementById('optEigenAn')?.checked) {
+    const eigen = document.getElementById('optEigenText')?.value.trim();
+    if(eigen) t += `\n\n${eigen}`;
+  }
+  if(document.getElementById('optPark')?.checked)
+    t += `\n\nHINWEIS: Eventuell anfallende Parkgebühren werden eins zu eins weiterberechnet.`;
+  return t;
+}
+
+function copyText() {
+  const text = buildText();
+  const btn  = document.getElementById('copyBtn');
+  const done = () => {
+    btn.classList.add('ok');
+    btn.textContent = '✓  Kopiert!';
+    showToast();
+    setTimeout(() => { btn.classList.remove('ok'); btn.innerHTML = '📋 &nbsp; Text kopieren für WhatsApp'; }, 3000);
+  };
+  if(navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallback(text, done));
+  } else { fallback(text, done); }
+}
+function fallback(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;';
+  document.body.appendChild(ta); ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta); cb();
+}
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// 🟠 HUBSPOT INTEGRATION (Einfügung 4 — JS)
+// ══════════════════════════════════════════════════════════════
+function hsOpenModal() {
+  // Felder vorausfüllen
+  const name = v('kundenName').trim();
+  document.getElementById('hsContactName').value = name;
+  document.getElementById('hsDealName').value = name ? `Katzen-Shooting ${name}` : 'Katzen-Shooting';
+
+  // Betrag aus aktuellem totalAmt
+  const amtText = document.getElementById('totalAmt').textContent.replace(/[^0-9]/g, '');
+  const amt = amtText ? parseInt(amtText) : 0;
+  document.getElementById('hsDealAmt').textContent = amt ? `${amt} €` : '— €';
+
+  // Info-Zeile
+  const einzeln = n('einzeln'), gruppe = n('gruppe'), km = n('kmVal');
+  const parts = [];
+  if(einzeln > 0) parts.push(`${einzeln} Einzelbild${einzeln>1?'er':''}`);
+  if(gruppe  > 0) parts.push(`${gruppe} Gruppenbild${gruppe>1?'er':''}`);
+  if(km > 0)      parts.push(`${km} km Anfahrt`);
+  document.getElementById('hsDealInfo').textContent = parts.join(' · ') || '';
+
+  document.getElementById('hsStatus').textContent = '';
+  document.getElementById('hsStatus').className = 'hs-status';
+  document.getElementById('hsSaveBtn').disabled = false;
+  document.getElementById('hsOverlay').style.display = 'flex';
+}
+
+function hsCloseModal() {
+  document.getElementById('hsOverlay').style.display = 'none';
+}
+
+async function hsSaveDeal() {
+  const token = v('hubspotToken').trim();
+  if(!token) {
+    hsSetStatus('Kein HubSpot Token — bitte in Einstellungen eintragen.', 'err');
+    return;
+  }
+
+  const contactName = document.getElementById('hsContactName').value.trim();
+  const email       = document.getElementById('hsEmail').value.trim();
+  const tel         = document.getElementById('hsTel').value.trim();
+  const dealName    = document.getElementById('hsDealName').value.trim() || 'Katzen-Shooting';
+  const stage       = document.getElementById('hsStage').value;
+  const amtText     = document.getElementById('hsDealAmt').textContent.replace(/[^0-9]/g, '');
+  const amount      = amtText ? parseInt(amtText) : 0;
+
+  if(!contactName) { hsSetStatus('Bitte einen Kontakt-Namen eingeben.', 'err'); return; }
+
+  const btn = document.getElementById('hsSaveBtn');
+  btn.disabled = true;
+  btn.textContent = '… wird gespeichert';
+  hsSetStatus('', '');
+
+  const CORS_PROXY = 'https://corsproxy.io/?';
+  const HS_BASE    = 'https://api.hubapi.com';
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
+
+  try {
+    // 1. Kontakt anlegen / suchen
+    let contactId = null;
+    const nameParts = contactName.split(' ');
+    const firstname = nameParts[0] || '';
+    const lastname  = nameParts.slice(1).join(' ') || '';
+
+    const contactProps = { firstname, lastname };
+    if(email) contactProps.email = email;
+    if(tel)   contactProps.phone = tel;
+
+    hsSetStatus('Kontakt anlegen …', '');
+    const contactRes = await fetch(CORS_PROXY + encodeURIComponent(`${HS_BASE}/crm/v3/objects/contacts`), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ properties: contactProps })
+    });
+    const contactData = await contactRes.json();
+
+    if(contactRes.ok) {
+      contactId = contactData.id;
+    } else if(contactData.category === 'CONFLICT' && contactData.message?.includes('existing object')) {
+      // Kontakt existiert bereits — ID aus Fehlermeldung extrahieren
+      const match = contactData.message.match(/ID: (\d+)/);
+      if(match) contactId = match[1];
+      else contactId = null; // Deal trotzdem anlegen
+    } else {
+      throw new Error(contactData.message || 'Kontakt-Fehler');
+    }
+
+    // 2. Deal anlegen
+    hsSetStatus('Deal anlegen …', '');
+    const dealRes = await fetch(CORS_PROXY + encodeURIComponent(`${HS_BASE}/crm/v3/objects/deals`), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        properties: {
+          dealname:    dealName,
+          amount:      amount,
+          dealstage:   stage,
+          pipeline:    'default',
+          closedate:   new Date(Date.now() + 30 * 24 * 3600000).toISOString().split('T')[0]
+        }
+      })
+    });
+    const dealData = await dealRes.json();
+    if(!dealRes.ok) throw new Error(dealData.message || 'Deal-Fehler');
+    const dealId = dealData.id;
+
+    // 3. Kontakt mit Deal verknüpfen
+    if(contactId) {
+      hsSetStatus('Verknüpfung …', '');
+      await fetch(CORS_PROXY + encodeURIComponent(`${HS_BASE}/crm/v3/objects/deals/${dealId}/associations/contacts/${contactId}/3`), {
+        method: 'PUT', headers
+      });
+    }
+
+    hsSetStatus(`✓ Deal #${dealId} angelegt${contactId ? ` · Kontakt #${contactId}` : ''}`, 'ok');
+    const hsBtn = document.getElementById('hsBtn');
+    hsBtn.classList.add('ok');
+    hsBtn.textContent = '✓ In HubSpot gespeichert';
+    setTimeout(() => {
+      hsBtn.classList.remove('ok');
+      hsBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="12" y1="12" x2="12" y2="12"/><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg>💼 In HubSpot speichern';
+      hsCloseModal();
+    }, 2000);
+
+  } catch(e) {
+    hsSetStatus('Fehler: ' + e.message, 'err');
+    btn.disabled = false;
+    btn.textContent = '💼 Deal speichern';
+  }
+}
+
+function hsSetStatus(msg, type) {
+  const el = document.getElementById('hsStatus');
+  el.textContent = msg;
+  el.className = 'hs-status' + (type ? ' ' + type : '');
+}
+
+// ══════════════════════════════════════════════════════════════
+// 🐈 WERBUNG — REFERENZLISTE
+// ══════════════════════════════════════════════════════════════
+const WERB_RASSE_MAP = {
+  Bengal:          ["Bella Vista Bengalen"],
+  BKH:             ["BKH Cattery from Dream of Colour",
+                    "BKH Cattery vom Indeland",
+                    "BKH vom Märchenviertel",
+                    "ZG Mühlehorn's BKH & Birma (Schweiz)"],
+  Birma:           ["ZG Mühlehorn's BKH & Birma (Schweiz)",
+                    "Ruhrtalbirmchen"],
+  Burma:           ["Burma vom Hardtsee",
+                    "Burma Shenfeld",
+                    "Burmezen Cattery Burmadorable"],
+  DeutschLanghaar: ["Deutsch Langhaar vom Wästertal"],
+  DevonRex:        ["Devon Rex Nuribor",
+                    "Devon Rex Rhenania",
+                    "Devon Rex Schwabenland",
+                    "Devon Rex von der Lohe"],
+  MCO:             ["MCO Vom drei Galgenberg",
+                    "MCO of Blue Erftpaws"],
+  NFO:             ["NFO von der Hees"],
+  Peterbald:       ["Peterbald Hex Hex de"],
+  Ragdoll:         ["Ragdolls Nonadidolls",
+                    "Ragdolls von Chawerim"],
+  RussischBlau:    ["Russisch Blau for Muhabbatim"],
+  Savannah:        ["Savannah Cattery SavVal"],
+  Selkirk:         ["Selkirk Luxhausen (Luxemburg)"],
+  Sibirier:        ["Sibirier & Neva Masquerade vom Niederrhein",
+                    "Sibirischen Katzen von Magical Lights",
+                    "Sibierer – Cattery Dorofei (Niederlande)"],
+  Siam:            ["Siam Door Willfamous (Niederlande)"],
+};
+
+const WERB_ALL_REFS = [
+  {name:"Bella Vista Bengalen",          rasse:"Bengal"},
+  {name:"BKH Cattery from Dream of Colour", rasse:"BKH"},
+  {name:"BKH Cattery vom Indeland",      rasse:"BKH"},
+  {name:"BKH vom Märchenviertel",        rasse:"BKH"},
+  {name:"ZG Mühlehorn's BKH & Birma (Schweiz)", rasse:"BKH/Birma"},
+  {name:"Burma vom Hardtsee",            rasse:"Burma"},
+  {name:"Burma Shenfeld",                rasse:"Burma"},
+  {name:"Burmezen Cattery Burmadorable", rasse:"Burma"},
+  {name:"Deutsch Langhaar vom Wästertal",rasse:"Dt. Langhaar"},
+  {name:"Devon Rex Nuribor",             rasse:"Devon Rex"},
+  {name:"Devon Rex Rhenania",            rasse:"Devon Rex"},
+  {name:"Devon Rex Schwabenland",        rasse:"Devon Rex"},
+  {name:"Devon Rex von der Lohe",        rasse:"Devon Rex"},
+  {name:"MCO Vom drei Galgenberg",       rasse:"MCO"},
+  {name:"MCO of Blue Erftpaws",          rasse:"MCO"},
+  {name:"NFO von der Hees",              rasse:"NFO"},
+  {name:"Peterbald Hex Hex de",          rasse:"Peterbald"},
+  {name:"Ragdolls Nonadidolls",          rasse:"Ragdoll"},
+  {name:"Ragdolls von Chawerim",         rasse:"Ragdoll"},
+  {name:"Russisch Blau for Muhabbatim",  rasse:"Russ. Blau"},
+  {name:"Ruhrtalbirmchen",               rasse:"Birma"},
+  {name:"Savannah Cattery SavVal",       rasse:"Savannah"},
+  {name:"Selkirk Luxhausen (Luxemburg)", rasse:"Selkirk"},
+  {name:"Sibirier & Neva Masquerade vom Niederrhein", rasse:"Sibirier"},
+  {name:"Sibirischen Katzen von Magical Lights",      rasse:"Sibirier"},
+  {name:"Sibierer – Cattery Dorofei (Niederlande)",   rasse:"Sibirier"},
+  {name:"Siam Door Willfamous (Niederlande)",         rasse:"Siam"},
+];
+
+// ── WERBUNG STATE ──
+let werbAutoSelected = [];
+let werbExtraSelected = [];
+let werbAccOpen = false;
+
+function werbToggleAcc() {
+  werbAccOpen = !werbAccOpen;
+  document.getElementById('werbAccHead').classList.toggle('open', werbAccOpen);
+  document.getElementById('werbAccBody').classList.toggle('open', werbAccOpen);
+}
+
+function werbOnRasseChange() {
+  const rasse = document.getElementById('werbRasse').value;
+  werbAutoSelected = rasse ? (WERB_RASSE_MAP[rasse] || []) : [];
+  const box  = document.getElementById('werbAutoBox');
+  const list = document.getElementById('werbAutoList');
+  if (werbAutoSelected.length) {
+    box.style.display = 'block';
+    list.innerHTML = werbAutoSelected.map(n =>
+      `<div class="werb-auto-chip"><div class="werb-auto-dot"></div><span>${n}</span></div>`
+    ).join('');
+  } else {
+    box.style.display = 'none';
+  }
+  werbRender();
+}
+
+function werbToggleExtra(name, el) {
+  if (werbExtraSelected.includes(name)) {
+    werbExtraSelected = werbExtraSelected.filter(n => n !== name);
+    el.classList.remove('selected');
+    el.querySelector('.werb-check').textContent = '';
+  } else {
+    werbExtraSelected.push(name);
+    el.classList.add('selected');
+    el.querySelector('.werb-check').textContent = '✓';
+  }
+  document.getElementById('werbExtraBadge').textContent = werbExtraSelected.length + ' gewählt';
+  werbRender();
+}
+
+function werbBuildExtraList() {
+  const list = document.getElementById('werbExtraList');
+  list.innerHTML = WERB_ALL_REFS.map(r => {
+    const safe = r.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<div class="werb-ref-chip" onclick="werbToggleExtra('${safe}',this)">
+      <div class="werb-check"></div>
+      <span>${r.name}</span>
+      <span class="werb-ref-tag">${r.rasse}</span>
+    </div>`;
+  }).join('');
+}
+
+let werbLang = 'DE';
+
+function werbSetLang(lang) {
+  werbLang = lang;
+  const btnDE = document.getElementById('werbLangDE');
+  const btnEN = document.getElementById('werbLangEN');
+  if (lang === 'DE') {
+    btnDE.style.border = '1px solid var(--gold)'; btnDE.style.background = 'var(--gold-dim)'; btnDE.style.color = 'var(--gold2)';
+    btnEN.style.border = '1px solid var(--border2)'; btnEN.style.background = 'var(--s2)'; btnEN.style.color = 'var(--muted)';
+  } else {
+    btnEN.style.border = '1px solid var(--gold)'; btnEN.style.background = 'var(--gold-dim)'; btnEN.style.color = 'var(--gold2)';
+    btnDE.style.border = '1px solid var(--border2)'; btnDE.style.background = 'var(--s2)'; btnDE.style.color = 'var(--muted)';
+  }
+  werbRender();
+}
+
+function werbRender() {
+  const name = document.getElementById('werbName').value.trim() || '[Name]';
+  const combined = [...new Set([...werbAutoSelected, ...werbExtraSelected])];
+
+  let text;
+  if (werbLang === 'EN') {
+    const refStrEN = combined.length > 0 ? combined.join(', ') : '[select references]';
+    text =
+`Hello ${name},
+
+This is Sabine from FotoArtisan.
+I just wanted to check if you would be interested in a professional photoshoot for your beautiful cats (adult cats and/or kittens). I specialise in cat photography and can come to your home with my mobile studio.
+
+Below are some of my references from catteries, such as ${refStrEN}
+
+You can find more details at www.fotoartisan.de
+
+What do you think? Would you be interested in a very special photoshoot?
+I'd love to hear from you to find out if you'd like more information.
+
+Best regards,
+Sabine from FotoArtisan`;
+  } else {
+    const refStrDE = combined.length > 0 ? combined.join(', ') : '[Referenzen wählen]';
+    text =
+`Hallo ${name},
+
+hier ist Sabine von fotoArtisan.
+Ich wollte nachfragen, ob ich grundsätzlich Dein Interesse an einem professionellen Fotoshooting für Eure wunderschönen Fellnasen (Zuchtiere und/oder Kitten) wecken kann. Ich bin auf Katzenfotografie spezialisiert und komme mit meinem mobilen Studio direkt zu Euch nach Hause.
+
+Hier ein paar meiner Cattery-Referenzen, z. B. ${refStrDE}
+
+Zum Stöbern: www.fotoartisan.de
+
+Wie klingt das für Dich? Hättest Du Lust auf ein Erlebnisshooting der besonderen Art?
+Ich freue mich über ein kurzes Feedback, ob Du an weiteren Details interessiert bist.
+
+Liebe Grüße
+Sabine von fotoArtisan`;
+  }
+
+  document.getElementById('werbTextPreview').textContent = text;
+  const btn = document.getElementById('werbCopyBtn');
+  if (!btn.classList.contains('ok')) {
+    btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.68 3.41 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 16z"/></svg> ${werbLang === 'EN' ? 'Copy text for WhatsApp' : 'Text kopieren für WhatsApp'}`;
+  }
+}
+
+function werbCopyWA() {
+  const text = document.getElementById('werbTextPreview').textContent;
+  const btn  = document.getElementById('werbCopyBtn');
+  const done = () => {
+    btn.classList.add('ok');
+    btn.textContent = '✓  Kopiert!';
+    setTimeout(() => {
+      btn.classList.remove('ok');
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.68 3.41 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 16z"/></svg> Text kopieren für WhatsApp';
+    }, 3000);
+  };
+  if(navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallback(text, done));
+  } else { fallback(text, done); }
+}
+
+// ── URL IMPORT ──
+let urlImportOpen = true;
+let urlImportPhone = '';
+
+function urlImportToggle() {
+  urlImportOpen = !urlImportOpen;
+  document.getElementById('urlImportBody').style.display = urlImportOpen ? 'block' : 'none';
+  document.getElementById('urlImportArrow').style.transform = urlImportOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+}
+
+function urlSetStatus(msg, type) {
+  const el = document.getElementById('urlStatus');
+  el.className = 'url-status ' + type;
+  el.textContent = msg;
+}
+
+async function doUrlImport() {
+  const raw = document.getElementById('urlImportInput').value.trim();
+  if (!raw) { urlSetStatus('Bitte eine URL eingeben.', 'err'); return; }
+  const btn = document.getElementById('urlImportBtn');
+  btn.disabled = true; btn.textContent = '…';
+  urlSetStatus('Claude liest das Impressum …', 'loading');
+  document.getElementById('urlResultBlock').style.display = 'none';
+
+  const prompt = `Rufe das Impressum dieser Website ab und extrahiere folgende Daten: ${raw}
+
+Antworte NUR mit einem JSON-Objekt (kein Markdown, keine Erklärung):
+{
+  "name": "Vorname Nachname der Inhaberin",
+  "cattery": "Name der Zucht / Cattery",
+  "rasse": "Katzenrasse (z.B. Birma, BKH, Maine Coon, ...)",
+  "rasseKey": "eines von: Bengal, BKH, Birma, Burma, DeutschLanghaar, DevonRex, MCO, NFO, Peterbald, Ragdoll, RussischBlau, Savannah, Selkirk, Sibirier, Siam — oder leer lassen",
+  "tel": "Telefonnummer im Format +49... (für WhatsApp)"
+}
+Wenn ein Feld nicht gefunden wird, leeres String verwenden.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const json = await res.json();
+
+    let text = '';
+    if (json.content) {
+      for (const block of json.content) {
+        if (block.type === 'text') text += block.text;
+      }
+    }
+
+    text = text.replace(/```json|```/g, '').trim();
+    const start = text.indexOf('{');
+    const end   = text.lastIndexOf('}');
+    if (start === -1 || end === -1) throw new Error('Kein JSON gefunden');
+    const data = JSON.parse(text.slice(start, end + 1));
+
+    urlImportPhone = data.tel || '';
+    document.getElementById('urlResName').textContent    = data.name    || '—';
+    document.getElementById('urlResCattery').textContent = data.cattery || '—';
+    document.getElementById('urlResRasse').textContent   = data.rasse   || '—';
+    document.getElementById('urlResTel').textContent     = data.tel     || '—';
+
+    const waLink = document.getElementById('urlWaLink');
+    if (data.tel) {
+      waLink.href = 'https://wa.me/' + data.tel.replace(/[^0-9+]/g, '');
+      waLink.style.display = 'flex';
+    } else {
+      waLink.style.display = 'none';
+    }
+
+    document.getElementById('urlResultBlock').style.display = 'block';
+    urlSetStatus('✓ Stammdaten aus Impressum gelesen.', 'ok');
+  } catch (e) {
+    urlSetStatus('Fehler beim Lesen: ' + e.message, 'err');
+  }
+
+  btn.disabled = false; btn.textContent = 'Lesen';
+}
+
+function urlFillWerbung() {
+  const name = document.getElementById('urlResName').textContent.trim();
+  if (name && name !== '—') {
+    const vorname = name.split(' ')[0];
+    document.getElementById('werbName').value = vorname;
+  }
+  const rasseKey = document.getElementById('urlResRasse').textContent.trim();
+  const sel = document.getElementById('werbRasse');
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value && rasseKey.toLowerCase().includes(sel.options[i].value.toLowerCase())) {
+      sel.value = sel.options[i].value; break;
+    }
+  }
+  werbOnRasseChange();
+  werbRender();
+  document.getElementById('werbName').scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+// Init Werbung-Tab
+werbBuildExtraList();
+werbRender();
+
+// ── URL STATE ──
+function buildStateURL() {
+  const state = {
+    n:  v('kundenName'),
+    a:  v('kundeAdresse'),
+    e:  v('einzeln'),
+    g:  v('gruppe'),
+    km: v('kmVal'),
+    c:  selectedColor,
+    ru: document.getElementById('optRueck')?.checked ? 1 : 0,
+    pa: document.getElementById('optPark')?.checked  ? 1 : 0,
+    ra: document.getElementById('optRate')?.checked  ? 1 : 0,
+    re: document.getElementById('rechnungToggle')?.checked ? 1 : 0,
+    mo: document.getElementById('montage')?.checked  ? 1 : 0,
+    ea: document.getElementById('optEigenAn')?.checked ? 1 : 0,
+    et: v('optEigenText'),
+    pa2: document.getElementById('optPreisAn')?.checked ? 1 : 0,
+    pt:  v('optPreisText'),
+    pb:  v('optPreisBetrag'),
+    sl: document.getElementById('preisSlider')?.value,
+  };
+  const params = new URLSearchParams();
+  Object.entries(state).forEach(([k, val]) => { if(val !== '' && val !== 0 && val !== '0') params.set(k, val); });
+  return location.href.split('?')[0] + '?' + params.toString();
+}
+
+function shareLink() {
+  const url = buildStateURL();
+  const btn = document.getElementById('shareBtn');
+  const done = () => {
+    btn.classList.add('ok');
+    btn.textContent = '✓  Link kopiert!';
+    setTimeout(() => {
+      btn.classList.remove('ok');
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:6px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Angebot als Link speichern / teilen';
+    }, 3000);
+  };
+  if(navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(url).then(done).catch(() => fallback(url, done));
+  } else { fallback(url, done); }
+}
+
+function loadFromURL() {
+  const params = new URLSearchParams(location.search);
+  if(!params.has('n') && !params.has('e') && !params.has('km')) return;
+
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+  const chk = (id, val) => { const el = document.getElementById(id); if(el) el.checked = !!parseInt(val); };
+
+  if(params.has('n'))  set('kundenName', params.get('n'));
+  if(params.has('a'))  set('kundeAdresse', params.get('a'));
+  if(params.has('e'))  set('einzeln', params.get('e'));
+  if(params.has('g'))  set('gruppe', params.get('g'));
+  if(params.has('km')) set('kmVal', params.get('km'));
+  if(params.has('ru')) chk('optRueck', params.get('ru'));
+  if(params.has('pa')) chk('optPark', params.get('pa'));
+  if(params.has('ra')) chk('optRate', params.get('ra'));
+  if(params.has('re')) chk('rechnungToggle', params.get('re'));
+  if(params.has('mo')) chk('montage', params.get('mo'));
+  if(params.has('ea')) chk('optEigenAn', params.get('ea'));
+  if(params.has('et')) set('optEigenText', params.get('et'));
+  if(params.has('pa2')) chk('optPreisAn', params.get('pa2'));
+  if(params.has('pt')) set('optPreisText', params.get('pt'));
+  if(params.has('pb')) set('optPreisBetrag', params.get('pb'));
+
+  if(params.has('c')) {
+    const c = params.get('c');
+    document.querySelectorAll('.color-btn').forEach(btn => {
+      if(btn.dataset.color === c) pickColor(btn);
+    });
+  }
+
+  toggleEigenText();
+  togglePreisOption();
+  updatePreisPreview();
+  _loadingFromURL = true;
+  calc();
+  _loadingFromURL = false;
+
+  const nameForTitle = params.get('n') || '';
+  if(nameForTitle.trim()) {
+    document.title = nameForTitle.trim() + ' / Angebot';
+  }
+
+  if(params.has('sl')) {
+    const sl = document.getElementById('preisSlider');
+    if(sl) {
+      const savedVal = parseInt(params.get('sl'));
+      const minVal = parseInt(sl.min) || 0;
+      const maxVal = parseInt(sl.max) || 9999;
+      sl.value = Math.max(minVal, Math.min(maxVal, savedVal));
+      renderSliderAmt();
+      const rechnungOn = document.getElementById('rechnungToggle')?.checked ?? false;
+      const aufschlag = parseFloat(document.getElementById('pRechnungAufschlag')?.value) || 10;
+      const preisOptOn = document.getElementById('optPreisAn')?.checked;
+      const preisOptBetrag = preisOptOn ? (parseFloat(document.getElementById('optPreisBetrag')?.value) || 0) : 0;
+      const base = parseInt(sl.value);
+      const display = (rechnungOn ? Math.round(base * (1 + aufschlag/100)) : base) + Math.round(preisOptBetrag);
+      document.getElementById('totalAmt').textContent = display + ' €';
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// 🟢 SUPABASE – KUNDENDATEN & ANGEBOTS-HISTORIE
+// ══════════════════════════════════════════════════════════════
+let sbKunde = null;          // aktuell ausgewählter Kunde {id, name, adresse, ort, km}
+let sbLetztesAngebot = null; // letztes gespeichertes Angebot dieses Kunden
+let sbSucheTimeout = null;
+
+function sbCfg() {
+  const url = v('supabaseUrl').trim().replace(/\/+$/, '');
+  const key = v('supabaseKey').trim();
+  return (url && key) ? { url, key } : null;
+}
+
+async function sbFetch(path, opts = {}) {
+  const cfg = sbCfg();
+  if(!cfg) throw new Error('Supabase nicht konfiguriert – URL und Key in Einstellungen eintragen');
+  const headers = { apikey: cfg.key, 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  // Alter anon-Key (JWT) zusätzlich als Bearer; neuer Publishable Key nur als apikey
+  if(cfg.key.startsWith('eyJ')) headers.Authorization = 'Bearer ' + cfg.key;
+  const res = await fetch(`${cfg.url}/rest/v1/${path}`, { ...opts, headers });
+  const txt = await res.text();
+  let data = null;
+  if(txt) { try { data = JSON.parse(txt); } catch(e) { data = { message: txt }; } }
+  if(!res.ok) throw new Error(data?.message || `HTTP ${res.status}`);
+  return data;
+}
+
+function sbEsc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function sbDatum(d) { return d ? new Date(d).toLocaleDateString('de-DE') : ''; }
+
+function sbToast(msg) {
+  const t = document.getElementById('toast');
+  const old = t.textContent;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => { t.textContent = old; }, 300);
+  }, 2500);
+}
+
+// ── Suche ──
+function sbCloseDropdown() {
+  const dd = document.getElementById('sbKundeDropdown');
+  if(dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
+}
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('#sbKundeSuche') && !e.target.closest('#sbKundeDropdown')) sbCloseDropdown();
+});
+
+function sbOnSuche() {
+  clearTimeout(sbSucheTimeout);
+  const q = v('sbKundeSuche').trim();
+  if(q.length < 2) { sbCloseDropdown(); return; }
+  sbSucheTimeout = setTimeout(() => sbSuche(q), 300);
+}
+
+async function sbSuche(q) {
+  const dd = document.getElementById('sbKundeDropdown');
+  const term = q.replace(/[,()*"]/g, ' ').trim();
+  try {
+    const filter = encodeURIComponent(
+      `(name.ilike."*${term}*",ort.ilike."*${term}*",adresse.ilike."*${term}*")`
+    );
+    const rows = await sbFetch(`kunden?select=id,name,adresse,ort,km&or=${filter}&order=name.asc&limit=8`);
+    dd.innerHTML = '';
+    if(!rows.length) {
+      dd.innerHTML = '<div class="autocomplete-item" style="color:var(--muted);cursor:default;">Kein Kunde gefunden</div>';
+    }
+    rows.forEach(k => {
+      const item = document.createElement('div');
+      item.className = 'autocomplete-item';
+      item.innerHTML = `${sbEsc(k.name)}<small>${sbEsc(k.adresse || 'ohne Adresse')}</small>`;
+      item.addEventListener('click', () => sbSelectKunde(k));
+      dd.appendChild(item);
+    });
+    dd.classList.add('open');
+  } catch(e) {
+    dd.innerHTML = `<div class="autocomplete-item" style="color:var(--red);cursor:default;">${sbEsc(e.message)}</div>`;
+    dd.classList.add('open');
+  }
+}
+
+// ── Kunde auswählen → Stammdaten eintragen, letzte Angebote laden ──
+async function sbSelectKunde(k) {
+  sbCloseDropdown();
+  sbKunde = k;
+  document.getElementById('sbKundeSuche').value = '';
+  document.getElementById('kundenName').value   = k.name || '';
+  document.getElementById('kundeAdresse').value = k.adresse || '';
+  resolvedOrtName  = k.ort || '';
+  acSelectedCoords = null;
+  const km = parseFloat(k.km) || 0;
+  document.getElementById('kmVal').value = km;
+  if(km > 0) { lastKmAuto = { km, min: null }; setKmStatus('ok', `${km} km (aus Kundendaten)`); }
+  else setKmStatus('idle', 'Keine km gespeichert – Adresse neu aus der Liste wählen');
+  updateTitle();
+  calc();
+
+  sbRenderInfo(null, true);
+  try {
+    const rows = await sbFetch(`angebote?select=*&kunde_id=eq.${k.id}&order=erstellt_am.desc&limit=5`);
+    sbLetztesAngebot = rows[0] || null;
+    sbRenderInfo(rows);
+  } catch(e) {
+    sbRenderInfo(null, false, e.message);
+  }
+}
+
+function sbRenderInfo(rows, loading = false, err = '') {
+  const box = document.getElementById('sbKundeInfo');
+  if(!sbKunde) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  box.style.display = 'block';
+  let h = `<div class="sb-info-head"><span>👤 ${sbEsc(sbKunde.name)}</span>`
+        + `<button class="sb-info-x" onclick="sbClearKunde()" title="Auswahl aufheben">✕</button></div>`;
+  if(loading)               h += `<div class="sb-info-line">Lade letzte Angebote …</div>`;
+  else if(err)              h += `<div class="sb-info-line" style="color:var(--red)">Fehler: ${sbEsc(err)}</div>`;
+  else if(!rows || !rows.length) h += `<div class="sb-info-line">Noch kein Angebot gespeichert.</div>`;
+  else {
+    const a = rows[0], o = a.optionen || {};
+    const extras = [
+      o.rechnung && 'Rechnung',
+      o.paypal   && 'PayPal',
+      o.montage  && 'Montage',
+      (o.preisAn && parseFloat(o.preisBetrag) > 0) && `${o.preisText || 'Preis-Option'} ${o.preisBetrag} €`
+    ].filter(Boolean);
+    h += `<div class="sb-info-lbl">Letztes Angebot · ${sbDatum(a.erstellt_am)}</div>`
+       + `<div class="sb-info-main">${a.preis_final ?? '—'} €</div>`
+       + `<div class="sb-info-line">${a.einzeln} Einzel · ${a.gruppe} Gruppe · ${sbEsc(a.farbe || '')}`
+       + `${extras.length ? ' · ' + sbEsc(extras.join(' · ')) : ''}</div>`;
+    if(rows.length > 1) {
+      h += `<div class="sb-info-hist">Davor: ${rows.slice(1).map(r => `${sbDatum(r.erstellt_am)} (${r.preis_final} €)`).join(' · ')}</div>`;
+    }
+    h += `<button class="sb-info-btn" onclick="sbUebernehmen()">↓ Details übernehmen</button>`;
+  }
+  box.innerHTML = h;
+}
+
+function sbClearKunde() {
+  sbKunde = null;
+  sbLetztesAngebot = null;
+  sbRenderInfo();
+}
+
+// ── Letztes Angebot als Startpunkt übernehmen ──
+function sbUebernehmen() {
+  const a = sbLetztesAngebot;
+  if(!a) return;
+  const o = a.optionen || {};
+  const set = (id, val) => { const el = document.getElementById(id); if(el && val !== undefined && val !== null) el.value = val; };
+  const chk = (id, val) => { const el = document.getElementById(id); if(el && val !== undefined) el.checked = !!val; };
+
+  set('einzeln', a.einzeln);
+  set('gruppe',  a.gruppe);
+  chk('rechnungToggle', o.rechnung);
+  chk('paypalToggle',   o.paypal);
+  chk('montage',        o.montage);
+  chk('optRueck',           o.rueck);
+  chk('optBildbearbeitung', o.bildbearbeitung);
+  chk('optPark',            o.park);
+  chk('optRate',            o.rate);
+  chk('optEigenAn',  o.eigenAn);
+  set('optEigenText', o.eigenText);
+  chk('optPreisAn',  o.preisAn);
+  set('optPreisText',   o.preisText);
+  set('optPreisBetrag', o.preisBetrag);
+  if(a.farbe) {
+    document.querySelectorAll('.color-btn').forEach(btn => { if(btn.dataset.color === a.farbe) pickColor(btn); });
+  }
+  toggleEigenText();
+  togglePreisOption();
+  updatePreisPreview();
+
+  _loadingFromURL = true; calc(); _loadingFromURL = false;
+
+  // Slider nur anfassen, wenn damals vom Standardpreis abgewichen wurde
+  if(a.slider_wert && parseInt(a.slider_wert) !== sliderStd) {
+    const sl = document.getElementById('preisSlider');
+    sl.value = Math.max(parseInt(sl.min) || 0, Math.min(parseInt(sl.max) || 9999, parseInt(a.slider_wert)));
+    onSliderInput();
+  }
+  saveSettings();
+  sbToast('✓ Details übernommen');
+}
+
+// ── Speichern: Kunde anlegen/aktualisieren + Angebot als neuer Eintrag ──
+async function sbSaveAngebot() {
+  if(!sbCfg()) { alert('Supabase nicht konfiguriert – bitte URL und Key in den Einstellungen eintragen.'); return; }
+  const name = v('kundenName').trim();
+  if(!name) { alert('Bitte zuerst einen Kundennamen eingeben.'); return; }
+
+  const btn = document.getElementById('sbSaveBtn');
+  const oldHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = '… wird gespeichert';
+
+  const kundeData = {
+    name,
+    adresse: v('kundeAdresse').trim() || null,
+    ort: resolvedOrtName || null,
+    km: n('kmVal') || null,
+    geaendert_am: new Date().toISOString()
+  };
+
+  try {
+    let kundeId = sbKunde?.id || null;
+
+    // Kein Kunde ausgewählt → prüfen, ob es den Namen schon gibt
+    if(!kundeId) {
+      const treffer = await sbFetch(`kunden?select=id,name,adresse&name=ilike.${encodeURIComponent(name)}&limit=1`);
+      if(treffer.length && confirm(
+        `Kunde „${treffer[0].name}“ (${treffer[0].adresse || 'ohne Adresse'}) existiert bereits.\n\n` +
+        `OK = diesem Kunden zuordnen\nAbbrechen = als neuen Kunden anlegen`
+      )) kundeId = treffer[0].id;
+    }
+
+    if(kundeId) {
+      await sbFetch(`kunden?id=eq.${kundeId}`, { method: 'PATCH', body: JSON.stringify(kundeData) });
+    } else {
+      const neu = await sbFetch('kunden', {
+        method: 'POST',
+        headers: { Prefer: 'return=representation' },
+        body: JSON.stringify(kundeData)
+      });
+      kundeId = neu[0].id;
+    }
+
+    const chk = id => document.getElementById(id)?.checked ?? false;
+    const angebot = {
+      kunde_id:    kundeId,
+      einzeln:     n('einzeln'),
+      gruppe:      n('gruppe'),
+      farbe:       selectedColor,
+      preis_final: parseInt(document.getElementById('totalAmt').textContent.replace(/[^0-9]/g, '')) || null,
+      slider_wert: parseInt(document.getElementById('preisSlider').value) || null,
+      optionen: {
+        rechnung: chk('rechnungToggle'),
+        paypal:   chk('paypalToggle'),
+        montage:  chk('montage'),
+        rueck:    chk('optRueck'),
+        bildbearbeitung: chk('optBildbearbeitung'),
+        park:     chk('optPark'),
+        rate:     chk('optRate'),
+        eigenAn:  chk('optEigenAn'),
+        eigenText: v('optEigenText'),
+        preisAn:  chk('optPreisAn'),
+        preisText: v('optPreisText'),
+        preisBetrag: v('optPreisBetrag'),
+        preisEinzel: n('pExtraE'),
+        preisGruppe: n('pExtraG'),
+        km: n('kmVal')
+      },
+      angebot_text: buildText()
+    };
+    await sbFetch('angebote', { method: 'POST', body: JSON.stringify(angebot) });
+
+    // Auswahl + Info-Box aktualisieren
+    sbKunde = { id: kundeId, ...kundeData };
+    const rows = await sbFetch(`angebote?select=*&kunde_id=eq.${kundeId}&order=erstellt_am.desc&limit=5`);
+    sbLetztesAngebot = rows[0] || null;
+    sbRenderInfo(rows);
+    sbToast('✓ Kunde & Angebot gespeichert');
+  } catch(e) {
+    alert('Fehler beim Speichern: ' + e.message);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = oldHtml;
+}
+
+</script>
+</body>
+</html>  display: flex;
+  background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.tab {
+  flex: 1;
+  padding: 13px 10px;
+  text-align: center;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  user-select: none;
+}
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.panel { display: none; }
+.panel.active { display: block; }
+.wrap { max-width: 520px; margin: 0 auto; padding: 0 14px; }
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-top: 14px;
+}
+.card > .card-head:first-child { border-radius: var(--r) var(--r) 0 0; }
+.card > .card-body:only-child,
+.card > *:last-child { border-radius: 0 0 var(--r) var(--r); }
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.card-head .ico { font-size: 0.95rem; }
+.card-head h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--gold2);
+  letter-spacing: 0.06em;
+}
+.card-body { padding: 14px 16px; }
+.card-head.collapsible { cursor: pointer; user-select: none; }
+.card-head.collapsible:active { background: var(--s2); }
+.collapse-arrow {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.75rem;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+.card-head.collapsible.closed .collapse-arrow { transform: rotate(-90deg); }
+.card-head.collapsible.closed { border-bottom-color: transparent; }
+.collapsible-body {
+  overflow: hidden;
+  max-height: 2000px;
+  transition: max-height 0.4s ease, opacity 0.25s ease;
+  opacity: 1;
+}
+.collapsible-body.closed { max-height: 0; opacity: 0; }
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.row:last-child { margin-bottom: 0; }
+.lbl { font-size: 0.75rem; color: var(--text); line-height: 1.35; flex: 1; }
+.lbl small { display: block; font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+input[type="text"], input[type="number"], input[type="password"] {
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  font-weight: 300;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+textarea { font-size: 16px !important; }
+input:focus { border-color: var(--gold); }
+input::placeholder { color: var(--muted2); }
+.euro-wrap { position: relative; flex-shrink: 0; width: 84px; }
+.euro-wrap input { padding-right: 20px; text-align: right; -moz-appearance: textfield; }
+.euro-wrap input::-webkit-outer-spin-button,
+.euro-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.euro-wrap span {
+  position: absolute; right: 9px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted); font-size: 0.7rem; pointer-events: none;
+}
+.step {
+  display: flex;
+  align-items: center;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.step button {
+  background: none; border: none; color: var(--gold);
+  font-size: 1.3rem; width: 40px; height: 40px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.step button:active { background: var(--gold-dim); }
+.step input {
+  width: 44px; border: none; border-radius: 0;
+  text-align: center; padding: 0; font-size: 16px; -moz-appearance: textfield;
+}
+.step input:focus { border-color: transparent; }
+.step input::-webkit-outer-spin-button,
+.step input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.tog-row {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 10px; margin-bottom: 12px;
+}
+.tog { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+.tog input { opacity: 0; width: 0; height: 0; position: absolute; }
+.tog-sl {
+  position: absolute; inset: 0;
+  background: var(--s3); border: 1px solid var(--border2);
+  border-radius: 26px; cursor: pointer; transition: background 0.2s;
+}
+.tog-sl::before {
+  content: '';
+  position: absolute; width: 18px; height: 18px; top: 3px; left: 3px;
+  background: var(--muted); border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+.tog input:checked + .tog-sl { background: var(--gold-dim); border-color: var(--gold); }
+.tog input:checked + .tog-sl::before { transform: translateX(20px); background: var(--gold); }
+.tog.tog-rechnung input:checked + .tog-sl { background: rgba(110,168,212,0.18); border-color: var(--blue); }
+.tog.tog-rechnung input:checked + .tog-sl::before { background: var(--blue); }
+.tog.tog-paypal input:checked + .tog-sl { background: rgba(0,156,222,0.18); border-color: #009cde; }
+.tog.tog-paypal input:checked + .tog-sl::before { background: #009cde; }
+.paypal-banner {
+  background: rgba(0,48,135,0.18);
+  border: 1px solid rgba(0,156,222,0.35);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  color: #7ec8e3;
+  line-height: 1.6;
+  margin: 0 16px 12px;
+  display: none;
+}
+.paypal-banner strong { color: #009cde; }
+.paypal-banner .pp-formula { font-size:0.63rem; color: rgba(126,200,227,0.7); margin-top:4px; }
+.color-btn {
+  background: var(--s2); border: 2px solid var(--border2); border-radius: 8px;
+  cursor: pointer; padding: 10px 8px 8px; text-align: center;
+  transition: border-color 0.18s, background 0.18s;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.color-btn:hover { border-color: var(--muted); }
+.color-btn.on { border-color: var(--gold); background: var(--gold-dim); }
+.color-preview { width: 36px; height: 36px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); }
+.color-label { font-size: 0.65rem; color: var(--text); letter-spacing: 0.05em; }
+.color-price { font-size: 0.65rem; color: var(--gold); min-height: 12px; }
+.btn-maps {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 10px;
+  background: var(--s3); border: 1px solid var(--border2); border-radius: 7px;
+  color: var(--gold); font-family: 'DM Mono', monospace;
+  font-size: 0.72rem; letter-spacing: 0.08em; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s; margin-top: 10px;
+}
+.btn-maps:active { background: var(--gold-dim); border-color: var(--gold); }
+.km-status { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.7rem; min-height: 22px; }
+.km-status .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dot-idle { background: var(--muted2); }
+.dot-loading { background: var(--gold); animation: pulse 1s infinite; }
+.dot-ok { background: var(--green); }
+.dot-err { background: var(--red); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.div { height: 1px; background: var(--border); margin: 12px 0; }
+.rechnung-banner {
+  background: rgba(110,168,212,0.12);
+  border: 1px solid rgba(110,168,212,0.35);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  color: #a8cce8;
+  line-height: 1.6;
+  margin-top: 10px;
+  display: none;
+}
+.rechnung-banner strong { color: var(--blue); }
+.total-card {
+  background: var(--s1); border: 1px solid var(--gold);
+  border-radius: var(--r); margin-top: 14px; padding: 18px 16px; text-align: center;
+}
+.total-lbl { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.22em; text-transform: uppercase; }
+.total-amt {
+  font-family: 'Cormorant Garamond', serif; font-size: 3rem;
+  font-weight: 300; color: var(--gold2); line-height: 1.1; margin: 6px 0 4px;
+}
+.total-lines { font-size: 0.67rem; color: var(--muted); line-height: 1.9; margin-top: 6px; }
+.total-lines span { color: var(--text); }
+.btn-copy {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; margin-top: 14px; padding: 16px;
+  background: var(--gold); color: #0a0908; border: none; border-radius: var(--r);
+  font-family: 'DM Mono', monospace; font-size: 0.82rem; font-weight: 400;
+  letter-spacing: 0.1em; cursor: pointer; transition: background 0.2s, transform 0.1s;
+}
+.btn-copy:active { transform: scale(0.98); }
+.btn-copy.ok { background: var(--green); color: #fff; }
+.btn-share {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; margin-top: 10px; padding: 13px;
+  background: var(--s2); color: var(--gold); border: 1px solid var(--border2);
+  border-radius: var(--r); font-family: 'DM Mono', monospace;
+  font-size: 0.78rem; font-weight: 300; letter-spacing: 0.08em;
+  cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+.btn-share:active { transform: scale(0.98); background: var(--gold-dim); border-color: var(--gold); }
+.btn-share.ok { background: var(--gold-dim); border-color: var(--gold); color: var(--gold2); }
+
+/* ── PATCH 1+3: Neues Angebot Button ── */
+.btn-neues-angebot {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; margin-top: 10px; padding: 13px;
+  background: var(--s2); color: var(--muted); border: 1px solid var(--border2);
+  border-radius: var(--r); font-family: 'DM Mono', monospace;
+  font-size: 0.78rem; font-weight: 300; letter-spacing: 0.08em;
+  cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+}
+.btn-neues-angebot:active {
+  transform: scale(0.98);
+  background: rgba(240,112,112,0.12);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* ── HUBSPOT BUTTON ── */
+.btn-hubspot {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; margin-top: 10px; padding: 13px;
+  background: rgba(255,122,0,0.10); color: #ff7a00;
+  border: 1px solid rgba(255,122,0,0.35);
+  border-radius: var(--r); font-family: 'DM Mono', monospace;
+  font-size: 0.78rem; font-weight: 300; letter-spacing: 0.08em;
+  cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+.btn-hubspot:active { transform: scale(0.98); background: rgba(255,122,0,0.18); border-color: #ff7a00; }
+.btn-hubspot.ok { background: rgba(94,207,160,0.12); border-color: var(--green); color: var(--green); }
+.btn-hubspot.loading { opacity: 0.6; cursor: not-allowed; }
+
+/* ── HUBSPOT MODAL ── */
+.hs-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 1000; padding: 0;
+}
+.hs-sheet {
+  background: var(--s1); border: 1px solid var(--border2);
+  border-radius: 18px 18px 0 0; padding: 24px 20px 32px;
+  width: 100%; max-width: 520px;
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(60px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+.hs-sheet-title {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Cormorant Garamond', serif; font-size: 1.15rem;
+  font-weight: 400; color: var(--gold2); letter-spacing: 0.05em;
+  margin-bottom: 18px;
+}
+.hs-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.hs-field { flex: 1; }
+.hs-field label { display: block; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px; }
+.hs-field input, .hs-field select {
+  width: 100%; background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 7px; color: var(--text); font-family: 'DM Mono', monospace;
+  font-size: 14px; font-weight: 300; padding: 9px 12px; outline: none;
+  transition: border-color 0.2s;
+}
+.hs-field select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238891aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+  padding-right: 30px; cursor: pointer;
+}
+.hs-field input:focus, .hs-field select:focus { border-color: #ff7a00; }
+.hs-deal-amt {
+  background: var(--s2); border: 1px solid var(--border2); border-radius: 8px;
+  padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;
+}
+.hs-deal-amt-lbl { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+.hs-deal-amt-val { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: #ff7a00; font-weight: 300; }
+.hs-actions { display: flex; gap: 10px; margin-top: 16px; }
+.hs-btn-cancel { flex: 1; padding: 13px; border-radius: 8px; border: 1px solid var(--border2); background: var(--s3); color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; cursor: pointer; }
+.hs-btn-save { flex: 2; padding: 13px; border-radius: 8px; border: none; background: #ff7a00; color: #fff; font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.2s; }
+.hs-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+.hs-status { font-size: 0.68rem; margin-top: 10px; min-height: 18px; text-align: center; }
+.hs-status.ok  { color: var(--green); }
+.hs-status.err { color: var(--red); }
+
+.set-group-title {
+  font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted); margin: 18px 0 8px; padding-left: 2px;
+}
+.set-group-title:first-child { margin-top: 0; }
+.api-note {
+  background: var(--gold-dim); border: 1px solid rgba(200,169,110,0.3);
+  border-radius: 7px; padding: 10px 12px; font-size: 0.7rem;
+  color: var(--gold2); line-height: 1.6; margin-bottom: 12px;
+}
+#preisSlider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--gold); cursor: pointer; border: 2px solid var(--s1);
+}
+#preisSlider::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--gold); cursor: pointer; border: 2px solid var(--s1);
+}
+.toast {
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--green); color: #fff; padding: 11px 22px;
+  border-radius: 30px; font-size: 0.74rem; letter-spacing: 0.08em;
+  transition: transform 0.3s ease; z-index: 999; pointer-events: none; white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.confirm-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; padding: 20px;
+}
+.confirm-box {
+  background: var(--s1); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 24px 22px; max-width: 320px; width: 100%; text-align: center;
+}
+.confirm-box p { font-size: 0.8rem; color: var(--text); line-height: 1.6; margin-bottom: 18px; }
+.confirm-box strong { color: var(--gold2); font-weight: 400; }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions button {
+  flex: 1; padding: 13px; border-radius: 8px; border: none;
+  font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; cursor: pointer;
+}
+.btn-cancel { background: var(--s3); color: var(--text); border: 1px solid var(--border2) !important; }
+.btn-confirm-reset { background: var(--red); color: #fff; }
+/* ── STUNDENLOHN BLOCK ── */
+.stunden-box {
+  margin-top: 14px;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.stunden-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--s2);
+}
+.stunden-header h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: var(--gold2);
+  letter-spacing: 0.06em;
+}
+.stunden-header .sub {
+  margin-left: auto;
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+.stunden-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.stunden-col {
+  padding: 13px 14px;
+  border-right: 1px solid var(--border);
+}
+.stunden-col:last-child { border-right: none; }
+.stunden-col-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.stunden-col-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.stunden-col-price.good { color: var(--green); }
+.stunden-col-price.ok   { color: var(--gold2); }
+.stunden-col-price.low  { color: var(--red); }
+.stunden-col-badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  letter-spacing: 0.07em;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.badge-good { background: rgba(114,196,144,0.15); color: var(--green); }
+.badge-ok   { background: rgba(212,176,106,0.15); color: var(--gold); }
+.badge-low  { background: rgba(212,120,112,0.15); color: var(--red); }
+.stunden-detail {
+  font-size: 0.62rem;
+  color: var(--muted);
+  line-height: 2;
+  border-top: 1px solid var(--border);
+  padding: 9px 14px;
+  background: var(--s2);
+}
+.stunden-detail span { color: var(--text); }
+.stunden-zeit-row {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+.stunden-zeit-col {
+  flex: 1;
+  padding: 8px 14px;
+  border-right: 1px solid var(--border);
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+.stunden-zeit-col:last-child { border-right: none; }
+.stunden-zeit-col span { display: block; color: var(--text); font-size: 0.72rem; margin-top: 1px; }
+
+/* ── BILDER HEADER BADGE ── */
+.bilder-badge {
+  margin-left: 8px;
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+}
+.bilder-badge span { color: var(--gold2); }
+
+/* ── AUTOCOMPLETE DROPDOWN ── */
+.autocomplete-wrap { position: relative; }
+.autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  z-index: 100;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  display: none;
+}
+.autocomplete-dropdown.open { display: block; }
+.autocomplete-item {
+  padding: 10px 14px;
+  font-size: 0.72rem;
+  color: var(--text);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.4;
+  transition: background 0.15s;
+}
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:active,
+.autocomplete-item:hover { background: var(--gold-dim); color: var(--gold2); }
+.autocomplete-item small { display: block; font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+
+/* ── WERBUNG TAB ── */
+.werb-sect-label { font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.werb-acc-head {
+  display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; user-select:none;
+  border:1px solid var(--border); border-radius:8px; background:var(--s2); margin-top:10px;
+  transition:border-color 0.2s, background 0.2s;
+}
+.werb-acc-head:active { background:var(--s3); }
+.werb-acc-head.open { border-color:var(--border2); border-radius:8px 8px 0 0; }
+.werb-acc-title { font-size:0.72rem; color:var(--text); flex:1; letter-spacing:0.04em; }
+.werb-acc-badge { background:var(--gold-dim); border:1px solid rgba(124,159,255,0.2); border-radius:20px; padding:2px 8px; font-size:0.6rem; color:var(--gold2); }
+.werb-acc-arrow { color:var(--muted); font-size:0.7rem; transition:transform 0.25s; }
+.werb-acc-head.open .werb-acc-arrow { transform:rotate(180deg); }
+.werb-acc-body { border:1px solid var(--border2); border-top:none; border-radius:0 0 8px 8px; overflow:hidden; max-height:0; transition:max-height 0.4s ease, opacity 0.25s ease; opacity:0; }
+.werb-acc-body.open { max-height:1400px; opacity:1; }
+.werb-acc-inner { padding:10px 12px; display:flex; flex-direction:column; gap:6px; }
+.werb-auto-chip { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; border:1px solid var(--gold); background:var(--gold-dim); font-size:0.72rem; color:var(--text); }
+.werb-auto-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+.werb-ref-chip { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; border:1px solid var(--border); background:var(--s2); transition:border-color 0.15s, background 0.15s; font-size:0.72rem; color:var(--text); user-select:none; }
+.werb-ref-chip.selected { border-color:var(--gold); background:var(--gold-dim); }
+.werb-check { width:18px; height:18px; border-radius:4px; flex-shrink:0; border:1px solid var(--border2); background:var(--s3); display:flex; align-items:center; justify-content:center; font-size:10px; color:#0a0908; font-weight:700; transition:background 0.15s, border-color 0.15s; }
+.werb-ref-chip.selected .werb-check { background:var(--gold); border-color:var(--gold); }
+.werb-ref-tag { margin-left:auto; font-size:0.58rem; color:var(--muted2); letter-spacing:0.06em; white-space:nowrap; flex-shrink:0; }
+.werb-ref-chip.selected .werb-ref-tag { color:var(--gold); }
+.werb-text-preview { background:var(--s2); border:1px solid var(--border2); border-radius:8px; padding:13px 14px; font-size:0.7rem; color:var(--text); line-height:1.75; white-space:pre-wrap; max-height:300px; overflow-y:auto; margin-top:10px; }
+.btn-copy-wa { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:12px; padding:16px; background:var(--gold); color:#0a0908; border:none; border-radius:var(--r); font-family:'DM Mono',monospace; font-size:0.82rem; font-weight:400; letter-spacing:0.1em; cursor:pointer; transition:background 0.2s, transform 0.1s; }
+.btn-copy-wa:active { transform:scale(0.98); }
+.btn-copy-wa.ok { background:var(--green); color:#fff; }
+.werb-info-note { background:var(--gold-dim); border:1px solid rgba(124,159,255,0.18); border-radius:8px; padding:9px 12px; font-size:0.67rem; color:var(--gold2); line-height:1.6; margin-top:10px; }
+.werb-divider { height:1px; background:var(--border); margin:14px 0; }
+#tab-werbung select {
+  width:100%; background:var(--s2); border:1px solid var(--border2);
+  border-radius:7px; color:var(--text); font-family:'DM Mono',monospace;
+  font-size:16px; font-weight:300; padding:10px 12px; outline:none;
+  appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238891aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center; padding-right:36px; cursor:pointer;
+}
+#tab-werbung select:focus { border-color:var(--gold); }
+/* ── URL IMPORT ── */
+.url-import-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); margin-top:14px; overflow:hidden; }
+.url-import-head { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; user-select:none; }
+.url-import-head h2 { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:400; color:var(--gold2); letter-spacing:0.06em; flex:1; }
+.url-import-body { padding:14px 16px; }
+.url-import-input-row { display:flex; gap:8px; align-items:stretch; }
+.url-import-input-row input { flex:1; }
+.btn-url-import { background:var(--gold); color:#0a0908; border:none; border-radius:8px; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:400; letter-spacing:0.08em; padding:9px 14px; cursor:pointer; white-space:nowrap; transition:opacity 0.2s, transform 0.1s; flex-shrink:0; }
+.btn-url-import:active { transform:scale(0.97); }
+.btn-url-import:disabled { opacity:0.45; cursor:not-allowed; }
+.url-status { display:none; padding:9px 12px; border-radius:8px; font-size:0.67rem; line-height:1.6; margin-top:10px; }
+.url-status.ok { display:block; background:rgba(94,207,160,0.1); border:1px solid rgba(94,207,160,0.35); color:var(--green); }
+.url-status.err { display:block; background:rgba(240,112,112,0.1); border:1px solid rgba(240,112,112,0.35); color:var(--red); }
+.url-status.loading { display:block; background:var(--gold-dim); border:1px solid rgba(124,159,255,0.25); color:var(--gold2); }
+.url-result-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.url-result-field { background:var(--s2); border-radius:8px; padding:10px 12px; }
+.url-result-lbl { font-size:0.6rem; color:var(--muted); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:3px; }
+.url-result-val { font-size:0.75rem; color:var(--text); word-break:break-word; }
+.btn-fill-werb { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:10px; padding:12px; background:var(--gold-dim); border:1px solid rgba(124,159,255,0.3); border-radius:8px; color:var(--gold2); font-family:'DM Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; cursor:pointer; transition:background 0.2s; }
+.btn-fill-werb:active { background:rgba(124,159,255,0.22); }
+.wa-quick-link { display:flex; align-items:center; gap:8px; width:100%; margin-top:8px; padding:11px 14px; background:rgba(94,207,160,0.08); border:1px solid rgba(94,207,160,0.3); border-radius:8px; color:var(--green); font-family:'DM Mono',monospace; font-size:0.72rem; text-decoration:none; transition:background 0.2s; }
+.wa-quick-link:active { background:rgba(94,207,160,0.18); }
+
+/* ── PAYPAL TAB ── */
+.pp-logo { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.pp-logo svg { flex-shrink:0; }
+.pp-hero {
+  background: linear-gradient(135deg, #003087 0%, #009cde 100%);
+  border-radius: var(--r);
+  padding: 20px 18px;
+  margin-top: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.pp-hero::before {
+  content:'';
+  position:absolute;
+  right:-30px; top:-30px;
+  width:130px; height:130px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.07);
+}
+.pp-hero::after {
+  content:'';
+  position:absolute;
+  right:20px; bottom:-40px;
+  width:90px; height:90px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.05);
+}
+.pp-hero-label { font-size:0.6rem; letter-spacing:0.22em; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:6px; }
+.pp-hero-amount {
+  font-family:'Cormorant Garamond',serif;
+  font-size:3.2rem; font-weight:300; color:#fff; line-height:1;
+}
+.pp-hero-sub { font-size:0.68rem; color:rgba(255,255,255,0.6); margin-top:4px; }
 </style>
 </head>
 <body>
