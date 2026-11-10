@@ -703,6 +703,15 @@ input::placeholder { color: var(--muted2); }
 .sb-preise { margin-top:10px; background:rgba(94,207,160,0.08); border:1px solid rgba(94,207,160,0.3); border-radius:8px; padding:10px 14px; font-size:0.68rem; color:var(--muted); line-height:1.7; }
 .sb-preise strong { color:var(--green); font-weight:400; }
 .sb-preise a { color:var(--gold); }
+/* ── ANGEBOTE AUSWÄHLEN / LÖSCHEN ── */
+.sb-ang-list { margin-top:10px; border-top:1px solid var(--border); padding-top:8px; display:flex; flex-direction:column; gap:4px; }
+.sb-ang { display:flex; align-items:center; gap:8px; padding:7px 8px; border-radius:7px; border:1px solid transparent; cursor:pointer; font-size:0.64rem; color:var(--muted); line-height:1.4; }
+.sb-ang.on { border-color:var(--gold); background:var(--gold-dim); color:var(--text); }
+.sb-ang-dot { width:10px; height:10px; border-radius:50%; border:1px solid var(--border2); flex-shrink:0; }
+.sb-ang.on .sb-ang-dot { background:var(--gold); border-color:var(--gold); }
+.sb-ang-txt { flex:1; min-width:0; }
+.sb-ang-del { background:none; border:none; color:var(--muted); cursor:pointer; padding:4px; display:flex; flex-shrink:0; border-radius:6px; }
+.sb-ang-del:hover, .sb-ang-del:active { color:var(--red); background:rgba(240,112,112,0.12); }
 </style>
 </head>
 <body>
@@ -2906,6 +2915,7 @@ function loadFromURL() {
 // ══════════════════════════════════════════════════════════════
 let sbKunde = null;          // aktuell ausgewählter Kunde {id, name, adresse, ort, km}
 let sbLetztesAngebot = null; // letztes gespeichertes Angebot dieses Kunden
+let sbAngebote = [], sbAuswahlIdx = 0;   // Angebote des Kunden + ausgewähltes Angebot
 let sbSucheTimeout = null;
 
 function sbCfg() {
@@ -3006,6 +3016,7 @@ async function sbSelectKunde(k) {
   sbRenderInfo(null, true);
   try {
     const rows = await sbFetch(`angebote?select=*&kunde_id=eq.${k.id}&order=erstellt_am.desc&limit=5`);
+    sbAuswahlIdx = 0;
     sbLetztesAngebot = rows[0] || null;
     sbRenderInfo(rows);
   } catch(e) {
@@ -3023,14 +3034,17 @@ function sbRenderInfo(rows, loading = false, err = '') {
   else if(err)              h += `<div class="sb-info-line" style="color:var(--red)">Fehler: ${sbEsc(err)}</div>`;
   else if(!rows || !rows.length) h += `<div class="sb-info-line">Noch kein Angebot gespeichert.</div>`;
   else {
-    const a = rows[0], o = a.optionen || {};
+    sbAngebote = rows;
+    if(sbAuswahlIdx >= rows.length) sbAuswahlIdx = 0;
+    const a = rows[sbAuswahlIdx], o = a.optionen || {};
+    sbLetztesAngebot = a;   // wird von „Details übernehmen“ geladen
     const extras = [
       o.rechnung && 'Rechnung',
       o.paypal   && 'PayPal',
       o.montage  && 'Montage',
       (o.preisAn && parseFloat(o.preisBetrag) > 0) && `${o.preisText || 'Preis-Option'} ${o.preisBetrag} €`
     ].filter(Boolean);
-    h += `<div class="sb-info-lbl">Letztes Angebot · ${sbDatum(a.erstellt_am)}</div>`
+    h += `<div class="sb-info-lbl">${sbAuswahlIdx === 0 ? 'Letztes Angebot' : 'Gewähltes Angebot'} · ${sbDatum(a.erstellt_am)}</div>`
        + `<div class="sb-info-main">${a.preis_final ?? '—'} €</div>`
        + `<div class="sb-info-line">${a.einzeln} Einzel · ${a.gruppe} Gruppe · ${sbEsc(a.farbe || '')}`
        + `${extras.length ? ' · ' + sbEsc(extras.join(' · ')) : ''}</div>`;
@@ -3038,9 +3052,18 @@ function sbRenderInfo(rows, loading = false, err = '') {
       const stufeTxt = parseInt(o.stufe) ? ` · ${o.stufe > 0 ? '+' : '−'}${Math.abs(o.stufe)} %` : ' · Standardpreis';
       h += `<div class="sb-info-line">${sbEsc(o.preisEinzel)} € Einzel · ${sbEsc(o.preisGruppe)} € Gruppe${stufeTxt}</div>`;
     }
-    if(rows.length > 1) {
-      h += `<div class="sb-info-hist">Davor: ${rows.slice(1).map(r => `${sbDatum(r.erstellt_am)} (${r.preis_final} €)`).join(' · ')}</div>`;
-    }
+    // Alle Angebote zur Auswahl (antippen) + löschen
+    h += `<div class="sb-ang-list">` + rows.map((r, i) => {
+      const ro = r.optionen || {};
+      const st = parseInt(ro.stufe);
+      const stTxt = ro.stufe === undefined ? '' : (st ? ` · ${st > 0 ? '+' : '−'}${Math.abs(st)} %` : ' · Standard');
+      return `<div class="sb-ang${i === sbAuswahlIdx ? ' on' : ''}" onclick="sbWaehleAngebot(${i})">`
+        + `<span class="sb-ang-dot"></span>`
+        + `<span class="sb-ang-txt">${sbDatum(r.erstellt_am)} · ${r.preis_final ?? '—'} € · ${r.einzeln} E / ${r.gruppe} G${stTxt}</span>`
+        + `<button class="sb-ang-del" onclick="sbLoescheAngebot(${i}, event)" title="Angebot löschen" aria-label="Angebot löschen">`
+        + `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`
+        + `</button></div>`;
+    }).join('') + `</div>`;
     h += `<button class="sb-info-btn" onclick="sbUebernehmen()">↓ Details übernehmen</button>`;
   }
   box.innerHTML = h;
@@ -3049,8 +3072,34 @@ function sbRenderInfo(rows, loading = false, err = '') {
 function sbClearKunde() {
   sbKunde = null;
   sbLetztesAngebot = null;
+  sbAngebote = []; sbAuswahlIdx = 0;
   sbRenderInfo();
   sbResetKundenPreise();
+}
+
+// ── Angebot auswählen ──
+function sbWaehleAngebot(i) {
+  sbAuswahlIdx = i;
+  sbRenderInfo(sbAngebote);
+}
+
+// ── Angebot löschen (z. B. falsch gespeichert oder nur Vorlage) ──
+async function sbLoescheAngebot(i, ev) {
+  if(ev) ev.stopPropagation();
+  const a = sbAngebote[i];
+  if(!a || !sbKunde) return;
+  if(!confirm(`Angebot vom ${sbDatum(a.erstellt_am)} (${a.preis_final ?? '—'} €) wirklich löschen?\n\nDas kann nicht rückgängig gemacht werden.`)) return;
+  try {
+    await sbFetch(`angebote?id=eq.${a.id}`, { method: 'DELETE' });
+    const rows = await sbFetch(`angebote?select=*&kunde_id=eq.${sbKunde.id}&order=erstellt_am.desc&limit=5`);
+    if(i === sbAuswahlIdx) sbAuswahlIdx = 0;
+    else if(i < sbAuswahlIdx) sbAuswahlIdx--;
+    sbLetztesAngebot = rows[sbAuswahlIdx] || null;
+    sbRenderInfo(rows);
+    sbToast('✓ Angebot gelöscht');
+  } catch(e) {
+    alert('Fehler beim Löschen: ' + e.message);
+  }
 }
 
 // ── Letztes Angebot als Startpunkt übernehmen ──
@@ -3171,6 +3220,7 @@ async function sbSaveAngebot() {
     // Auswahl + Info-Box aktualisieren
     sbKunde = { id: kundeId, ...kundeData };
     const rows = await sbFetch(`angebote?select=*&kunde_id=eq.${kundeId}&order=erstellt_am.desc&limit=5`);
+    sbAuswahlIdx = 0;
     sbLetztesAngebot = rows[0] || null;
     sbRenderInfo(rows);
     sbToast('✓ Kunde & Angebot gespeichert');
