@@ -744,6 +744,35 @@ input::placeholder { color: var(--muted2); }
 #preisSliderBox { display:none !important; }   /* Schieber ausgeblendet – Stufen übernehmen, Wert bleibt intern gespeichert */
 /* ── ANFAHRT ZUKLAPPBAR ── */
 #anfahrtBody:not(.closed) { overflow:visible; }   /* Adress-Vorschläge nicht abschneiden */
+/* ══ TABLET (iPad mini) ══ */
+.ang-left, .ang-right { min-width:0; }
+/* Hochkant ab ca. 700 px: breitere Spalte, etwas größere Schrift und Tippflächen */
+@media (min-width: 700px) {
+  html { font-size: 17px; }
+  .wrap { max-width: 680px; padding: 0 20px; }
+  .gb-pill { padding: 10px 0; font-size: 0.68rem; }
+  .step button { width: 46px; height: 46px; }
+  .tab { padding: 15px 10px; }
+}
+/* Quer ab ca. 1000 px: zwei Spalten, Ergebnisse rechts bleiben stehen */
+@media (min-width: 1000px) {
+  #tab-angebot .wrap {
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0 24px;
+    align-items: start;
+  }
+  .ang-right {
+    position: sticky;
+    top: 58px;                         /* unter der Tab-Leiste */
+    max-height: calc(100vh - 66px);
+    overflow-y: auto;
+    padding-bottom: 20px;
+    scrollbar-width: none;
+  }
+  .ang-right::-webkit-scrollbar { display: none; }
+}
 </style>
 </head>
 <body>
@@ -790,6 +819,7 @@ input::placeholder { color: var(--muted2); }
 <!-- ══ TAB: ANGEBOT ══ -->
 <div class="panel active" id="tab-angebot">
 <div class="wrap">
+<div class="ang-left">   <!-- Tablet: linke Spalte (Eingaben) -->
 
   <div class="card">
     <div class="card-head"><span class="ico">👤</span><h2>Kunde</h2></div>
@@ -971,6 +1001,9 @@ input::placeholder { color: var(--muted2); }
     </div>
   </div>
 
+</div>   <!-- /ang-left -->
+<div class="ang-right">   <!-- Tablet: rechte Spalte (Ergebnisse) -->
+
   <!-- Total -->
   <div class="total-card">
     <div class="total-lbl" id="totalLbl">Gesamtpreis (Angebot)</div>
@@ -1063,6 +1096,7 @@ input::placeholder { color: var(--muted2); }
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Neues Angebot erstellen
   </button>
 
+</div>   <!-- /ang-right -->
 </div>
 </div>
 
