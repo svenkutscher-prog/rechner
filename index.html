@@ -729,6 +729,21 @@ input::placeholder { color: var(--muted2); }
 .gb-hero { font-family:'Cormorant Garamond',serif; font-size:2.3rem; font-weight:300; line-height:1.05; }
 .gb-herl { padding:0 16px 14px; font-size:0.65rem; color:var(--muted); line-height:1.6; }
 .gb-herl span { color:var(--text); }
+#shareBtn { display:none !important; }   /* „Angebot als Link speichern“ vorerst ausgeblendet */
+/* ── KACHEL „WAS BLEIBT ÜBRIG“ ── */
+.gb-wrap { padding:14px 16px 4px; }
+.gb-wrap > .gb-cap { margin-bottom:6px; }
+.gb-l2 { display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-size:0.75rem; color:var(--muted); line-height:2.1; }
+.gb-l2 b { font-weight:300; color:var(--text); white-space:nowrap; }
+.gb-sum2 { display:flex; justify-content:space-between; align-items:baseline; gap:8px; border-top:1px solid var(--border2); margin-top:4px; padding-top:8px; }
+.gb-lohn { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:10px 16px 14px; padding:10px 12px; background:var(--s1); border:1px solid var(--border); border-radius:8px; }
+.gb-lohn-sub { font-size:0.62rem; color:var(--muted); margin-top:2px; }
+.gb-lohn-sub span { color:var(--text); }
+.gb-lohn-val { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:300; line-height:1; }
+.gb-pill.lock { border-style:dashed; background:none; }
+#preisSliderBox { display:none !important; }   /* Schieber ausgeblendet – Stufen übernehmen, Wert bleibt intern gespeichert */
+/* ── ANFAHRT ZUKLAPPBAR ── */
+#anfahrtBody:not(.closed) { overflow:visible; }   /* Adress-Vorschläge nicht abschneiden */
 </style>
 </head>
 <body>
@@ -792,7 +807,12 @@ input::placeholder { color: var(--muted2); }
   </div>
 
   <div class="card">
-    <div class="card-head"><span class="ico">🚗</span><h2>Anfahrt</h2></div>
+    <div class="card-head collapsible" id="anfahrtHead" onclick="toggleCard(this)">
+      <span class="ico">🚗</span><h2>Anfahrt</h2>
+      <span class="bilder-badge" id="anfahrtBadge"></span>
+      <span class="collapse-arrow">▼</span>
+    </div>
+    <div class="collapsible-body" id="anfahrtBody">
     <div class="card-body">
       <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;">Kundenadresse</div>
       <div class="autocomplete-wrap">
@@ -821,6 +841,7 @@ input::placeholder { color: var(--muted2); }
         <span id="kmStatusText" style="color:var(--muted)">Adresse eingeben → km wird automatisch berechnet</span>
       </div>
       <input type="number" id="kmVal" value="0" min="0" oninput="calc()" style="display:none;">
+    </div>
     </div>
   </div>
 
@@ -950,22 +971,33 @@ input::placeholder { color: var(--muted2); }
     </div>
   </div>
 
+  <!-- Total -->
+  <div class="total-card">
+    <div class="total-lbl" id="totalLbl">Gesamtpreis (Angebot)</div>
+    <div class="total-amt" id="totalAmt">— €</div>
+    <div class="total-lines" id="totalLines"></div>
+  </div>
+
   <!-- Kosten & Minimum -->
   <div id="kostenBox" style="display:none;margin-top:14px;background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;">
-    <div class="gb-top">
+    <div class="gb-wrap">
+      <div class="gb-cap">Was bleibt übrig</div>
+      <div class="gb-l2"><span>Angebotspreis <span id="gwStufe"></span></span><b id="gwPreis">—</b></div>
+      <div class="gb-l2" id="gwRowDiesel"><span>− Diesel gesamt</span><b id="gwDiesel">—</b></div>
+      <div class="gb-sum2"><span class="gb-cap" style="margin:0;">= Gewinn</span><span id="kostenAmt" class="gb-hero" style="color:var(--gold2);">—</span></div>
+    </div>
+    <div class="gb-lohn">
       <div>
-        <div class="gb-cap">Gewinn</div>
-        <div id="kostenAmt" class="gb-hero" style="color:var(--gold2);">—</div>
+        <div class="gb-cap" style="margin:0;">Stundenlohn</div>
+        <div class="gb-lohn-sub" id="gwLohnSub"></div>
       </div>
       <div style="text-align:right;">
-        <div class="gb-cap">Stundenlohn</div>
-        <div id="gwLohn" class="gb-hero">—</div>
-        <span id="gbLohnChip" class="gb-chip" style="display:none;"></span>
+        <div id="gwLohn" class="gb-lohn-val">—</div>
+        <span id="gbLohnChip" class="gb-chip" style="display:none;margin-top:4px;"></span>
       </div>
     </div>
-    <div id="gwHerleitung" class="gb-herl"></div>
     <div class="gb-stufen">
-      <div class="gb-stufen-head"><span>Preisstufe</span><span id="gbRunter"></span></div>
+      <div class="gb-cap" style="margin:0;">Preisstufe</div>
       <div class="gb-pills" id="gbPills"></div>
     </div>
   </div>
@@ -1008,13 +1040,6 @@ input::placeholder { color: var(--muted2); }
     </div>
     <div class="stunden-zeit-row" id="stundenZeitRow"></div>
     <div class="stunden-detail" id="stundenDetail"></div>
-  </div>
-
-  <!-- Total -->
-  <div class="total-card">
-    <div class="total-lbl" id="totalLbl">Gesamtpreis (Angebot)</div>
-    <div class="total-amt" id="totalAmt">— €</div>
-    <div class="total-lines" id="totalLines"></div>
   </div>
 
   <button class="btn-copy" id="copyBtn" onclick="copyText()">
@@ -1938,6 +1963,24 @@ function setKmStatus(state, text) {
   const el = document.getElementById('kmStatusText');
   el.textContent = text;
   el.style.color = state === 'ok' ? 'var(--green)' : state === 'err' ? 'var(--red)' : 'var(--muted)';
+  anfahrtAutoKlappen(state);
+}
+
+// ── Anfahrt: zuklappen, sobald km berechnet sind; aufklappen bei neuer Eingabe/Fehler ──
+function anfahrtAutoKlappen(state) {
+  const head = document.getElementById('anfahrtHead');
+  const body = document.getElementById('anfahrtBody');
+  const badge = document.getElementById('anfahrtBadge');
+  if(!head || !body) return;
+  if(state === 'ok') {
+    const km  = parseFloat(document.getElementById('kmVal')?.value) || 0;
+    const ort = resolvedOrtName || (v('kundeAdresse').split(',').pop() || '').trim();
+    if(badge) badge.innerHTML = `${ort ? sbEsc(ort) + ' · ' : ''}<span>${km} km</span>`;
+    head.classList.add('closed'); body.classList.add('closed');
+  } else if(state === 'idle' || state === 'err') {
+    if(badge) badge.innerHTML = '';
+    head.classList.remove('closed'); body.classList.remove('closed');
+  }
 }
 
 async function fetchDistance(destination) {
@@ -2247,46 +2290,51 @@ function renderGewinnBox(preis) {
   const set = (id, t) => { const el = document.getElementById(id); if(el) el.textContent = t; };
   const aktStufe = sliderStd ? sliderStufe(preis) : 0;
 
-  // ── Gewinn + Stundenlohn ──
+  // ── Was bleibt übrig: Angebotspreis − Diesel = Gewinn ──
+  set('gwPreis', preis + ' €');
+  const stEl = document.getElementById('gwStufe');
+  if(stEl) {
+    const st = aktStufe * 5;
+    stEl.textContent = st === 0 ? '(Standard)' : `(${st > 0 ? '+' : '−'}${Math.abs(st)} %)`;
+    stEl.style.color = st === 0 ? 'var(--muted)' : (st > 0 ? 'var(--green)' : 'var(--red)');
+  }
+  const rowD = document.getElementById('gwRowDiesel');
+  if(rowD) rowD.style.display = dieselGes > 0 ? 'flex' : 'none';
+  set('gwDiesel', dieselGes + ' €');
   set('kostenAmt', gewinn + ' €');
+
+  // ── Stundenlohn mit Zielwert aus den Einstellungen ──
   const ok = lohn >= minLohn;
   const lohnEl = document.getElementById('gwLohn');
   if(lohnEl) { lohnEl.textContent = lohn + ' €/h'; lohnEl.style.color = ok ? 'var(--green)' : 'var(--red)'; }
+  const sub = document.getElementById('gwLohnSub');
+  if(sub) sub.innerHTML = `Ziel <span>${minLohn} €/h</span> · ${formatDauer(gesMin)}`;
   const chip = document.getElementById('gbLohnChip');
   if(chip) {
     chip.style.display = gesMin > 0 ? 'inline-block' : 'none';
     chip.className = 'gb-chip ' + (ok ? 'ok' : 'low');
-    chip.textContent = ok ? `✓ über ${minLohn} €/h Mindestlohn` : `⚠ unter ${minLohn} €/h Mindestlohn`;
+    chip.textContent = ok ? `✓ +${lohn - minLohn} €/h über Ziel` : `⚠ ${minLohn - lohn} €/h unter Ziel`;
   }
 
-  // ── Herleitung in einer Zeile ──
-  const herl = document.getElementById('gwHerleitung');
-  if(herl) {
-    const st = aktStufe * 5;
-    const stTxt = st === 0 ? 'Standard' : `${st > 0 ? '+' : '−'}${Math.abs(st)} %`;
-    herl.innerHTML = `Angebotspreis <span>${preis} €</span> (${stTxt})`
-      + (dieselGes > 0 ? ` − Diesel <span>${dieselGes} €</span>` : '')
-      + ` · Zeit <span>${formatDauer(gesMin)}</span>`;
-  }
-
-  // ── Preisstufen: unter Minimum gesperrt ──
+  // ── Preisstufen: Rabatt rötlich, Aufschlag grünlich, unter Mindestlohn gesperrt ──
   const pills = document.getElementById('gbPills');
   if(pills && sliderStd) {
-    let html = '', low = null;
+    let html = '';
     for(let st = -SLIDER_MAX_STUFEN; st <= SLIDER_MAX_STUFEN; st++) {
       const okSt = !(sliderMin > 0) || sliderStufenPreis(st) >= sliderMin;
-      if(okSt && low === null) low = st;
-      const lbl = st === 0 ? '0' : (st > 0 ? '+' : '−') + Math.abs(st * 5);
-      const cls = 'gb-pill' + (st === aktStufe ? ' on' : '') + (!okSt ? ' lock' : '');
-      html += `<button class="${cls}" ${okSt ? `onclick="gbSetStufe(${st})"` : 'disabled'} title="${sliderStufenPreis(st)} €">${lbl}</button>`;
+      const on   = st === aktStufe;
+      const lbl  = st === 0 ? '0' : (st > 0 ? '+' : '−') + Math.abs(st * 5);
+      let style  = '';
+      if(okSt && !on && st !== 0) {
+        const a = (0.04 + Math.abs(st) / SLIDER_MAX_STUFEN * 0.12).toFixed(3);
+        style = st < 0
+          ? `background:rgba(240,112,112,${a});border-color:rgba(240,112,112,0.35);color:#f5a3a3;`
+          : `background:rgba(94,207,160,${a});border-color:rgba(94,207,160,0.35);color:#8fe0bd;`;
+      }
+      const cls = 'gb-pill' + (on ? ' on' : '') + (!okSt ? ' lock' : '');
+      html += `<button class="${cls}" style="${style}" ${okSt ? `onclick="gbSetStufe(${st})"` : 'disabled'} title="${sliderStufenPreis(st)} €">${lbl}</button>`;
     }
     pills.innerHTML = html;
-    let txt;
-    if(low === null)   txt = 'auch +20 % liegt unter Mindestlohn';
-    else if(low === 0) txt = 'kein Rabatt möglich';
-    else if(low > 0)   txt = `erst ab +${low * 5} %`;
-    else               txt = `runter bis −${-low * 5} %`;
-    set('gbRunter', txt);
   }
 }
 
