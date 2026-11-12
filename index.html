@@ -1506,10 +1506,19 @@ input::placeholder { color: var(--muted2); }
 <!-- Confirm Reset Overlay -->
 <div class="confirm-overlay" id="confirmOverlay" style="display:none;">
   <div class="confirm-box">
-    <p>Alle <strong>Einstellungen und Angebotsdaten</strong> werden zurückgesetzt.<br>Dieser Schritt kann nicht rückgängig gemacht werden.</p>
+    <div style="font-size:1.6rem;margin-bottom:6px;">⚠️</div>
+    <p style="margin-bottom:10px;"><strong style="color:var(--red);">Achtung: Alles wird gelöscht</strong></p>
+    <div style="text-align:left;font-size:0.72rem;color:var(--text);line-height:1.7;background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
+      Gelöscht werden auch <strong>alle Zugangsdaten</strong>:<br>
+      • OpenRouteService API Key<br>
+      • HubSpot Token<br>
+      • Supabase URL &amp; Key<br>
+      <span style="color:var(--muted);">sowie alle Einstellungen (Preise, Diesel, Startadresse …) und das aktuelle Angebot.</span>
+    </div>
+    <p style="font-size:0.7rem;color:var(--muted);margin-bottom:16px;">Notiere dir die Zugangsdaten vorher. Deine Kunden in Supabase bleiben erhalten.<br><br><span style="color:var(--text);">Wirklich alles zurücksetzen?</span></p>
     <div class="confirm-actions">
-      <button class="btn-cancel" onclick="hideResetConfirm()">Abbrechen</button>
-      <button class="btn-confirm-reset" onclick="doReset()">Zurücksetzen</button>
+      <button class="btn-cancel" onclick="hideResetConfirm()">Nein</button>
+      <button class="btn-confirm-reset" onclick="doReset()">Ja, alles löschen</button>
     </div>
   </div>
 </div>
