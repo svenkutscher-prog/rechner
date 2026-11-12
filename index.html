@@ -773,6 +773,23 @@ input::placeholder { color: var(--muted2); }
   }
   .ang-right::-webkit-scrollbar { display: none; }
 }
+/* ── DIESEL-REFRESH + ZEITAUFTEILUNG ── */
+.gb-dp { display:inline-flex; align-items:center; gap:6px; }
+.gb-dp-price { font-size:0.62rem; padding:2px 8px; border-radius:12px; background:var(--s3); color:var(--gold2); border:1px solid var(--border2); }
+.gb-dp-btn { width:28px; height:28px; border-radius:8px; border:1px solid var(--border2); background:var(--s3); color:var(--gold); cursor:pointer; display:grid; place-items:center; padding:0; flex-shrink:0; }
+.gb-dp-btn:active { transform:scale(0.95); }
+.gb-dp-btn.spin svg { animation:gbSpin 0.9s linear infinite; }
+@keyframes gbSpin { to { transform:rotate(360deg); } }
+.gb-dp-info { font-size:0.58rem; color:var(--muted); text-align:right; margin-top:-2px; min-height:14px; }
+.gb-lohn { display:block; }
+.gb-lohn-top { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.gb-zeit-head { display:flex; justify-content:space-between; margin:12px 0 6px; font-size:0.62rem; color:var(--muted); }
+.gb-zeit-head span:last-child { color:var(--text); }
+.gb-zeiten { display:grid; gap:6px; }
+.gb-z { border-radius:8px; padding:8px 10px; background:var(--s2); border:1px solid var(--border); min-width:0; }
+.gb-z span { display:block; font-size:0.6rem; color:var(--muted); }
+.gb-z b { display:block; font-weight:300; font-size:0.72rem; color:var(--text); margin-top:2px; white-space:nowrap; }
+.gb-z small { display:block; font-size:0.56rem; color:var(--muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 </style>
 </head>
 <body>
@@ -1016,18 +1033,31 @@ input::placeholder { color: var(--muted2); }
     <div class="gb-wrap">
       <div class="gb-cap">Was bleibt übrig</div>
       <div class="gb-l2"><span>Angebotspreis <span id="gwStufe"></span></span><b id="gwPreis">—</b></div>
-      <div class="gb-l2" id="gwRowDiesel"><span>− Diesel gesamt</span><b id="gwDiesel">—</b></div>
+      <div class="gb-l2" id="gwRowDiesel" style="align-items:center;">
+        <span class="gb-dp">− Diesel gesamt
+          <span class="gb-dp-price" id="gbDieselPreis">—</span>
+          <button class="gb-dp-btn" id="gbDieselBtn" onclick="gbDieselRefresh()" aria-label="Dieselpreis aktualisieren" title="Aktuellen Dieselpreis laden">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          </button>
+        </span>
+        <b id="gwDiesel">—</b>
+      </div>
+      <div class="gb-dp-info" id="gbDieselInfo">Preis aus den Einstellungen</div>
       <div class="gb-sum2"><span class="gb-cap" style="margin:0;">= Gewinn</span><span id="kostenAmt" class="gb-hero" style="color:var(--gold2);">—</span></div>
     </div>
     <div class="gb-lohn">
-      <div>
-        <div class="gb-cap" style="margin:0;">Stundenlohn</div>
-        <div class="gb-lohn-sub" id="gwLohnSub"></div>
+      <div class="gb-lohn-top">
+        <div>
+          <div class="gb-cap" style="margin:0;">Stundenlohn</div>
+          <div class="gb-lohn-sub" id="gwLohnSub"></div>
+        </div>
+        <div style="text-align:right;">
+          <div id="gwLohn" class="gb-lohn-val">—</div>
+          <span id="gbLohnChip" class="gb-chip" style="display:none;margin-top:4px;"></span>
+        </div>
       </div>
-      <div style="text-align:right;">
-        <div id="gwLohn" class="gb-lohn-val">—</div>
-        <span id="gbLohnChip" class="gb-chip" style="display:none;margin-top:4px;"></span>
-      </div>
+      <div class="gb-zeit-head"><span>Arbeitszeit</span><span id="gbZeitGes">—</span></div>
+      <div class="gb-zeiten" id="gbZeiten"></div>
     </div>
     <div class="gb-stufen">
       <div class="gb-cap" style="margin:0;">Preisstufe</div>
@@ -2344,6 +2374,9 @@ function renderGewinnBox(preis) {
   const rowD = document.getElementById('gwRowDiesel');
   if(rowD) rowD.style.display = dieselGes > 0 ? 'flex' : 'none';
   set('gwDiesel', dieselGes + ' €');
+  set('gbDieselPreis', diesel.toFixed(2).replace('.', ',') + ' €/L');
+  const dInf = document.getElementById('gbDieselInfo');
+  if(dInf) dInf.style.display = dieselGes > 0 ? 'block' : 'none';
   set('kostenAmt', gewinn + ' €');
 
   // ── Stundenlohn mit Zielwert aus den Einstellungen ──
@@ -2351,7 +2384,19 @@ function renderGewinnBox(preis) {
   const lohnEl = document.getElementById('gwLohn');
   if(lohnEl) { lohnEl.textContent = lohn + ' €/h'; lohnEl.style.color = ok ? 'var(--green)' : 'var(--red)'; }
   const sub = document.getElementById('gwLohnSub');
-  if(sub) sub.innerHTML = `Ziel <span>${minLohn} €/h</span> · ${formatDauer(gesMin)}`;
+  if(sub) sub.innerHTML = `Ziel <span>${minLohn} €/h</span>`;
+
+  // Arbeitszeit einzeln: Fahrzeit · Shooting · Bearbeitung
+  set('gbZeitGes', formatDauer(gesMin));
+  const zf = [];
+  if(km > 0) zf.push(['🚗 Fahrzeit', formatDauer(fahrMin), `2 × ${Math.round(km)} km`]);
+  zf.push(['📸 Shooting', formatDauer(pauschMin), 'Pauschale']);
+  if(bilder > 0) zf.push(['🎨 Bearbeitung', formatDauer(bildMin), `${bilder} Bilder × ${minBild} Min.`]);
+  const zEl = document.getElementById('gbZeiten');
+  if(zEl) {
+    zEl.style.gridTemplateColumns = `repeat(${zf.length}, minmax(0,1fr))`;
+    zEl.innerHTML = zf.map(z => `<div class="gb-z"><span>${z[0]}</span><b>${z[1]}</b><small>${z[2]}</small></div>`).join('');
+  }
   const chip = document.getElementById('gbLohnChip');
   if(chip) {
     chip.style.display = gesMin > 0 ? 'inline-block' : 'none';
@@ -2379,6 +2424,23 @@ function renderGewinnBox(preis) {
     }
     pills.innerHTML = html;
   }
+}
+
+// ── DIESELPREIS AKTUALISIEREN (aus der Kachel) ──
+async function gbDieselRefresh() {
+  const btn = document.getElementById('gbDieselBtn');
+  const inf = document.getElementById('gbDieselInfo');
+  const stufe = sliderStd ? sliderStufe(parseInt(document.getElementById('preisSlider').value)) : 0;   // gewählte Preisstufe merken
+  btn.classList.add('spin'); btn.disabled = true;
+  inf.textContent = 'Lade aktuellen Dieselpreis …'; inf.style.color = 'var(--muted)';
+  await fetchDieselPreis();          // bestehende Funktion: lädt, speichert und rechnet neu
+  btn.classList.remove('spin'); btn.disabled = false;
+  if(stufe) gbSetStufe(stufe);       // Preisstufe nach dem Neuberechnen wiederherstellen
+  const st = document.getElementById('dieselStatus');
+  const ok = st && /green/.test(st.style.color);
+  const zeit = new Date().toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' });
+  if(ok) { inf.textContent = `✓ aktualisiert ${zeit} · ${st.textContent.replace(/^⛽\s*/, '')}`; inf.style.color = 'var(--green)'; }
+  else   { inf.textContent = 'Laden fehlgeschlagen – bisheriger Preis bleibt'; inf.style.color = 'var(--red)'; }
 }
 
 // ── TEXT ──
